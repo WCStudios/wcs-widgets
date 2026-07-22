@@ -1,0 +1,51 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Top Post</title>
+<style>
+:root{--card:#fff;--line:#e6e6e6;--text:#111;--muted:#888;--accent:#e8622c;--soft:#f2f2f2}
+@media (prefers-color-scheme:dark){:root{--card:#191919;--line:#2a2a2a;--text:#f4f4f4;--muted:#8a8a8a;--soft:#242424}}
+*{margin:0;box-sizing:border-box}html,body{background:transparent;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px;user-select:none;position:relative;display:flex;gap:16px;align-items:center}
+.thumb{width:88px;height:88px;border-radius:14px;object-fit:cover;background:var(--soft);flex:0 0 auto}
+.lab{font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--muted)}
+.who{font-size:12px;font-weight:700;margin-top:2px}
+.cap{font-size:13px;margin-top:8px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.stats{display:flex;gap:18px;margin-top:10px}
+.st{font-size:15px;font-weight:800}.st small{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:block}
+.switch{position:absolute;top:12px;right:14px;font-size:10px;color:var(--muted);cursor:pointer}
+a{color:inherit;text-decoration:none}
+.body{flex:1;min-width:0}
+</style></head><body>
+<div class="card" id="card">
+  <div class="switch" id="switch" onclick="cycle()"></div>
+  <img class="thumb" id="thumb" alt="">
+  <div class="body">
+    <div class="lab">Top recent post</div>
+    <div class="who" id="who">@…</div>
+    <div class="cap" id="cap">loading…</div>
+    <div class="stats">
+      <div class="st" id="likes">—<small>Likes</small></div>
+      <div class="st" id="comments">—<small>Comments</small></div>
+    </div>
+  </div>
+</div>
+<script>
+const FEED="https://raw.githubusercontent.com/WCStudios/wcs-widgets/main/ig-stats.json";
+let data=null,accts=[],i=0;
+const fmt=n=>Number(n||0).toLocaleString("en-US");
+function render(){if(!data)return;const a=accts[i],d=data[a]||{},t=d.topPost;
+ document.getElementById('who').textContent="@"+a;
+ document.getElementById('switch').textContent=accts.length>1?"switch ▸":"";
+ if(!t){document.getElementById('cap').textContent="No recent posts";return;}
+ const img=document.getElementById('thumb');if(t.thumb){img.src=t.thumb;img.style.display="";}else{img.style.display="none";}
+ document.getElementById('cap').textContent=t.caption||"(no caption)";
+ document.getElementById('likes').innerHTML=fmt(t.likes)+"<small>Likes</small>";
+ document.getElementById('comments').innerHTML=fmt(t.comments)+"<small>Comments</small>";
+ const card=document.getElementById('card');card.onclick=null;
+ if(t.permalink){card.style.cursor="pointer";}
+}
+function openPost(){const t=(data[accts[i]]||{}).topPost;if(t&&t.permalink)window.open(t.permalink,"_blank");}
+function cycle(e){if(e)e.stopPropagation();if(accts.length>1){i=(i+1)%accts.length;render();}}
+document.getElementById('card').addEventListener('click',openPost);
+function load(){fetch(FEED+"?t="+Date.now()).then(r=>r.json()).then(d=>{data=d;accts=d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null);render();}).catch(()=>{});}
+load();setInterval(load,300000);
+</script></body></html>
