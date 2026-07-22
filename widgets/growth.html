@@ -26,7 +26,7 @@ body{background:transparent;font-family:-apple-system,BlinkMacSystemFont,"Segoe 
   <div class="foot" id="foot"></div>
 </div>
 <script>
-const FEED="https://wcstudios.github.io/wcs-widgets/ig-stats.json";
+const JSSRC="https://wcstudios.github.io/wcs-widgets/ig-stats.js";
 const RANGES=[30,60,90,365],LBL={30:"30d",60:"60d",90:"90d",365:"1y"};
 let data=null,accts=[],ai=0,ri=0;
 const fmt=n=>Number(n||0).toLocaleString("en-US");
@@ -46,6 +46,7 @@ function render(){if(!data)return;const a=accts[ai],d=data[a]||{};
 const switchEl=document.getElementById('switch');
 function setR(x){ri=x;render();}
 function cycleAcct(){if(accts.length>1){ai=(ai+1)%accts.length;render();}}
-function load(){fetch(FEED+"?t="+Date.now(),{cache:"no-store"}).then(r=>r.json()).then(d=>{data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));render();}).catch(e=>{delta.textContent="feed error";});}
+function apply(d){if(!d)return;data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));render();}
+function load(){const s=document.createElement('script');s.src=JSSRC+"?t="+Date.now();s.onload=()=>{apply(window.IGDATA);s.remove();};s.onerror=()=>{delta.textContent="feed offline";s.remove();};document.head.appendChild(s);}
 load();setInterval(load,300000);
 </script></body></html>
