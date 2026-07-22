@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCStudios IG Stats</title>
+<style>
+  :root{
+    --bg:#0e0e0e; --card:#171717; --card2:#1e1e1e; --line:#2a2a2a;
+    --text:#f5f5f5; --muted:#8a8a8a; --accent:#e8622c; --blue:#3b82f6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:transparent;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text)}
+  .wrap{display:flex;flex-wrap:wrap;gap:16px;padding:14px;align-items:stretch}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;flex:1 1 240px;min-width:230px;position:relative;overflow:hidden}
+  .card::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 120% at 100% 0,rgba(232,98,44,.08),transparent 55%);pointer-events:none}
+  .top{display:flex;align-items:center;gap:14px}
+  .avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--line);background:#222 center/cover no-repeat;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);font-size:18px}
+  .handle{font-size:15px;font-weight:600}
+  .sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .stats{display:flex;gap:26px;margin-top:18px}
+  .stat .n{font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1}
+  .stat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-top:6px}
+  .badge{position:absolute;top:16px;right:18px;font-size:11px;color:var(--muted)}
+  .total{flex:1 1 200px;min-width:200px;background:linear-gradient(160deg,#1c1c1c,#141414);border:1px solid var(--line);border-radius:18px;padding:20px 22px;display:flex;flex-direction:column;justify-content:center}
+  .total .big{font-size:40px;font-weight:800;letter-spacing:-1px;line-height:1}
+  .total .cap{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+  .dots{display:flex;gap:8px;margin-top:14px;align-items:center;color:var(--muted);font-size:12px}
+  .dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  .updated{width:100%;text-align:right;font-size:10px;color:var(--muted);padding:0 16px 10px}
+  a{color:inherit;text-decoration:none}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- WCStudios -->
+    <a class="card" id="c-wcs" href="https://instagram.com/wcstudios.co" target="_blank">
+      <div class="top">
+        <div class="avatar" data-avatar="wcs">W</div>
+        <div>
+          <div class="handle">@wcstudios.co</div>
+          <div class="sub">WCStudios · Production + Post</div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="n" data-f="wcs-posts">93</div><div class="l">Posts</div></div>
+        <div class="stat"><div class="n" data-f="wcs-followers">7,783</div><div class="l">Followers</div></div>
+      </div>
+    </a>
+
+    <!-- lifeofbennyy -->
+    <a class="card" id="c-life" href="https://instagram.com/lifeofbennyy" target="_blank">
+      <div class="top">
+        <div class="avatar" data-avatar="life" style="color:var(--blue)">B</div>
+        <div>
+          <div class="handle">@lifeofbennyy</div>
+          <div class="sub">Bennett · Personal</div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="n" data-f="life-posts">87</div><div class="l">Posts</div></div>
+        <div class="stat"><div class="n" data-f="life-followers">3,425</div><div class="l">Followers</div></div>
+      </div>
+    </a>
+
+    <!-- Combined total -->
+    <div class="total">
+      <div class="cap">Total Followers</div>
+      <div class="big" data-f="total">11,208</div>
+      <div class="dots">
+        <div class="dot" style="background:rgba(232,98,44,.18);color:var(--accent)">W</div>
+        <div class="dot" style="background:rgba(59,130,246,.18);color:var(--blue)">B</div>
+        <span>across 2 accounts</span>
+      </div>
+    </div>
+  </div>
+  <div class="updated" id="updated"></div>
+
+<script>
+  // Baked-in fallback values (current at build time).
+  const FALLBACK = {
+    "wcs":  { posts: 93, followers: 7783 },
+    "life": { posts: 87, followers: 3425 }
+  };
+
+  // Optional: set DATA_URL to a JSON feed to make these numbers auto-refresh.
+  // Expected shape: { "wcstudios.co": {followers, mediaCount}, "lifeofbennyy": {followers, mediaCount} }
+  const DATA_URL = "https://raw.githubusercontent.com/WCStudios/wcs-widgets/main/ig-stats.json?t=" + Date.now();
+
+  const fmt = n => Number(n).toLocaleString("en-US");
+  function paint(wcs, life){
+    document.querySelector('[data-f="wcs-posts"]').textContent = fmt(wcs.posts);
+    document.querySelector('[data-f="wcs-followers"]').textContent = fmt(wcs.followers);
+    document.querySelector('[data-f="life-posts"]').textContent = fmt(life.posts);
+    document.querySelector('[data-f="life-followers"]').textContent = fmt(life.followers);
+    document.querySelector('[data-f="total"]').textContent = fmt(wcs.followers + life.followers);
+    document.getElementById('updated').textContent = "Updated " + new Date().toLocaleString();
+  }
+  paint(FALLBACK.wcs, FALLBACK.life);
+
+  if (DATA_URL) {
+    fetch(DATA_URL).then(r=>r.json()).then(d=>{
+      const w=d["wcstudios.co"]||{}, l=d["lifeofbennyy"]||{};
+      paint(
+        { posts: w.mediaCount ?? FALLBACK.wcs.posts, followers: w.followers ?? FALLBACK.wcs.followers },
+        { posts: l.mediaCount ?? FALLBACK.life.posts, followers: l.followers ?? FALLBACK.life.followers }
+      );
+    }).catch(()=>{});
+  }
+</script>
+</body>
+</html>
