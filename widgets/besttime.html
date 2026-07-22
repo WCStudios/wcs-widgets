@@ -1,43 +1,40 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>Best Time</title>
 <style>
-:root{--card:#fff;--line:#e6e6e6;--text:#111;--muted:#888;--accent:#e8622c;--soft:#f2f2f2;--bar:#e8622c}
-@media (prefers-color-scheme:dark){:root{--card:#191919;--line:#2a2a2a;--text:#f4f4f4;--muted:#8a8a8a;--soft:#242424}}
-*{margin:0;box-sizing:border-box}html,body{background:transparent;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin:12px;cursor:pointer;user-select:none;position:relative}
-.card:active{transform:scale(.99)}
+:root{--card:#fff;--line:#e6e6e6;--text:#111;--muted:#8a8a8a;--accent:#e8622c;--soft:#efefef}
+@media (prefers-color-scheme:dark){:root{--card:#191919;--line:#2a2a2a;--text:#f4f4f4;--muted:#8a8a8a;--soft:#2b2b2b}}
+*{margin:0;box-sizing:border-box}html,body{height:100%}
+body{background:transparent;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);display:flex;padding:8px}
+.card{flex:1;display:flex;flex-direction:column;justify-content:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:clamp(18px,4vw,32px);cursor:pointer;user-select:none;position:relative}
+.who{font-size:clamp(12px,2.4vw,15px);font-weight:700;margin-bottom:2px}
 .lab{font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:var(--muted)}
-.big{font-size:38px;font-weight:800;letter-spacing:-1px;line-height:1;margin-top:6px}
-.sub{font-size:12px;color:var(--muted);margin-top:6px}
-.bars{display:flex;align-items:flex-end;gap:3px;height:56px;margin-top:18px}
-.bar{flex:1;background:var(--soft);border-radius:3px 3px 0 0;min-height:3px;position:relative}
-.bar.peak{background:var(--bar)}
+.big{font-size:clamp(30px,7vw,50px);font-weight:800;letter-spacing:-1px;line-height:1;margin-top:6px}
+.sub{font-size:clamp(11px,2vw,13px);color:var(--muted);margin-top:6px}
+.bars{display:flex;align-items:flex-end;gap:2px;height:clamp(46px,10vw,80px);margin-top:clamp(14px,3vw,22px)}
+.bar{flex:1;background:var(--soft);border-radius:3px 3px 0 0;min-height:3px}.bar.peak{background:var(--accent)}
 .axis{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:6px}
-.hint{position:absolute;top:14px;right:16px;font-size:10px;color:var(--muted)}
-.who{font-size:12px;font-weight:700;margin-bottom:2px}
+.hint{position:absolute;top:14px;right:18px;font-size:10px;color:var(--muted)}
 </style></head><body>
 <div class="card" id="card" onclick="cycle()">
   <div class="hint" id="hint"></div>
   <div class="who" id="who">@…</div>
   <div class="lab">Best time to post</div>
   <div class="big" id="best">—</div>
-  <div class="sub" id="sub">based on recent post engagement</div>
+  <div class="sub" id="sub">loading…</div>
   <div class="bars" id="bars"></div>
   <div class="axis"><span>12a</span><span>6a</span><span>12p</span><span>6p</span><span>11p</span></div>
 </div>
 <script>
-const FEED="https://raw.githubusercontent.com/WCStudios/wcs-widgets/main/ig-stats.json";
+const FEED="https://wcstudios.github.io/wcs-widgets/ig-stats.json";
 let data=null,accts=[],i=0;
 function fmtH(h){if(h==null)return "—";const ap=h<12?"AM":"PM";let hr=h%12;if(hr===0)hr=12;return hr+" "+ap;}
 function render(){if(!data)return;const a=accts[i],d=data[a]||{};
- document.getElementById('who').textContent="@"+a;
- document.getElementById('best').textContent=d.bestHour!=null?fmtH(d.bestHour):"Collecting…";
- const hourly=d.hourly||[];const peak=d.bestHour;
- document.getElementById('bars').innerHTML=Array.from({length:24},(_,h)=>{
-   const v=hourly[h]||0;return '<div class="bar '+(h===peak?'peak':'')+'" style="height:'+Math.max(3,v*0.54)+'px"></div>';}).join('');
- document.getElementById('sub').textContent=d.bestHour!=null?("Central time · from last "+(hourly.length?"25 posts":"posts")):"Needs a few posts to learn";
- document.getElementById('hint').textContent=accts.length>1?"tap to switch ▸":"";}
+ who.textContent="@"+a;best.textContent=d.bestHour!=null?fmtH(d.bestHour):"Collecting…";
+ const hourly=d.hourly||[],peak=d.bestHour,H=document.getElementById('bars').clientHeight||60;
+ bars.innerHTML=Array.from({length:24},(_,h)=>{const v=hourly[h]||0;return '<div class="bar '+(h===peak?'peak':'')+'" style="height:'+Math.max(3,v/100*H)+'px"></div>';}).join('');
+ sub.textContent=d.bestHour!=null?"Central time · based on recent post engagement":"Needs a few posts to learn";
+ hint.textContent=accts.length>1?"tap to switch ▸":"";}
 function cycle(){if(accts.length>1){i=(i+1)%accts.length;render();}}
-function load(){fetch(FEED+"?t="+Date.now()).then(r=>r.json()).then(d=>{data=d;accts=d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null);render();}).catch(()=>{});}
-load();setInterval(load,300000);
+function load(){fetch(FEED+"?t="+Date.now(),{cache:"no-store"}).then(r=>r.json()).then(d=>{data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));render();}).catch(e=>{sub.textContent="feed error";});}
+load();setInterval(load,300000);window.addEventListener('resize',render);
 </script></body></html>
