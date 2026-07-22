@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Growth</title>
+<style>
+:root{--card:#fff;--line:#e6e6e6;--text:#111;--muted:#888;--accent:#e8622c;--up:#16a34a;--down:#dc2626;--soft:#f2f2f2}
+@media (prefers-color-scheme:dark){:root{--card:#191919;--line:#2a2a2a;--text:#f4f4f4;--muted:#8a8a8a;--soft:#242424}}
+*{margin:0;box-sizing:border-box}html,body{background:transparent;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin:12px;user-select:none;position:relative}
+.who{font-size:12px;font-weight:700}
+.range{display:inline-flex;gap:4px;margin:10px 0 4px}
+.chip{font-size:11px;padding:4px 9px;border-radius:20px;background:var(--soft);color:var(--muted);cursor:pointer;border:1px solid transparent}
+.chip.on{background:var(--accent);color:#fff}
+.big{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1;margin-top:10px}
+.delta{font-size:13px;font-weight:700;margin-top:6px}.delta.up{color:var(--up)}.delta.down{color:var(--down)}.delta.flat{color:var(--muted)}
+.spark{height:44px;margin-top:14px}
+.foot{font-size:11px;color:var(--muted);margin-top:8px}
+.switch{position:absolute;top:14px;right:16px;font-size:10px;color:var(--muted);cursor:pointer}
+</style></head><body>
+<div class="card" id="card">
+  <div class="switch" id="switch" onclick="cycleAcct()"></div>
+  <div class="who" id="who">@…</div>
+  <div class="range" id="range"></div>
+  <div class="big" id="followers">—</div>
+  <div class="delta flat" id="delta">—</div>
+  <svg class="spark" id="spark" width="100%" viewBox="0 0 240 44" preserveAspectRatio="none"></svg>
+  <div class="foot" id="foot"></div>
+</div>
+<script>
+const FEED="https://raw.githubusercontent.com/WCStudios/wcs-widgets/main/ig-stats.json";
+const RANGES=[30,60,90,365];const LBL={30:"30d",60:"60d",90:"90d",365:"1y"};
+let data=null,accts=[],ai=0,ri=0;
+const fmt=n=>Number(n||0).toLocaleString("en-US");
+function render(){if(!data)return;const a=accts[ai],d=data[a]||{};
+ document.getElementById('who').textContent="@"+a;
+ document.getElementById('followers').textContent=fmt(d.followers);
+ document.getElementById('range').innerHTML=RANGES.map((r,x)=>'<span class="chip '+(x===ri?'on':'')+'" onclick="setR('+x+')">'+LBL[r]+'</span>').join('');
+ const g=(d.growth||{})[String(RANGES[ri])];
+ const de=document.getElementById('delta');
+ if(g==null){de.className="delta flat";de.textContent="Collecting data — check back as history builds";}
+ else{const s=g>0?"+":"";de.className="delta "+(g>0?"up":g<0?"down":"flat");de.textContent=s+fmt(g)+" followers in "+LBL[RANGES[ri]];}
+ // sparkline from history within range
+ const hist=(d.history||[]).slice();const cut=Date.now()-RANGES[ri]*86400000;
+ const pts=hist.filter(h=>new Date(h.date).getTime()>=cut);
+ const sp=document.getElementById('spark');
+ if(pts.length>1){const ys=pts.map(p=>p.followers);const mn=Math.min(...ys),mx=Math.max(...ys),rng=mx-mn||1;
+   const path=pts.map((p,x)=>{const px=(x/(pts.length-1))*240;const py=44-((p.followers-mn)/rng)*40-2;return (x?"L":"M")+px.toFixed(1)+" "+py.toFixed(1);}).join(" ");
+   sp.innerHTML='<path d="'+path+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';}
+ else{sp.innerHTML='';}
+ document.getElementById('foot').textContent=pts.length>1?(pts.length+" snapshots"):"Growth tracking active — daily snapshots build the trend";
+ document.getElementById('switch').textContent=accts.length>1?"switch ▸":"";}
+function setR(x){ri=x;render();}
+function cycleAcct(){if(accts.length>1){ai=(ai+1)%accts.length;render();}}
+function load(){fetch(FEED+"?t="+Date.now()).then(r=>r.json()).then(d=>{data=d;accts=d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null);render();}).catch(()=>{});}
+load();setInterval(load,300000);
+</script></body></html>
