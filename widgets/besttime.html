@@ -25,7 +25,7 @@ body{background:transparent;font-family:-apple-system,BlinkMacSystemFont,"Segoe 
   <div class="axis"><span>12a</span><span>6a</span><span>12p</span><span>6p</span><span>11p</span></div>
 </div>
 <script>
-const FEED="https://wcstudios.github.io/wcs-widgets/ig-stats.json";
+const JSSRC="https://wcstudios.github.io/wcs-widgets/ig-stats.js";
 let data=null,accts=[],i=0;
 function fmtH(h){if(h==null)return "—";const ap=h<12?"AM":"PM";let hr=h%12;if(hr===0)hr=12;return hr+" "+ap;}
 function render(){if(!data)return;const a=accts[i],d=data[a]||{};
@@ -35,6 +35,7 @@ function render(){if(!data)return;const a=accts[i],d=data[a]||{};
  sub.textContent=d.bestHour!=null?"Central time · based on recent post engagement":"Needs a few posts to learn";
  hint.textContent=accts.length>1?"tap to switch ▸":"";}
 function cycle(){if(accts.length>1){i=(i+1)%accts.length;render();}}
-function load(){fetch(FEED+"?t="+Date.now(),{cache:"no-store"}).then(r=>r.json()).then(d=>{data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));render();}).catch(e=>{sub.textContent="feed error";});}
+function apply(d){if(!d)return;data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));render();}
+function load(){const s=document.createElement('script');s.src=JSSRC+"?t="+Date.now();s.onload=()=>{apply(window.IGDATA);s.remove();};s.onerror=()=>{sub.textContent="feed offline";s.remove();};document.head.appendChild(s);}
 load();setInterval(load,300000);window.addEventListener('resize',render);
 </script></body></html>
