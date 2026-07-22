@@ -24,7 +24,7 @@ body{background:transparent;font-family:-apple-system,BlinkMacSystemFont,"Segoe 
   <div class="dots" id="dots"></div>
 </div>
 <script>
-const FEED="https://wcstudios.github.io/wcs-widgets/ig-stats.json";
+const JSSRC="https://wcstudios.github.io/wcs-widgets/ig-stats.js";
 const META={"wcstudios.co":{av:"W",c:"#e8622c",sub:"WCStudios · Production + Post"},"lifeofbennyy":{av:"B",c:"#3b82f6",sub:"Bennett · Personal"}};
 let data=null,accts=[],i=0;
 const fmt=n=>Number(n||0).toLocaleString("en-US");
@@ -34,6 +34,7 @@ function render(){if(!data)return;const a=accts[i],d=data[a]||{},m=META[a]||{av:
  hint.textContent=accts.length>1?"tap to switch ▸":"";
  dots.innerHTML=accts.map((_,x)=>'<div class="d '+(x===i?'on':'')+'"></div>').join('');}
 function cycle(){if(accts.length>1){i=(i+1)%accts.length;render();}}
-function load(){fetch(FEED+"?t="+Date.now(),{cache:"no-store"}).then(r=>r.json()).then(d=>{data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));render();}).catch(e=>{sub.textContent="feed error";});}
+function apply(d){if(!d)return;data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));render();}
+function load(){const s=document.createElement('script');s.src=JSSRC+"?t="+Date.now();s.onload=()=>{apply(window.IGDATA);s.remove();};s.onerror=()=>{sub.textContent="feed offline";s.remove();};document.head.appendChild(s);}
 load();setInterval(load,300000);
 </script></body></html>
