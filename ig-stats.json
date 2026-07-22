@@ -1,13 +1,105 @@
 {
+ "updatedAt": "2026-07-22T16:43:54.039Z",
+ "accounts": [
+  "wcstudios.co",
+  "lifeofbennyy"
+ ],
  "wcstudios.co": {
-  "followers": 7783,
+  "followers": 7785,
   "mediaCount": 93,
-  "following": 30
+  "following": 30,
+  "engagementRate": 0.44,
+  "avgLikes": 33,
+  "avgComments": 1,
+  "bestHour": 15,
+  "hourly": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   39,
+   46,
+   28,
+   91,
+   51,
+   100,
+   0,
+   0,
+   48,
+   30,
+   46,
+   0,
+   0,
+   0
+  ],
+  "growth": {
+   "30": null,
+   "60": null,
+   "90": null,
+   "365": null
+  },
+  "history": [],
+  "topPost": {
+   "thumb": "https://scontent-iad3-2.cdninstagram.com/v/t51.75761-15/476010705_18314424055202075_4617840820613543190_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=111&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_ohc=4haM0lo6w9oQ7kNvwFnsqFp&_nc_oc=AdrZC6fCXjI_LPfldHpNz85r0t2F1Eb5uoNjA0pKPHZ841-xLifpGwjreNFhrGlOl5g&_nc_zt=23&_nc_ht=scontent-iad3-2.cdninstagram.com&edm=ANo9K5cEAAAA&_nc_gid=6uEBDpM0YGJeHlbJnQeCoQ&_nc_tpa=Q5bMBQFNgFj5wmofgaRfdfA1WdQt1nFKGz-dPCy7DXszmBQLUTGT4Zc1tJB4jEyNrjwwLX_d6xlM9g9c_Q&oh=00_AQBQMDPvIGQDm8wEl7iHPqq1dl6QRw6y0cFl18GE_YlvkQ&oe=6A66AE71",
+   "likes": 63,
+   "comments": 0,
+   "permalink": "https://www.instagram.com/reel/DFitqN_Rn-7/",
+   "caption": "O-Line - A five part docuseries highlighting the big boys in the trenches. \n\n3+ "
+  }
  },
  "lifeofbennyy": {
   "followers": 3425,
   "mediaCount": 87,
-  "following": 679
- },
- "updatedAt": "seed"
+  "following": 679,
+  "engagementRate": 20.2,
+  "avgLikes": 687,
+  "avgComments": 5,
+  "bestHour": 19,
+  "hourly": [
+   6,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   13,
+   6,
+   13,
+   0,
+   0,
+   8,
+   14,
+   90,
+   51,
+   8,
+   100,
+   12,
+   22,
+   6,
+   13
+  ],
+  "growth": {
+   "30": null,
+   "60": null,
+   "90": null,
+   "365": null
+  },
+  "history": [],
+  "topPost": {
+   "thumb": "https://scontent-iad3-1.cdninstagram.com/v/t51.82787-15/602974073_18546709006036861_1367492717490605549_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=108&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=0b3JDUWBwZYQ7kNvwGuPCyc&_nc_oc=AdpObVJfZVryJCl5OlrHkAo6a2474bg8XpLCft-Rmh9EHvl63OXDsPnIXnFrVB3mSp8&_nc_zt=23&_nc_ht=scontent-iad3-1.cdninstagram.com&edm=ANo9K5cEAAAA&_nc_gid=-3xEEhxr-Uv42WTUsFmk9w&_nc_tpa=Q5bMBQE-RRgEuPTAwldMaBknkyXPY1_o0M9Qjy-pCGgz1q5MVd2BcvLho5ICn04-HLK_rrMwFGdNtI_1Ag&oh=00_AQCRzX5swbOvlWprTZP2kbaCmZA8CkZutU_pOVq9e41Y4Q&oe=6A66ACFC",
+   "likes": 2297,
+   "comments": 8,
+   "permalink": "https://www.instagram.com/p/DSd5zM_DLs7/",
+   "caption": "Hughes to the @minnesotawild.\n\nEarlier this year, the team and I had the chance "
+  }
+ }
 }
