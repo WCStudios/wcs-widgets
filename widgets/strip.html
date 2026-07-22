@@ -69,7 +69,9 @@ function fmtH(h){if(h==null)return "—";const ap=h<12?"AM":"PM";let hr=h%12;if(
 function render(){if(!data)return;const a=accts[ai],d=data[a]||{},m=META[a]||{av:(a[0]||"?").toUpperCase(),c:"#e8622c",sub:""};
  const sw=accts.length>1?"tap to switch ▸":"";hint1.textContent=sw;hint4.textContent=sw;
  // followers
- av.textContent=m.av;av.style.color=m.c;handle.textContent="@"+a;sub1.textContent=m.sub;
+ if(d.profilePic){av.style.backgroundImage="url('"+d.profilePic+"')";av.style.backgroundSize="cover";av.style.backgroundPosition="center";av.textContent="";}
+ else{av.style.backgroundImage="";av.textContent=m.av;av.style.color=m.c;}
+ handle.textContent="@"+a;sub1.textContent=m.sub;
  followers.textContent=fmt(d.followers);posts.textContent=fmt(d.mediaCount);following.textContent=fmt(d.following);
  // growth
  gFollowers.textContent=fmt(d.followers);
