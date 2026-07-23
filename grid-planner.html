@@ -1,174 +1,214 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>IG Grid Planner</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>IG Feed</title>
 <style>
 :root{--bg:#fff;--line:#ececec;--text:#111;--muted:#8a8a8a;--accent:#e8622c;--soft:#f0f0f0;--drop:#e8622c}
 @media (prefers-color-scheme:dark){:root{--bg:#171717;--line:#2a2a2a;--text:#f4f4f4;--muted:#8a8a8a;--soft:#262626}}
 *{margin:0;box-sizing:border-box}html,body{height:100%;width:100%;background:var(--bg)}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text)}
 .wrap{height:100%;display:flex;flex-direction:column}
-.head{display:flex;align-items:center;gap:12px;cursor:pointer;position:relative;padding:clamp(12px,2vw,16px) clamp(12px,2vw,16px) 10px}
-.pic{width:clamp(40px,7vw,54px);aspect-ratio:1;border-radius:50%;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);border:2px solid var(--line);flex:0 0 auto;background-size:cover;background-position:center}
-.handle{font-size:clamp(14px,2.4vw,17px);font-weight:700}
-.meta{font-size:11px;color:var(--muted);margin-top:2px}
+.head{display:flex;align-items:center;gap:14px;cursor:pointer;position:relative;padding:clamp(12px,2vw,18px) clamp(12px,2vw,18px) 0}
+.pic{width:clamp(48px,8vw,64px);aspect-ratio:1;border-radius:50%;object-fit:cover;background:var(--soft);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);background-size:cover;background-position:center}
+.handle{font-size:clamp(15px,2.6vw,19px);font-weight:700}
+.meta{font-size:12px;color:var(--muted);margin-top:3px}
 .meta b{color:var(--text)}
-.hint{position:absolute;top:8px;right:12px;font-size:10px;color:var(--muted)}
-.tabs{display:flex;gap:20px;justify-content:center;border-top:1px solid var(--line);margin:0 clamp(12px,2vw,16px);padding-top:9px;font-size:10.5px;letter-spacing:1px;color:var(--muted)}
-.tabs .on{color:var(--text);font-weight:700;border-top:2px solid var(--text);margin-top:-10px;padding-top:9px}
-.scroll{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;align-content:start;grid-auto-rows:max-content;padding:1px 0 4px;scrollbar-width:thin;scrollbar-color:transparent transparent}
-.scroll.scrolling{scrollbar-color:rgba(150,150,150,.5) transparent}
-.scroll::-webkit-scrollbar{width:8px}
-.scroll::-webkit-scrollbar-track{background:transparent}
-.scroll::-webkit-scrollbar-thumb{background:transparent;border-radius:8px;border:2px solid transparent;background-clip:content-box}
-.scroll.scrolling::-webkit-scrollbar-thumb{background:rgba(150,150,150,.55);background-clip:content-box}
-.scroll::-webkit-scrollbar-thumb:hover{background:rgba(150,150,150,.8);background-clip:content-box}
-.cell{position:relative;overflow:hidden;background:var(--soft);cursor:grab;height:120px}
+.vtog{position:absolute;top:clamp(12px,2vw,16px);right:clamp(12px,2vw,16px);display:flex;z-index:7}
+.vtog button{border:1px solid var(--line);background:rgba(127,127,127,.08);color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.2px;padding:4px 9px;cursor:pointer}
+.vtog button:first-child{border-radius:7px 0 0 7px}
+.vtog button:last-child{border-radius:0 7px 7px 0}
+.vtog button+button{border-left:none}
+.vtog button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tabs{display:flex;gap:26px;justify-content:center;border-top:1px solid var(--line);margin:14px clamp(12px,2vw,18px) 0;padding-top:10px;font-size:11px;letter-spacing:1px;color:var(--muted)}
+.tabs span{cursor:pointer}
+.tabs .on{color:var(--text);font-weight:700;border-top:2px solid var(--text);margin-top:-11px;padding-top:10px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:10px;overflow-y:auto;align-content:start;grid-auto-rows:max-content;flex:1;scrollbar-width:thin;scrollbar-color:transparent transparent}
+.grid.scrolling{scrollbar-color:rgba(150,150,150,.5) transparent}
+.grid::-webkit-scrollbar{width:8px}
+.grid::-webkit-scrollbar-track{background:transparent}
+.grid::-webkit-scrollbar-thumb{background:transparent;border-radius:8px;border:2px solid transparent;background-clip:content-box}
+.grid.scrolling::-webkit-scrollbar-thumb{background:rgba(150,150,150,.55);background-clip:content-box}
+.grid::-webkit-scrollbar-thumb:hover{background:rgba(150,150,150,.8);background-clip:content-box}
+.cell{position:relative;overflow:hidden;background:var(--soft);height:120px}
+.cell img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.cell.draft{cursor:grab}
+.cell.live{cursor:pointer}
 .cell.drag{opacity:.35}
 .cell.over{outline:2px solid var(--drop);outline-offset:-2px;z-index:5}
-.cell img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.pin,.mv{position:absolute;top:6px;z-index:4;width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);-webkit-backdrop-filter:blur(10px) saturate(1.4);backdrop-filter:blur(10px) saturate(1.4);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .14s,background .14s;font-size:12px;line-height:1}
+.pin{right:6px}.mv{left:6px}
+.cell:hover .pin,.cell:hover .mv{opacity:1}
+.pin:hover,.mv:hover{background:rgba(255,255,255,.26)}
+.pin.on{opacity:1;background:rgba(232,98,44,.5);border-color:rgba(232,98,44,.7)}
+.pin svg{width:13px;height:13px;display:block;fill:currentColor}
+.ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:12px;color:#fff;font-size:12px;font-weight:700;opacity:0;background:rgba(0,0,0,.4);transition:opacity .15s;z-index:2}
+.cell.live:hover .ov{opacity:1}
 .badge{position:absolute;top:6px;left:6px;z-index:3;background:rgba(0,0,0,.72);color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;padding:0 5px;border-radius:11px;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .tag{position:absolute;top:6px;right:6px;z-index:3;background:rgba(232,98,44,.9);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;pointer-events:none}
+.tag.reel{background:rgba(50,50,60,.9)}
+.plabel{position:absolute;top:6px;left:6px;z-index:3;background:rgba(0,0,0,.55);color:#8fe3a0;font-size:8.5px;font-weight:700;padding:2px 5px;border-radius:5px;pointer-events:none;letter-spacing:.5px}
 .sched{position:absolute;bottom:6px;right:6px;z-index:4;background:rgba(0,0,0,.62);color:#a9d8ff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;pointer-events:none;display:flex;align-items:center;gap:3px}
 .rlabel{position:absolute;bottom:6px;left:6px;right:44px;z-index:3;background:rgba(0,0,0,.62);color:#fff;font-size:10px;font-weight:600;padding:2px 6px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .12s;pointer-events:none}
-.cell:hover .rlabel{opacity:1}
+.cell.draft:hover .rlabel{opacity:1}
 .moves{position:absolute;top:6px;right:6px;z-index:4;display:flex;flex-direction:column;gap:3px;opacity:0;transition:opacity .12s}
-.cell:hover .moves{opacity:1}
-.mv{width:22px;height:20px;border:none;border-radius:6px;background:rgba(0,0,0,.72);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.mv:hover{background:var(--accent)}.mv:disabled{opacity:.3;cursor:default}
-.foot{border-top:1px solid var(--line);padding:9px clamp(12px,2vw,16px);display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted)}
-.foot .grow{flex:1}
-.btn{border:1px solid var(--line);background:var(--soft);color:var(--text);font-size:11px;font-weight:700;padding:5px 11px;border-radius:8px;cursor:pointer}
+.cell.draft:hover .moves{opacity:1}
+.mvb{width:22px;height:20px;border:none;border-radius:6px;background:rgba(0,0,0,.72);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mvb:hover{background:var(--accent)}.mvb:disabled{opacity:.3;cursor:default}
+.divider{grid-column:1/4;font-size:9.5px;letter-spacing:1.2px;color:var(--muted);text-transform:uppercase;font-weight:700;padding:13px 6px 7px;border-top:1px solid var(--line);margin-top:4px}
+.foot{display:none;border-top:1px solid var(--line);padding:8px clamp(12px,2vw,18px);align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+.foot.show{display:flex}
+.foot .grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn{border:1px solid var(--line);background:var(--soft);color:var(--text);font-size:11px;font-weight:700;padding:5px 11px;border-radius:8px;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--accent);color:var(--accent)}
 .btn.p{background:var(--accent);color:#fff;border-color:var(--accent)}
-.empty{grid-column:1/4;color:var(--muted);font-size:13px;text-align:center;padding:40px 20px}
-.divider{grid-column:1/4;font-size:9.5px;letter-spacing:1.2px;color:var(--muted);text-transform:uppercase;font-weight:700;padding:13px 6px 7px;border-top:1px solid var(--line);margin-top:4px}
-.cell.live{cursor:default}
-.cell.live .plabel{position:absolute;top:6px;left:6px;z-index:3;background:rgba(0,0,0,.55);color:#8fe3a0;font-size:8.5px;font-weight:700;padding:2px 5px;border-radius:5px;pointer-events:none;letter-spacing:.5px}
+.btn.hide{display:none}
+.empty{grid-column:1/4;color:var(--muted);font-size:13px;text-align:center;padding:36px 20px}
 .toast{position:absolute;left:50%;bottom:52px;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:11px;font-weight:700;padding:7px 14px;border-radius:20px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
 .toast.show{opacity:1}
 </style></head><body>
 <div class="wrap">
   <div class="head" id="head" onclick="cycle()">
-    <div class="hint" id="hint"></div>
+    <div class="vtog" id="vtog" onclick="event.stopPropagation()">
+      <button data-v="both" onclick="setView('both')">Both</button>
+      <button data-v="preview" onclick="setView('preview')">Preview</button>
+      <button data-v="live" onclick="setView('live')">Live</button>
+    </div>
     <div class="pic" id="pic">–</div>
     <div>
       <div class="handle" id="handle">@…</div>
       <div class="meta" id="meta">loading…</div>
     </div>
   </div>
-  <div class="tabs"><span class="on">GRID PLANNER</span><span>DRAFTS</span></div>
-  <div class="scroll" id="scroll"></div>
-  <div class="foot">
-    <span class="grow" id="status">Drag a post to reorder · 1 = bottom, newest on top</span>
-    <button class="btn" id="resetBtn" onclick="resetOrder()">Reset</button>
-    <button class="btn p" id="copyBtn" onclick="copyOrder()">Copy order</button>
+  <div class="tabs" id="tabs"><span id="tabGrid" class="on" onclick="setTab('grid')">GRID</span><span id="tabReels" onclick="setTab('reels')">REELS</span></div>
+  <div class="grid" id="grid"></div>
+  <div class="foot" id="foot">
+    <span class="grow" id="footstatus"></span>
+    <button class="btn" id="copyOrderBtn" onclick="copyOrder()">Copy order</button>
+    <button class="btn" id="clearBtn" onclick="clearPins()">Clear</button>
+    <button class="btn p" id="copyPinsBtn" onclick="copyPins()">Copy pins</button>
   </div>
   <div class="toast" id="toast"></div>
 </div>
 <script>
-const JSSRC="https://wcstudios.github.io/wcs-widgets/draft-grid.js";
 const STATSSRC="https://wcstudios.github.io/wcs-widgets/ig-stats.js";
+const DRAFTSRC="https://wcstudios.github.io/wcs-widgets/draft-grid.js";
 const ACCTS=["wcstudios.co","lifeofbennyy"];
-const INIT={"wcstudios.co":"W","lifeofbennyy":"B"};
-let raw=null, acct=0, rows=[]; // rows = posts (each may be grid[3] or single[1]) top→bottom
+let data=null,draft=null,accts=ACCTS,i=0,view='both',tab='grid',rows=[];
 const $=id=>document.getElementById(id);
-function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1400);}
+const fmt=n=>Number(n||0).toLocaleString("en-US");
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function fmtDate(s){try{return new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric'});}catch(_){return '';}}
-function sizeCells(){requestAnimationFrame(()=>{document.querySelectorAll('#scroll .cell').forEach(c=>{const w=c.clientWidth;if(w)c.style.height=Math.round(w*1.25)+'px';});});}
-let _ro;function watchResize(){if(_ro)return;try{_ro=new ResizeObserver(()=>sizeCells());_ro.observe($('scroll'));}catch(_){window.addEventListener('resize',sizeCells);}}
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1400);}
+function sizeCells(){requestAnimationFrame(()=>{document.querySelectorAll('#grid .cell').forEach(c=>{const w=c.clientWidth;if(w)c.style.height=Math.round(w*1.25)+'px';});});}
+let _ro;function watchResize(){if(_ro)return;try{_ro=new ResizeObserver(()=>sizeCells());_ro.observe($('grid'));}catch(_){window.addEventListener('resize',sizeCells);}}
+function watchScroll(el){if(!el)return;el.addEventListener('scroll',()=>{el.classList.add('scrolling');clearTimeout(el._st);el._st=setTimeout(()=>el.classList.remove('scrolling'),900);});}
 
-function itemsFor(a){return ((raw&&raw.items)||[]).filter(x=>(x.account||"wcstudios.co")===a);}
+// ---- pins / classification (live) ----
+function pinKey(a){return "wcspin:"+a;}
+function localPins(a){try{return new Set(JSON.parse(localStorage.getItem(pinKey(a))||"[]"));}catch(_){return new Set();}}
+function savePins(a,s){try{localStorage.setItem(pinKey(a),JSON.stringify([...s]));}catch(_){}}
+function togglePin(p){const a=accts[i],s=localPins(a);s.has(p)?s.delete(p):s.add(p);savePins(a,s);render();}
+function clearPins(){savePins(accts[i],new Set());render();toast("Local pins cleared");}
+function copyPins(){const a=accts[i],d=data&&data[a]||{},s=localPins(a);const fp=(d.grid||[]).filter(p=>p.pinned).map(p=>p.permalink);const all=[...new Set([...fp,...s])].filter(Boolean);if(!all.length){toast("No pins");return;}try{navigator.clipboard.writeText("PINNED:"+a+"|"+all.join(", "));toast("Copied — paste into Social Settings");}catch(_){toast("Copy failed");}}
+
+// ---- draft order ----
+function draftItems(a){return ((draft&&draft.items)||[]).filter(x=>(x.account||"wcstudios.co")===a);}
+function ordKey(a){return "wcsgrid:"+a;}
+function persist(){try{localStorage.setItem(ordKey(accts[i]),JSON.stringify(rows.map(r=>r.pageId)));}catch(_){}}
+function loadOrder(a){
+  const base=draftItems(a);let saved=null;try{saved=JSON.parse(localStorage.getItem(ordKey(a))||"null");}catch(_){}
+  if(saved&&Array.isArray(saved)){const byId=Object.fromEntries(base.map(x=>[x.pageId,x]));const o=saved.map(id=>byId[id]).filter(Boolean);base.forEach(x=>{if(!saved.includes(x.pageId))o.unshift(x);});return o;}
+  const key=p=>p.scheduleDate?new Date(p.scheduleDate).getTime():Number.POSITIVE_INFINITY;
+  return base.slice().sort((x,y)=>{const kx=key(x),ky=key(y);if(kx!==ky)return ky-kx;return (y.order??0)-(x.order??0);});
+}
+function resetOrder(){try{localStorage.removeItem(ordKey(accts[i]));}catch(_){}rows=loadOrder(accts[i]);render();toast("Reset");}
+function copyOrder(){const n=rows.length;const t="Grid Order (top = newest):\n"+rows.map((it,k)=>(n-k)+"  "+(it.title||it.pageId)).join("\n");try{navigator.clipboard.writeText(t);toast("Order copied");}catch(_){toast("Copy failed");}}
+
+// ---- view / tab ----
+function setView(v){view=v;render();}
+function setTab(t){tab=t;render();}
+function cycle(){if(accts.length>1){i=(i+1)%accts.length;rows=loadOrder(accts[i]);render();}}
+function open2(u){if(u&&u!=='#')window.open(u,'_blank');}
 
 function render(){
-  const a=ACCTS[acct];
+  const a=accts[i],d=(data&&data[a])||{};
   const pic=$('pic');
-  const pp=(window.IGDATA&&window.IGDATA[a]&&window.IGDATA[a].profilePic)||null;
-  if(pp){pic.style.backgroundImage="url('"+pp+"')";pic.textContent="";}
-  else{pic.style.backgroundImage="";pic.textContent=INIT[a]||a[0].toUpperCase();}
-  $('handle').textContent="@"+a;
-  $('hint').textContent="tap to switch ▸";
+  if(d.profilePic){pic.style.backgroundImage="url('"+d.profilePic+"')";pic.textContent="";}
+  else{pic.style.backgroundImage="";pic.textContent=(a[0]||"?").toUpperCase();}
+  $('handle').textContent=a;
+  $('meta').innerHTML="<b>"+fmt(d.mediaCount)+"</b> posts &nbsp;·&nbsp; <b>"+fmt(d.followers)+"</b> followers &nbsp;·&nbsp; "+(accts.length>1?"tap to switch ▸":"Instagram");
+  [...$('vtog').children].forEach(b=>b.classList.toggle('on',b.dataset.v===view));
+  $('tabs').style.display=view==='preview'?'none':'flex';
+  $('tabGrid').className=tab==='grid'?'on':'';$('tabReels').className=tab==='reels'?'on':'';
+
+  let html='';
   const n=rows.length;
-  $('meta').innerHTML="<b>"+n+"</b> draft post"+(n===1?"":"s")+" &nbsp;·&nbsp; plan the feed";
-  const sc=$('scroll');
-  if(!n){sc.innerHTML='<div class="empty">No draft posts for this account.<br>Set a post to <b>IG Grid Post</b> or <b>IG Feed Post</b> and it’ll show here.</div>';return;}
-  let html="";
-  rows.forEach((it,pi)=>{
-    const gnum=n-pi; // top = highest number (newest), bottom = 1
-    const tiles=(it.tiles||[]);
-    const cellsN=it.kind==='grid'?3:1;
-    for(let k=0;k<cellsN;k++){
-      const u=tiles[k];
-      const first=(k===0);
-      html+='<div class="cell" draggable="true" data-post="'+pi+'">'+
-        (u?'<img src="'+u+'" referrerpolicy="no-referrer" alt="">':'')+
-        (first?'<div class="badge">'+gnum+'</div>':'')+
-        (first&&it.scheduleDate?'<div class="sched">⏱ '+fmtDate(it.scheduleDate)+'</div>':'')+
-        (first&&it.kind==='grid'?'<div class="tag">GRID</div>':'')+
-        (first?'<div class="rlabel">'+esc(it.title||'')+'</div>':'')+
-        (first?'<div class="moves"><button class="mv" onclick="event.stopPropagation();move('+pi+',-1)" '+(pi===0?'disabled':'')+'>▲</button>'+
-          '<button class="mv" onclick="event.stopPropagation();move('+pi+',1)" '+(pi===n-1?'disabled':'')+'>▼</button></div>':'')+
-        '</div>';
-    }
-  });
-  // Reference: your most recent posted posts (read-only) so you can plan drafts on top.
-  const live=((window.IGDATA&&window.IGDATA[a]&&window.IGDATA[a].grid)||[]).filter(p=>p.productType!=='REELS').slice(0,9);
-  if(live.length){
-    html+='<div class="divider">↓ posted · your live feed</div>';
-    live.forEach(p=>{
-      html+='<div class="cell live">'+(p.thumb?'<img src="'+p.thumb+'" referrerpolicy="no-referrer" alt="">':'')+'<div class="plabel">LIVE</div></div>';
+  // ---- PREVIEW (drafts) ----
+  if(view!=='live'){
+    if(!n && view==='preview'){html+='<div class="empty">No draft posts for this account.</div>';}
+    rows.forEach((it,pi)=>{
+      const gnum=n-pi, tiles=it.tiles||[], cellsN=it.kind==='grid'?3:1;
+      for(let k=0;k<cellsN;k++){const u=tiles[k],first=(k===0);
+        html+='<div class="cell draft" draggable="true" data-post="'+pi+'">'+
+          (u?'<img src="'+u+'" referrerpolicy="no-referrer" alt="">':'')+
+          (first?'<div class="badge">'+gnum+'</div>':'')+
+          (first&&it.scheduleDate?'<div class="sched">⏱ '+fmtDate(it.scheduleDate)+'</div>':'')+
+          (first&&it.kind==='grid'?'<div class="tag">GRID</div>':first&&it.kind==='reel'?'<div class="tag reel">▶ REEL</div>':'')+
+          (first?'<div class="rlabel">'+esc(it.title||'')+'</div>':'')+
+          (first?'<div class="moves"><button class="mvb" onclick="event.stopPropagation();move('+pi+',-1)" '+(pi===0?'disabled':'')+'>▲</button><button class="mvb" onclick="event.stopPropagation();move('+pi+',1)" '+(pi===n-1?'disabled':'')+'>▼</button></div>':'')+
+          '</div>';
+      }
     });
   }
-  sc.innerHTML=html;
-  sizeCells();
-  wireDrag();
-  $('status').textContent="Drafts on top · scheduled sort by date · drag to override";
+  // ---- LIVE ----
+  let liveList=[];
+  if(view!=='preview'){
+    const s=localPins(a);
+    let g=(d.grid||[]).map(p=>({...p,_pin:p.pinned||s.has(p.permalink)}));
+    g=g.filter(p=>tab==='reels'?p.productType==='REELS':p.productType!=='REELS');
+    g=g.map((p,idx)=>({p,idx})).sort((x,y)=>(y.p._pin-x.p._pin)||(x.idx-y.idx)).map(o=>o.p);
+    liveList=g;
+    if(view==='both'&&n&&g.length)html+='<div class="divider">↓ posted · your live feed</div>';
+    if(!g.length&&view==='live')html+='<div class="empty">'+(tab==='reels'?'No reels':'No posts')+'</div>';
+    html+=g.map(p=>{const perm=(p.permalink||'').replace(/'/g,"%27");
+      const pinBtn=tab==='grid'?'<button class="pin '+(p._pin?'on':'')+'" title="Pin/unpin" onclick="event.stopPropagation();togglePin(\''+perm+'\')"><svg viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg></button>':'';
+      return '<div class="cell live" onclick="open2(\''+perm+'\')">'+
+        (p.thumb?'<img loading="lazy" src="'+p.thumb+'" referrerpolicy="no-referrer" alt="">':'')+
+        (view==='both'?'<div class="plabel">LIVE</div>':'')+pinBtn+
+        '<div class="ov">♥ '+fmt(p.likes)+' &nbsp; 💬 '+fmt(p.comments)+'</div></div>';
+    }).join('');
+  }
+  $('grid').innerHTML=html;
+  sizeCells();wireDrag();
+
+  // ---- footer ----
+  const showOrder=view!=='live'&&n>0;
+  const showPins=view!=='preview'&&tab==='grid';
+  const nPins=liveList.filter(p=>p._pin).length;
+  $('copyOrderBtn').classList.toggle('hide',!showOrder);
+  $('clearBtn').classList.toggle('hide',!(showPins&&nPins));
+  $('copyPinsBtn').classList.toggle('hide',!showPins);
+  let st="";
+  if(view==='preview')st="Drag to reorder · drafts on top, scheduled by date";
+  else if(view==='live')st=showPins?("📌 "+nPins+" pinned · copy → Social Settings"):"Your live feed";
+  else st="Drafts on top · live below"+(showPins&&nPins?(" · 📌 "+nPins+" pinned"):"");
+  $('footstatus').textContent=st;
+  $('foot').classList.toggle('show',showOrder||showPins);
 }
 
 function move(pi,d){const j=pi+d;if(j<0||j>=rows.length)return;const t=rows[pi];rows[pi]=rows[j];rows[j]=t;persist();render();}
-
 let dragPost=null;
 function wireDrag(){
-  [...document.querySelectorAll('#scroll .cell:not(.live)')].forEach(el=>{
+  [...document.querySelectorAll('#grid .cell.draft')].forEach(el=>{
     el.addEventListener('dragstart',e=>{dragPost=+el.dataset.post;el.classList.add('drag');try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text','');}catch(_){}});
-    el.addEventListener('dragend',()=>{dragPost=null;[...document.querySelectorAll('#scroll .cell')].forEach(c=>c.classList.remove('drag','over'));});
+    el.addEventListener('dragend',()=>{dragPost=null;[...document.querySelectorAll('#grid .cell')].forEach(c=>c.classList.remove('drag','over'));});
     el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('over');});
     el.addEventListener('dragleave',()=>el.classList.remove('over'));
     el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('over');const to=+el.dataset.post;if(dragPost==null||dragPost===to)return;const it=rows.splice(dragPost,1)[0];rows.splice(to,0,it);persist();render();});
   });
 }
 
-function keyFor(a){return "wcsgrid:"+a;}
-function persist(){try{localStorage.setItem(keyFor(ACCTS[acct]),JSON.stringify(rows.map(r=>r.pageId)));}catch(_){}}
-function loadOrder(a){
-  const base=itemsFor(a);
-  let saved=null;try{saved=JSON.parse(localStorage.getItem(keyFor(a))||"null");}catch(_){}
-  if(saved&&Array.isArray(saved)){
-    const byId=Object.fromEntries(base.map(x=>[x.pageId,x]));
-    const ordered=saved.map(id=>byId[id]).filter(Boolean);
-    base.forEach(x=>{if(!saved.includes(x.pageId))ordered.unshift(x);});
-    return ordered;
-  }
-  // Default: unscheduled drafts float to the top; scheduled posts sort by date
-  // (later date higher). Scheduling a post to an earlier date drops it down.
-  const key=p=>p.scheduleDate?new Date(p.scheduleDate).getTime():Number.POSITIVE_INFINITY;
-  return base.slice().sort((x,y)=>{
-    const kx=key(x),ky=key(y);
-    if(kx!==ky)return ky-kx;
-    return (y.order??0)-(x.order??0);
-  });
-}
-function resetOrder(){try{localStorage.removeItem(keyFor(ACCTS[acct]));}catch(_){}rows=loadOrder(ACCTS[acct]);render();toast("Reset to saved order");}
-function copyOrder(){
-  const n=rows.length;
-  const lines=rows.map((it,i)=>(n-i)+"  "+(it.title||it.pageId));
-  const txt="Grid Order (top = newest):\n"+lines.join("\n");
-  try{navigator.clipboard.writeText(txt);toast("Order copied");}catch(_){toast("Copy failed");}
-}
-function cycle(){acct=(acct+1)%ACCTS.length;rows=loadOrder(ACCTS[acct]);render();}
-
-function apply(){rows=loadOrder(ACCTS[acct]);render();}
-function loadStats(){const s=document.createElement('script');s.src=STATSSRC+"?t="+Date.now();s.onload=()=>{render();s.remove();};s.onerror=()=>s.remove();document.head.appendChild(s);}
-function load(){const s=document.createElement('script');s.src=JSSRC+"?t="+Date.now();s.onload=()=>{raw=window.DRAFTGRID;apply();s.remove();};s.onerror=()=>{$('meta').textContent="feed offline";s.remove();};document.head.appendChild(s);}
-function watchScroll(el){if(!el)return;el.addEventListener('scroll',()=>{el.classList.add('scrolling');clearTimeout(el._st);el._st=setTimeout(()=>el.classList.remove('scrolling'),900);});}
-load();loadStats();watchResize();watchScroll($('scroll'));setInterval(()=>{load();loadStats();},300000);
+function applyStats(d){if(!d)return;data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));render();}
+function applyDraft(){rows=loadOrder(accts[i]);render();}
+function loadStats(){const s=document.createElement('script');s.src=STATSSRC+"?t="+Date.now();s.onload=()=>{applyStats(window.IGDATA);s.remove();};s.onerror=()=>{s.remove();};document.head.appendChild(s);}
+function loadDraft(){const s=document.createElement('script');s.src=DRAFTSRC+"?t="+Date.now();s.onload=()=>{draft=window.DRAFTGRID;applyDraft();s.remove();};s.onerror=()=>{s.remove();};document.head.appendChild(s);}
+loadStats();loadDraft();watchResize();watchScroll($('grid'));setInterval(()=>{loadStats();loadDraft();},300000);
 </script></body></html>
