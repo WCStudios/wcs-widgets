@@ -27,6 +27,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .cell img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .badge{position:absolute;top:6px;left:6px;z-index:3;background:rgba(0,0,0,.72);color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;padding:0 5px;border-radius:11px;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .tag{position:absolute;top:6px;right:6px;z-index:3;background:rgba(232,98,44,.9);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;pointer-events:none}
+.sched{position:absolute;top:31px;left:6px;z-index:3;background:rgba(0,0,0,.62);color:#a9d8ff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;pointer-events:none;display:flex;align-items:center;gap:3px}
 .rlabel{position:absolute;bottom:6px;left:6px;right:44px;z-index:3;background:rgba(0,0,0,.62);color:#fff;font-size:10px;font-weight:600;padding:2px 6px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .12s;pointer-events:none}
 .cell:hover .rlabel{opacity:1}
 .moves{position:absolute;top:6px;right:6px;z-index:4;display:flex;flex-direction:column;gap:3px;opacity:0;transition:opacity .12s}
@@ -69,6 +70,7 @@ let raw=null, acct=0, rows=[]; // rows = posts (each may be grid[3] or single[1]
 const $=id=>document.getElementById(id);
 function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1400);}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function fmtDate(s){try{return new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric'});}catch(_){return '';}}
 function sizeCells(){requestAnimationFrame(()=>{document.querySelectorAll('#scroll .cell').forEach(c=>{const w=c.clientWidth;if(w)c.style.height=Math.round(w*1.25)+'px';});});}
 let _ro;function watchResize(){if(_ro)return;try{_ro=new ResizeObserver(()=>sizeCells());_ro.observe($('scroll'));}catch(_){window.addEventListener('resize',sizeCells);}}
 
@@ -97,6 +99,7 @@ function render(){
       html+='<div class="cell" draggable="true" data-post="'+pi+'">'+
         (u?'<img src="'+u+'" referrerpolicy="no-referrer" alt="">':'')+
         (first?'<div class="badge">'+gnum+'</div>':'')+
+        (first&&it.scheduleDate?'<div class="sched">⏱ '+fmtDate(it.scheduleDate)+'</div>':'')+
         (first&&it.kind==='grid'?'<div class="tag">GRID</div>':'')+
         (first?'<div class="rlabel">'+esc(it.title||'')+'</div>':'')+
         (first?'<div class="moves"><button class="mv" onclick="event.stopPropagation();move('+pi+',-1)" '+(pi===0?'disabled':'')+'>▲</button>'+
@@ -107,8 +110,7 @@ function render(){
   sc.innerHTML=html;
   sizeCells();
   wireDrag();
-  const changed=rows.some((it,i)=>(it.order)!==(n-i));
-  $('status').textContent=changed?"Order changed — set each post’s Grid Order to match the numbers":"Drag a post to reorder · 1 = bottom, newest on top";
+  $('status').textContent="Drafts on top · scheduled sort by date · drag to override";
 }
 
 function move(pi,d){const j=pi+d;if(j<0||j>=rows.length)return;const t=rows[pi];rows[pi]=rows[j];rows[j]=t;persist();render();}
@@ -135,7 +137,14 @@ function loadOrder(a){
     base.forEach(x=>{if(!saved.includes(x.pageId))ordered.unshift(x);});
     return ordered;
   }
-  return base.slice().sort((x,y)=>((y.order??1e18)-(x.order??1e18)));
+  // Default: unscheduled drafts float to the top; scheduled posts sort by date
+  // (later date higher). Scheduling a post to an earlier date drops it down.
+  const key=p=>p.scheduleDate?new Date(p.scheduleDate).getTime():Number.POSITIVE_INFINITY;
+  return base.slice().sort((x,y)=>{
+    const kx=key(x),ky=key(y);
+    if(kx!==ky)return ky-kx;
+    return (y.order??0)-(x.order??0);
+  });
 }
 function resetOrder(){try{localStorage.removeItem(keyFor(ACCTS[acct]));}catch(_){}rows=loadOrder(ACCTS[acct]);render();toast("Reset to saved order");}
 function copyOrder(){
