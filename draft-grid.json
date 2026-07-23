@@ -1,11 +1,12 @@
 {
- "updatedAt": "2026-07-23T04:03:14.110Z",
+ "updatedAt": "2026-07-23T04:15:50.292Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
    "title": "MN Wild - Made for MN",
    "account": "wcstudios.co",
    "order": 1,
+   "kind": "grid",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/enprmt.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/1520par.jpg",
@@ -17,6 +18,7 @@
    "title": "RBC Heritage Recap",
    "account": "wcstudios.co",
    "order": 2,
+   "kind": "grid",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/17zmf57.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/18eelws.jpg",
@@ -28,6 +30,7 @@
    "title": "DripDrip - Brother Battles Spot",
    "account": "wcstudios.co",
    "order": 3,
+   "kind": "grid",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/1v3h8rb.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/u24ho1.jpg",
@@ -39,6 +42,7 @@
    "title": "MN Wild - 25 Years Spot",
    "account": "wcstudios.co",
    "order": 4,
+   "kind": "grid",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/1imfdp8.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/ari0ic.jpg",
@@ -50,10 +54,21 @@
    "title": "Cascade CBX - Ryan Carter Spot",
    "account": "wcstudios.co",
    "order": 5,
+   "kind": "grid",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/6f7vo9.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/9e8qj7.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/1uezh8g.jpg"
+   ]
+  },
+  {
+   "pageId": "3a5421ef-c766-8050-b3e5-e9c6ec976953",
+   "title": "001 | MN Wild Blade Gang BTS",
+   "account": "lifeofbennyy",
+   "order": null,
+   "kind": "single",
+   "tiles": [
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1cptb37.jpg"
    ]
   }
  ]
