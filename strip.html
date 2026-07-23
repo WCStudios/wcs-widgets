@@ -70,7 +70,7 @@ let data=null,accts=[],ai=0,ri=0;
 const fmt=n=>Number(n||0).toLocaleString("en-US");
 function fmtH(h){if(h==null)return "—";const ap=h<12?"AM":"PM";let hr=h%12;if(hr===0)hr=12;return hr+" "+ap;}
 function render(){if(!data)return;const a=accts[ai],d=data[a]||{},m=META[a]||{av:(a[0]||"?").toUpperCase(),c:"#e8622c",sub:""};
- const sw=accts.length>1?"tap to switch ▸":"";hint1.textContent=sw;hint4.textContent=sw;
+ const sw="";hint1.textContent=sw;hint4.textContent=sw;
  // followers
  if(d.profilePic){av.style.backgroundImage="url('"+d.profilePic+"')";av.style.backgroundSize="cover";av.style.backgroundPosition="center";av.textContent="";}
  else{av.style.backgroundImage="";av.textContent=m.av;av.style.color=m.c;}
