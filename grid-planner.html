@@ -14,7 +14,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .hint{position:absolute;top:8px;right:12px;font-size:10px;color:var(--muted)}
 .tabs{display:flex;gap:20px;justify-content:center;border-top:1px solid var(--line);margin:0 clamp(12px,2vw,16px);padding-top:9px;font-size:10.5px;letter-spacing:1px;color:var(--muted)}
 .tabs .on{color:var(--text);font-weight:700;border-top:2px solid var(--text);margin-top:-10px;padding-top:9px}
-.scroll{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;align-content:start;grid-auto-rows:max-content;padding:1px 0 4px}
+.scroll{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;align-content:start;grid-auto-rows:max-content;padding:1px 0 4px;scrollbar-width:thin;scrollbar-color:transparent transparent}
+.scroll.scrolling{scrollbar-color:rgba(150,150,150,.5) transparent}
+.scroll::-webkit-scrollbar{width:8px}
+.scroll::-webkit-scrollbar-track{background:transparent}
+.scroll::-webkit-scrollbar-thumb{background:transparent;border-radius:8px;border:2px solid transparent;background-clip:content-box}
+.scroll.scrolling::-webkit-scrollbar-thumb{background:rgba(150,150,150,.55);background-clip:content-box}
+.scroll::-webkit-scrollbar-thumb:hover{background:rgba(150,150,150,.8);background-clip:content-box}
 .cell{position:relative;overflow:hidden;background:var(--soft);cursor:grab;height:120px}
 .cell.drag{opacity:.35}
 .cell.over{outline:2px solid var(--drop);outline-offset:-2px;z-index:5}
@@ -143,5 +149,6 @@ function cycle(){acct=(acct+1)%ACCTS.length;rows=loadOrder(ACCTS[acct]);render()
 function apply(){rows=loadOrder(ACCTS[acct]);render();}
 function loadStats(){const s=document.createElement('script');s.src=STATSSRC+"?t="+Date.now();s.onload=()=>{render();s.remove();};s.onerror=()=>s.remove();document.head.appendChild(s);}
 function load(){const s=document.createElement('script');s.src=JSSRC+"?t="+Date.now();s.onload=()=>{raw=window.DRAFTGRID;apply();s.remove();};s.onerror=()=>{$('meta').textContent="feed offline";s.remove();};document.head.appendChild(s);}
-load();loadStats();watchResize();setInterval(()=>{load();loadStats();},300000);
+function watchScroll(el){if(!el)return;el.addEventListener('scroll',()=>{el.classList.add('scrolling');clearTimeout(el._st);el._st=setTimeout(()=>el.classList.remove('scrolling'),900);});}
+load();loadStats();watchResize();watchScroll($('scroll'));setInterval(()=>{load();loadStats();},300000);
 </script></body></html>
