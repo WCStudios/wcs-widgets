@@ -1,9 +1,9 @@
 {
- "updatedAt": "2026-07-23T02:22:01.241Z",
+ "updatedAt": "2026-07-23T03:00:58.934Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
-   "title": "001 | MN Wild - Made for MN",
+   "title": "MN Wild - Made for MN",
    "account": "wcstudios.co",
    "order": 1,
    "tiles": [
@@ -14,7 +14,7 @@
   },
   {
    "pageId": "39a421ef-c766-803a-b4aa-c2f10d49b73e",
-   "title": "002 | RBC Heritage Recap",
+   "title": "RBC Heritage Recap",
    "account": "wcstudios.co",
    "order": 2,
    "tiles": [
@@ -25,7 +25,7 @@
   },
   {
    "pageId": "39a421ef-c766-8098-b9d7-e33a53f78d6a",
-   "title": "003 | DripDrip - Brother Battles Spot",
+   "title": "DripDrip - Brother Battles Spot",
    "account": "wcstudios.co",
    "order": 3,
    "tiles": [
@@ -36,7 +36,7 @@
   },
   {
    "pageId": "39a421ef-c766-807b-befa-fccd134051bc",
-   "title": "004 | MN Wild - 25 Years Spot",
+   "title": "MN Wild - 25 Years Spot",
    "account": "wcstudios.co",
    "order": 4,
    "tiles": [
@@ -47,7 +47,7 @@
   },
   {
    "pageId": "39a421ef-c766-8074-8189-ee893cca376c",
-   "title": "005 | Cascade CBX - Ryan Carter Spot",
+   "title": "Cascade CBX - Ryan Carter Spot",
    "account": "wcstudios.co",
    "order": 5,
    "tiles": [
