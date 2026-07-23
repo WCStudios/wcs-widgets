@@ -6,8 +6,9 @@
 *{margin:0;box-sizing:border-box}html,body{height:100%;width:100%;background:var(--bg)}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text)}
 .wrap{height:100%;display:flex;flex-direction:column}
-.head{display:flex;align-items:center;gap:14px;cursor:pointer;position:relative;padding:clamp(12px,2vw,18px) clamp(12px,2vw,18px) 0}
-.pic{width:clamp(48px,8vw,64px);aspect-ratio:1;border-radius:50%;object-fit:cover;background:var(--soft);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);background-size:cover;background-position:center}
+.head{display:flex;align-items:center;gap:14px;position:relative;padding:clamp(12px,2vw,18px) clamp(12px,2vw,18px) 0}
+.pic{width:clamp(48px,8vw,64px);aspect-ratio:1;border-radius:50%;object-fit:cover;background:var(--soft);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);background-size:cover;background-position:center;cursor:pointer;transition:border-color .15s}
+.pic:hover{border-color:var(--accent)}
 .handle{font-size:clamp(15px,2.6vw,19px);font-weight:700}
 .meta{font-size:12px;color:var(--muted);margin-top:3px}
 .meta b{color:var(--text)}
@@ -66,13 +67,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .toast.show{opacity:1}
 </style></head><body>
 <div class="wrap">
-  <div class="head" id="head" onclick="cycle()">
-    <div class="vtog" id="vtog" onclick="event.stopPropagation()">
+  <div class="head" id="head">
+    <div class="vtog" id="vtog">
       <button data-v="both" onclick="setView('both')">Both</button>
       <button data-v="preview" onclick="setView('preview')">Preview</button>
       <button data-v="live" onclick="setView('live')">Live</button>
     </div>
-    <div class="pic" id="pic">–</div>
+    <div class="pic" id="pic" title="Switch account" onclick="cycle()">–</div>
     <div>
       <div class="handle" id="handle">@…</div>
       <div class="meta" id="meta">loading…</div>
@@ -80,12 +81,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
   </div>
   <div class="tabs" id="tabs"><span id="tabGrid" class="on" onclick="setTab('grid')">GRID</span><span id="tabReels" onclick="setTab('reels')">REELS</span></div>
   <div class="grid" id="grid"></div>
-  <div class="foot" id="foot">
-    <span class="grow" id="footstatus"></span>
-    <button class="btn" id="copyOrderBtn" onclick="copyOrder()">Copy order</button>
-    <button class="btn" id="clearBtn" onclick="clearPins()">Clear</button>
-    <button class="btn p" id="copyPinsBtn" onclick="copyPins()">Copy pins</button>
-  </div>
   <div class="toast" id="toast"></div>
 </div>
 <script>
@@ -168,7 +163,7 @@ function render(){
   if(d.profilePic){pic.style.backgroundImage="url('"+d.profilePic+"')";pic.textContent="";}
   else{pic.style.backgroundImage="";pic.textContent=(a[0]||"?").toUpperCase();}
   $('handle').textContent=a;
-  $('meta').innerHTML="<b>"+fmt(d.mediaCount)+"</b> posts &nbsp;·&nbsp; <b>"+fmt(d.followers)+"</b> followers &nbsp;·&nbsp; "+(accts.length>1?"tap to switch ▸":"Instagram");
+  $('meta').innerHTML="<b>"+fmt(d.mediaCount)+"</b> posts &nbsp;·&nbsp; <b>"+fmt(d.followers)+"</b> followers &nbsp;·&nbsp; Instagram";
   [...$('vtog').children].forEach(b=>b.classList.toggle('on',b.dataset.v===view));
   $('tabs').style.display=view==='preview'?'none':'flex';
   $('tabGrid').className=tab==='grid'?'on':'';$('tabReels').className=tab==='reels'?'on':'';
@@ -199,20 +194,6 @@ function render(){
   }
   $('grid').innerHTML=html;
   sizeCells();wireDrag();
-
-  // ---- footer ----
-  const showOrder=view!=='live'&&n>0;
-  const showPins=view!=='preview'&&tab==='grid';
-  const nPins=pinned.length;
-  $('copyOrderBtn').classList.toggle('hide',!showOrder);
-  $('clearBtn').classList.toggle('hide',!(showPins&&nPins));
-  $('copyPinsBtn').classList.toggle('hide',!showPins);
-  let st="";
-  if(view==='preview')st="Drag to reorder · drafts on top, scheduled by date";
-  else if(view==='live')st=showPins?("📌 "+nPins+" pinned · copy → Social Settings"):"Your live feed";
-  else st=(nPins?("📌 "+nPins+" pinned on top · "):"")+"drafts · live";
-  $('footstatus').textContent=st;
-  $('foot').classList.toggle('show',showOrder||showPins);
 }
 
 function move(pi,d){const j=pi+d;if(j<0||j>=rows.length)return;const t=rows[pi];rows[pi]=rows[j];rows[j]=t;persist();render();}
