@@ -174,7 +174,11 @@ function render(){
   $('tabGrid').className=tab==='grid'?'on':'';$('tabReels').className=tab==='reels'?'on':'';
 
   const n=rows.length;
-  const draftHtml=(view==='live')?'':rows.map((it,pi)=>draftCells(it,pi,n)).join('');
+  // In Both/Live the GRID/REELS tab also filters drafts (reel drafts → REELS tab).
+  const draftHtml=(view==='live')?'':rows.map((it,pi)=>{
+    const hide=(view!=='preview')&&(tab==='reels'?it.kind!=='reel':it.kind==='reel');
+    return hide?'':draftCells(it,pi,n);
+  }).join('');
   // live list (filtered by tab), split into pinned + rest
   let liveAll=[];
   if(view!=='preview'){const s=localPins(a),cls=localClass(a);
