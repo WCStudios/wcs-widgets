@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-07-23T04:17:08.926Z",
+ "updatedAt": "2026-07-23T04:21:11.260Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -59,6 +59,30 @@
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/6f7vo9.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/9e8qj7.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/1uezh8g.jpg"
+   ]
+  },
+  {
+   "pageId": "39a421ef-c766-8087-bbd3-e33754733327",
+   "title": "Cascade CBX - CodeTheThrow Spot",
+   "account": "wcstudios.co",
+   "order": 6,
+   "kind": "grid",
+   "tiles": [
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1gr7tte.jpg",
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1dtxfhi.jpg",
+    null
+   ]
+  },
+  {
+   "pageId": "39a421ef-c766-80d9-b29d-cc643b00e266",
+   "title": "Cascade CBX - Marek Houston Spot",
+   "account": "wcstudios.co",
+   "order": 7,
+   "kind": "grid",
+   "tiles": [
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1x4nx59.jpg",
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/jilqw.jpg",
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/rlkx75.jpg"
    ]
   },
   {
