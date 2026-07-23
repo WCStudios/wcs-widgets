@@ -191,10 +191,9 @@ function render(){
     html=liveAll.length?[...pinned,...rest].map(p=>liveCell(p,false)).join(''):'<div class="empty">'+(tab==='reels'?'No reels':'No posts')+'</div>';
   }else if(view==='preview'){
     html=n?draftHtml:'<div class="empty">No draft posts for this account.</div>';
-  }else{ // both — pinned at the very top, then drafts, then the rest of live
+  }else{ // both — pinned at the very top, then drafts, then live, as one continuous feed
     html+=pinned.map(p=>liveCell(p,true)).join('');
     html+=draftHtml;
-    if((pinned.length+n)&&rest.length)html+='<div class="divider">↓ posted · your live feed</div>';
     html+=rest.map(p=>liveCell(p,true)).join('');
     if(!html)html='<div class="empty">Nothing here yet.</div>';
   }
