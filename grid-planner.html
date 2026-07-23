@@ -27,7 +27,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .cell img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .badge{position:absolute;top:6px;left:6px;z-index:3;background:rgba(0,0,0,.72);color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;padding:0 5px;border-radius:11px;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .tag{position:absolute;top:6px;right:6px;z-index:3;background:rgba(232,98,44,.9);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;pointer-events:none}
-.sched{position:absolute;top:31px;left:6px;z-index:3;background:rgba(0,0,0,.62);color:#a9d8ff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;pointer-events:none;display:flex;align-items:center;gap:3px}
+.sched{position:absolute;bottom:6px;right:6px;z-index:4;background:rgba(0,0,0,.62);color:#a9d8ff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;pointer-events:none;display:flex;align-items:center;gap:3px}
 .rlabel{position:absolute;bottom:6px;left:6px;right:44px;z-index:3;background:rgba(0,0,0,.62);color:#fff;font-size:10px;font-weight:600;padding:2px 6px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .12s;pointer-events:none}
 .cell:hover .rlabel{opacity:1}
 .moves{position:absolute;top:6px;right:6px;z-index:4;display:flex;flex-direction:column;gap:3px;opacity:0;transition:opacity .12s}
@@ -40,6 +40,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .btn:hover{border-color:var(--accent);color:var(--accent)}
 .btn.p{background:var(--accent);color:#fff;border-color:var(--accent)}
 .empty{grid-column:1/4;color:var(--muted);font-size:13px;text-align:center;padding:40px 20px}
+.divider{grid-column:1/4;font-size:9.5px;letter-spacing:1.2px;color:var(--muted);text-transform:uppercase;font-weight:700;padding:13px 6px 7px;border-top:1px solid var(--line);margin-top:4px}
+.cell.live{cursor:default}
+.cell.live .plabel{position:absolute;top:6px;left:6px;z-index:3;background:rgba(0,0,0,.55);color:#8fe3a0;font-size:8.5px;font-weight:700;padding:2px 5px;border-radius:5px;pointer-events:none;letter-spacing:.5px}
 .toast{position:absolute;left:50%;bottom:52px;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:11px;font-weight:700;padding:7px 14px;border-radius:20px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
 .toast.show{opacity:1}
 </style></head><body>
@@ -107,6 +110,14 @@ function render(){
         '</div>';
     }
   });
+  // Reference: your most recent posted posts (read-only) so you can plan drafts on top.
+  const live=((window.IGDATA&&window.IGDATA[a]&&window.IGDATA[a].grid)||[]).filter(p=>p.productType!=='REELS').slice(0,9);
+  if(live.length){
+    html+='<div class="divider">↓ posted · your live feed</div>';
+    live.forEach(p=>{
+      html+='<div class="cell live">'+(p.thumb?'<img src="'+p.thumb+'" referrerpolicy="no-referrer" alt="">':'')+'<div class="plabel">LIVE</div></div>';
+    });
+  }
   sc.innerHTML=html;
   sizeCells();
   wireDrag();
@@ -117,7 +128,7 @@ function move(pi,d){const j=pi+d;if(j<0||j>=rows.length)return;const t=rows[pi];
 
 let dragPost=null;
 function wireDrag(){
-  [...document.querySelectorAll('#scroll .cell')].forEach(el=>{
+  [...document.querySelectorAll('#scroll .cell:not(.live)')].forEach(el=>{
     el.addEventListener('dragstart',e=>{dragPost=+el.dataset.post;el.classList.add('drag');try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text','');}catch(_){}});
     el.addEventListener('dragend',()=>{dragPost=null;[...document.querySelectorAll('#scroll .cell')].forEach(c=>c.classList.remove('drag','over'));});
     el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('over');});
