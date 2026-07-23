@@ -18,8 +18,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .row+.row{margin-top:1px}
 .row.drag{opacity:.4;cursor:grabbing}
 .row.over{outline:2px solid var(--drop);outline-offset:-2px}
-.cell{position:relative;overflow:hidden;background:var(--soft)}
-.cell::before{content:"";display:block;padding-top:125%}
+.cell{position:relative;overflow:hidden;background:var(--soft);height:120px}
 .cell img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .badge{position:absolute;top:6px;left:6px;z-index:3;background:rgba(0,0,0,.72);color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;padding:0 5px;border-radius:11px;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .rlabel{position:absolute;bottom:6px;left:6px;right:44px;z-index:3;background:rgba(0,0,0,.62);color:#fff;font-size:10px;font-weight:600;padding:2px 6px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .12s;pointer-events:none}
@@ -93,10 +92,13 @@ function render(){
       '<button class="mv" onclick="move('+i+',1)" '+(i===n-1?'disabled':'')+'>▼</button></div></div>';
   }).join('');
   wireDrag();
+  sizeCells();
   const changed=rows.some((it,i)=>(it.order)!==(rows.length-i));
   $('status').textContent=changed?"Order changed — set each post’s Grid Order to match the numbers":"Drag a row to reorder · 1 = bottom, newest on top";
 }
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function sizeCells(){requestAnimationFrame(()=>{document.querySelectorAll('#scroll .cell').forEach(c=>{const w=c.clientWidth;if(w)c.style.height=Math.round(w*1.25)+'px';});});}
+let _ro;function watchResize(){if(_ro)return;try{_ro=new ResizeObserver(()=>sizeCells());_ro.observe($('scroll'));}catch(_){window.addEventListener('resize',sizeCells);}}
 
 function move(i,d){const j=i+d;if(j<0||j>=rows.length)return;const t=rows[i];rows[i]=rows[j];rows[j]=t;persist();render();}
 
@@ -136,5 +138,5 @@ function cycle(){acct=(acct+1)%ACCTS.length;rows=loadOrder(ACCTS[acct]);render()
 function apply(){rows=loadOrder(ACCTS[acct]);render();}
 function loadStats(){const s=document.createElement('script');s.src=STATSSRC+"?t="+Date.now();s.onload=()=>{render();s.remove();};s.onerror=()=>s.remove();document.head.appendChild(s);}
 function load(){const s=document.createElement('script');s.src=JSSRC+"?t="+Date.now();s.onload=()=>{raw=window.DRAFTGRID;apply();s.remove();};s.onerror=()=>{$('meta').textContent="feed offline";s.remove();};document.head.appendChild(s);}
-load();loadStats();setInterval(()=>{load();loadStats();},300000);
+load();loadStats();watchResize();setInterval(()=>{load();loadStats();},300000);
 </script></body></html>
