@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-07-23T18:05:32.640Z",
+ "updatedAt": "2026-07-23T19:02:59.484Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -109,18 +109,6 @@
    "kind": "single",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/17t4ymf.jpg"
-   ]
-  },
-  {
-   "pageId": "3a5421ef-c766-8050-b3e5-e9c6ec976953",
-   "title": "MN Wild Blade Gang BTS",
-   "account": "lifeofbennyy",
-   "order": 9,
-   "status": "Scheduled",
-   "scheduleDate": "2026-07-23T19:00:00.000+00:00",
-   "kind": "single",
-   "tiles": [
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1cptb37.jpg"
    ]
   }
  ]
