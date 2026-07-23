@@ -5,16 +5,16 @@
 @media (prefers-color-scheme:dark){:root{--bg:#171717;--line:#2a2a2a;--text:#f4f4f4;--muted:#8a8a8a;--soft:#262626}}
 *{margin:0;box-sizing:border-box}html,body{height:100%;width:100%;background:var(--bg)}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text)}
-.wrap{height:100%;display:flex;flex-direction:column;padding:clamp(12px,2vw,20px)}
-.head{display:flex;align-items:center;gap:14px;cursor:pointer;position:relative}
+.wrap{height:100%;display:flex;flex-direction:column;padding:0}
+.head{display:flex;align-items:center;gap:14px;cursor:pointer;position:relative;padding:clamp(12px,2vw,18px) clamp(12px,2vw,18px) 0}
 .pic{width:clamp(48px,8vw,64px);aspect-ratio:1;border-radius:50%;object-fit:cover;background:var(--soft);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent)}
 .handle{font-size:clamp(15px,2.6vw,19px);font-weight:700}
 .meta{font-size:12px;color:var(--muted);margin-top:3px}
 .meta b{color:var(--text)}
 .hint{position:absolute;top:0;right:0;font-size:10px;color:var(--muted)}
-.tabs{display:flex;gap:26px;justify-content:center;border-top:1px solid var(--line);margin-top:14px;padding-top:10px;font-size:11px;letter-spacing:1px;color:var(--muted)}
+.tabs{display:flex;gap:26px;justify-content:center;border-top:1px solid var(--line);margin:14px clamp(12px,2vw,18px) 0;padding-top:10px;font-size:11px;letter-spacing:1px;color:var(--muted)}
 .tabs .on{color:var(--text);font-weight:700;border-top:2px solid var(--text);margin-top:-11px;padding-top:10px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:12px;overflow-y:auto;flex:1}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:10px;overflow-y:auto;flex:1}
 .cell{position:relative;aspect-ratio:1;background:var(--soft);overflow:hidden;cursor:pointer}
 .cell img{width:100%;height:100%;object-fit:cover;display:block}
 .cell .ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:12px;color:#fff;font-size:12px;font-weight:700;opacity:0;background:rgba(0,0,0,.4);transition:opacity .15s}
