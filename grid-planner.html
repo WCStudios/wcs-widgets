@@ -11,7 +11,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .handle{font-size:clamp(15px,2.6vw,19px);font-weight:700}
 .meta{font-size:12px;color:var(--muted);margin-top:3px}
 .meta b{color:var(--text)}
-.vtog{position:absolute;top:clamp(12px,2vw,16px);right:clamp(12px,2vw,16px);display:flex;z-index:7}
+.vtog{position:absolute;bottom:6px;right:clamp(12px,2vw,16px);display:flex;z-index:7}
 .vtog button{border:1px solid var(--line);background:rgba(127,127,127,.08);color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.2px;padding:4px 9px;cursor:pointer}
 .vtog button:first-child{border-radius:7px 0 0 7px}
 .vtog button:last-child{border-radius:0 7px 7px 0}
@@ -44,7 +44,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .badge{position:absolute;top:6px;left:6px;z-index:3;background:rgba(0,0,0,.72);color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;padding:0 5px;border-radius:11px;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .tag{position:absolute;top:6px;right:6px;z-index:3;background:rgba(232,98,44,.9);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;pointer-events:none}
 .tag.reel{background:rgba(50,50,60,.9)}
-.plabel{position:absolute;top:6px;left:6px;z-index:3;background:rgba(0,0,0,.55);color:#8fe3a0;font-size:8.5px;font-weight:700;padding:2px 5px;border-radius:5px;pointer-events:none;letter-spacing:.5px}
+.plabel{position:absolute;bottom:6px;left:6px;z-index:3;background:rgba(0,0,0,.55);color:#8fe3a0;font-size:8.5px;font-weight:700;padding:2px 5px;border-radius:5px;pointer-events:none;letter-spacing:.5px}
+.reelic{position:absolute;bottom:6px;right:6px;z-index:3;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;pointer-events:none}
 .sched{position:absolute;bottom:6px;right:6px;z-index:4;background:rgba(0,0,0,.62);color:#a9d8ff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;pointer-events:none;display:flex;align-items:center;gap:3px}
 .rlabel{position:absolute;bottom:6px;left:6px;right:44px;z-index:3;background:rgba(0,0,0,.62);color:#fff;font-size:10px;font-weight:600;padding:2px 6px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .12s;pointer-events:none}
 .cell.draft:hover .rlabel{opacity:1}
@@ -128,6 +129,39 @@ function setTab(t){tab=t;render();}
 function cycle(){if(accts.length>1){i=(i+1)%accts.length;rows=loadOrder(accts[i]);render();}}
 function open2(u){if(u&&u!=='#')window.open(u,'_blank');}
 
+// ---- reel classification (grid vs reels-only) ----
+function clsKey(a){return "wcscls:"+a;}
+function localClass(a){try{return JSON.parse(localStorage.getItem(clsKey(a))||"{}");}catch(_){return {};}}
+function moveClass(perm,t){const a=accts[i],c=localClass(a);c[perm]=t;try{localStorage.setItem(clsKey(a),JSON.stringify(c));}catch(_){}render();}
+function isReel(p,cls){const o=cls[p.permalink];if(o)return o==='reels';return p.productType==='REELS';}
+
+// ---- cell builders ----
+function draftCells(it,pi,n){
+  const gnum=n-pi,tiles=it.tiles||[],cellsN=it.kind==='grid'?3:1;let h='';
+  for(let k=0;k<cellsN;k++){const u=tiles[k],first=(k===0);
+    h+='<div class="cell draft" draggable="true" data-post="'+pi+'">'+
+      (u?'<img src="'+u+'" referrerpolicy="no-referrer" alt="">':'')+
+      (first?'<div class="badge">'+gnum+'</div>':'')+
+      (first&&it.scheduleDate?'<div class="sched">⏱ '+fmtDate(it.scheduleDate)+'</div>':'')+
+      (first&&it.kind==='grid'?'<div class="tag">GRID</div>':first&&it.kind==='reel'?'<div class="tag reel">▶ REEL</div>':'')+
+      (first?'<div class="rlabel">'+esc(it.title||'')+'</div>':'')+
+      (first?'<div class="moves"><button class="mvb" onclick="event.stopPropagation();move('+pi+',-1)" '+(pi===0?'disabled':'')+'>▲</button><button class="mvb" onclick="event.stopPropagation();move('+pi+',1)" '+(pi===n-1?'disabled':'')+'>▼</button></div>':'')+
+      '</div>';
+  }
+  return h;
+}
+function liveCell(p,showLabel){const perm=(p.permalink||'').replace(/'/g,"%27");const isR=(p.productType==='REELS');
+  const pinBtn=(tab==='grid')?'<button class="pin '+(p._pin?'on':'')+'" title="Pin/unpin" onclick="event.stopPropagation();togglePin(\''+perm+'\')"><svg viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg></button>':'';
+  const mvBtn=isR?(tab==='reels'
+    ?'<button class="mv" title="Show in main grid" onclick="event.stopPropagation();moveClass(\''+perm+'\',\'grid\')">⊞</button>'
+    :'<button class="mv" title="Move to Reels only" onclick="event.stopPropagation();moveClass(\''+perm+'\',\'reels\')">🎬</button>'):'';
+  return '<div class="cell live" onclick="open2(\''+perm+'\')">'+
+    (p.thumb?'<img loading="lazy" src="'+p.thumb+'" referrerpolicy="no-referrer" alt="">':'')+
+    (showLabel?'<div class="plabel">'+(p._pin?'PINNED':'LIVE')+'</div>':'')+
+    (isR&&tab==='grid'?'<div class="reelic">▶</div>':'')+pinBtn+mvBtn+
+    '<div class="ov">♥ '+fmt(p.likes)+' &nbsp; 💬 '+fmt(p.comments)+'</div></div>';
+}
+
 function render(){
   const a=accts[i],d=(data&&data[a])||{};
   const pic=$('pic');
@@ -139,42 +173,26 @@ function render(){
   $('tabs').style.display=view==='preview'?'none':'flex';
   $('tabGrid').className=tab==='grid'?'on':'';$('tabReels').className=tab==='reels'?'on':'';
 
-  let html='';
   const n=rows.length;
-  // ---- PREVIEW (drafts) ----
-  if(view!=='live'){
-    if(!n && view==='preview'){html+='<div class="empty">No draft posts for this account.</div>';}
-    rows.forEach((it,pi)=>{
-      const gnum=n-pi, tiles=it.tiles||[], cellsN=it.kind==='grid'?3:1;
-      for(let k=0;k<cellsN;k++){const u=tiles[k],first=(k===0);
-        html+='<div class="cell draft" draggable="true" data-post="'+pi+'">'+
-          (u?'<img src="'+u+'" referrerpolicy="no-referrer" alt="">':'')+
-          (first?'<div class="badge">'+gnum+'</div>':'')+
-          (first&&it.scheduleDate?'<div class="sched">⏱ '+fmtDate(it.scheduleDate)+'</div>':'')+
-          (first&&it.kind==='grid'?'<div class="tag">GRID</div>':first&&it.kind==='reel'?'<div class="tag reel">▶ REEL</div>':'')+
-          (first?'<div class="rlabel">'+esc(it.title||'')+'</div>':'')+
-          (first?'<div class="moves"><button class="mvb" onclick="event.stopPropagation();move('+pi+',-1)" '+(pi===0?'disabled':'')+'>▲</button><button class="mvb" onclick="event.stopPropagation();move('+pi+',1)" '+(pi===n-1?'disabled':'')+'>▼</button></div>':'')+
-          '</div>';
-      }
-    });
+  const draftHtml=(view==='live')?'':rows.map((it,pi)=>draftCells(it,pi,n)).join('');
+  // live list (filtered by tab), split into pinned + rest
+  let liveAll=[];
+  if(view!=='preview'){const s=localPins(a),cls=localClass(a);
+    liveAll=(d.grid||[]).map(p=>({...p,_pin:p.pinned||s.has(p.permalink)})).filter(p=>tab==='reels'?isReel(p,cls):!isReel(p,cls));
   }
-  // ---- LIVE ----
-  let liveList=[];
-  if(view!=='preview'){
-    const s=localPins(a);
-    let g=(d.grid||[]).map(p=>({...p,_pin:p.pinned||s.has(p.permalink)}));
-    g=g.filter(p=>tab==='reels'?p.productType==='REELS':p.productType!=='REELS');
-    g=g.map((p,idx)=>({p,idx})).sort((x,y)=>(y.p._pin-x.p._pin)||(x.idx-y.idx)).map(o=>o.p);
-    liveList=g;
-    if(view==='both'&&n&&g.length)html+='<div class="divider">↓ posted · your live feed</div>';
-    if(!g.length&&view==='live')html+='<div class="empty">'+(tab==='reels'?'No reels':'No posts')+'</div>';
-    html+=g.map(p=>{const perm=(p.permalink||'').replace(/'/g,"%27");
-      const pinBtn=tab==='grid'?'<button class="pin '+(p._pin?'on':'')+'" title="Pin/unpin" onclick="event.stopPropagation();togglePin(\''+perm+'\')"><svg viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg></button>':'';
-      return '<div class="cell live" onclick="open2(\''+perm+'\')">'+
-        (p.thumb?'<img loading="lazy" src="'+p.thumb+'" referrerpolicy="no-referrer" alt="">':'')+
-        (view==='both'?'<div class="plabel">LIVE</div>':'')+pinBtn+
-        '<div class="ov">♥ '+fmt(p.likes)+' &nbsp; 💬 '+fmt(p.comments)+'</div></div>';
-    }).join('');
+  const pinned=liveAll.filter(p=>p._pin), rest=liveAll.filter(p=>!p._pin);
+
+  let html='';
+  if(view==='live'){
+    html=liveAll.length?[...pinned,...rest].map(p=>liveCell(p,false)).join(''):'<div class="empty">'+(tab==='reels'?'No reels':'No posts')+'</div>';
+  }else if(view==='preview'){
+    html=n?draftHtml:'<div class="empty">No draft posts for this account.</div>';
+  }else{ // both — pinned at the very top, then drafts, then the rest of live
+    html+=pinned.map(p=>liveCell(p,true)).join('');
+    html+=draftHtml;
+    if((pinned.length+n)&&rest.length)html+='<div class="divider">↓ posted · your live feed</div>';
+    html+=rest.map(p=>liveCell(p,true)).join('');
+    if(!html)html='<div class="empty">Nothing here yet.</div>';
   }
   $('grid').innerHTML=html;
   sizeCells();wireDrag();
@@ -182,14 +200,14 @@ function render(){
   // ---- footer ----
   const showOrder=view!=='live'&&n>0;
   const showPins=view!=='preview'&&tab==='grid';
-  const nPins=liveList.filter(p=>p._pin).length;
+  const nPins=pinned.length;
   $('copyOrderBtn').classList.toggle('hide',!showOrder);
   $('clearBtn').classList.toggle('hide',!(showPins&&nPins));
   $('copyPinsBtn').classList.toggle('hide',!showPins);
   let st="";
   if(view==='preview')st="Drag to reorder · drafts on top, scheduled by date";
   else if(view==='live')st=showPins?("📌 "+nPins+" pinned · copy → Social Settings"):"Your live feed";
-  else st="Drafts on top · live below"+(showPins&&nPins?(" · 📌 "+nPins+" pinned"):"");
+  else st=(nPins?("📌 "+nPins+" pinned on top · "):"")+"drafts · live";
   $('footstatus').textContent=st;
   $('foot').classList.toggle('show',showOrder||showPins);
 }
