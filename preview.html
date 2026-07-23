@@ -15,15 +15,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .tabs{display:flex;gap:26px;justify-content:center;border-top:1px solid var(--line);margin:14px clamp(12px,2vw,18px) 0;padding-top:10px;font-size:11px;letter-spacing:1px;color:var(--muted)}
 .tabs span{cursor:pointer}
 .tabs .on{color:var(--text);font-weight:700;border-top:2px solid var(--text);margin-top:-11px;padding-top:10px}
-.mv{position:absolute;top:5px;left:5px;z-index:4;width:24px;height:24px;border:none;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .12s,background .12s}
-.cell:hover .mv{opacity:1}
-.mv:hover{background:var(--accent)}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:10px;overflow-y:auto;align-content:start;grid-auto-rows:max-content;flex:1}
+.pin,.mv{position:absolute;top:6px;z-index:4;width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);-webkit-backdrop-filter:blur(10px) saturate(1.4);backdrop-filter:blur(10px) saturate(1.4);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .14s,background .14s;font-size:12px;line-height:1}
+.pin{right:6px}.mv{left:6px}
+.cell:hover .pin,.cell:hover .mv{opacity:1}
+.pin:hover,.mv:hover{background:rgba(255,255,255,.26)}
+.pin.on{opacity:1;background:rgba(232,98,44,.5);border-color:rgba(232,98,44,.7)}
+.pin svg{width:13px;height:13px;display:block;fill:currentColor}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:10px;overflow-y:auto;align-content:start;grid-auto-rows:max-content;flex:1;scrollbar-width:thin;scrollbar-color:transparent transparent}
+.grid.scrolling{scrollbar-color:rgba(150,150,150,.5) transparent}
+.grid::-webkit-scrollbar{width:8px}
+.grid::-webkit-scrollbar-track{background:transparent}
+.grid::-webkit-scrollbar-thumb{background:transparent;border-radius:8px;border:2px solid transparent;background-clip:content-box}
+.grid.scrolling::-webkit-scrollbar-thumb{background:rgba(150,150,150,.55);background-clip:content-box}
+.grid::-webkit-scrollbar-thumb:hover{background:rgba(150,150,150,.8);background-clip:content-box}
 .cell{position:relative;overflow:hidden;background:var(--soft);cursor:pointer;height:120px}
 .cell img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.pin{position:absolute;top:5px;right:5px;z-index:4;width:24px;height:24px;border:none;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .12s,background .12s}
-.cell:hover .pin{opacity:1}
-.pin.on{opacity:1;background:var(--accent)}
 .ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:12px;color:#fff;font-size:12px;font-weight:700;opacity:0;background:rgba(0,0,0,.4);transition:opacity .15s;z-index:2}
 .cell:hover .ov{opacity:1}
 .foot{display:none;border-top:1px solid var(--line);padding:8px clamp(12px,2vw,18px);align-items:center;gap:10px;font-size:11px;color:var(--muted)}
@@ -95,7 +101,7 @@ function render(){if(!data)return;const a=accts[i],d=data[a]||{};
    const moveBtn=tab==='grid'
      ?'<button class="mv" title="Move to Reels" onclick="event.stopPropagation();moveClass(\''+perm+'\',\'reel\')">🎬</button>'
      :'<button class="mv" title="Move to Grid" onclick="event.stopPropagation();moveClass(\''+perm+'\',\'grid\')">⊞</button>';
-   const pinBtn=tab==='grid'?'<button class="pin '+(p._pin?'on':'')+'" title="Pin/unpin" onclick="event.stopPropagation();togglePin(\''+perm+'\')">📌</button>':'';
+   const pinBtn=tab==='grid'?'<button class="pin '+(p._pin?'on':'')+'" title="Pin/unpin" onclick="event.stopPropagation();togglePin(\''+perm+'\')"><svg viewBox="0 0 24 24"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg></button>':'';
    return '<div class="cell" onclick="open2(\''+perm+'\')">'+
      (p.thumb?'<img loading="lazy" src="'+p.thumb+'" referrerpolicy="no-referrer" alt="">':'<span class="ph"></span>')+
      pinBtn+moveBtn+
@@ -120,5 +126,6 @@ function open2(u){if(u&&u!=='#')window.open(u,'_blank');}
 function cycle(){if(accts.length>1){i=(i+1)%accts.length;render();}}
 function apply(d){if(!d)return;data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));render();}
 function load(){const s=document.createElement('script');s.src=JSSRC+"?t="+Date.now();s.onload=()=>{apply(window.IGDATA);s.remove();};s.onerror=()=>{$('meta').textContent="feed offline";s.remove();};document.head.appendChild(s);}
-load();watchResize();setInterval(load,300000);
+function watchScroll(el){if(!el)return;el.addEventListener('scroll',()=>{el.classList.add('scrolling');clearTimeout(el._st);el._st=setTimeout(()=>el.classList.remove('scrolling'),900);});}
+load();watchResize();watchScroll($('grid'));setInterval(load,300000);
 </script></body></html>
