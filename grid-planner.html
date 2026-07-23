@@ -18,7 +18,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .row+.row{margin-top:1px}
 .row.drag{opacity:.4;cursor:grabbing}
 .row.over{outline:2px solid var(--drop);outline-offset:-2px}
-.cell{position:relative;aspect-ratio:1;background:var(--soft);overflow:hidden}
+.cell{position:relative;aspect-ratio:4/5;background:var(--soft);overflow:hidden}
 .cell img{width:100%;height:100%;object-fit:cover;display:block}
 .badge{position:absolute;top:6px;left:6px;z-index:3;background:rgba(0,0,0,.72);color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;padding:0 5px;border-radius:11px;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .rlabel{position:absolute;bottom:6px;left:6px;right:44px;z-index:3;background:rgba(0,0,0,.62);color:#fff;font-size:10px;font-weight:600;padding:2px 6px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .12s;pointer-events:none}
@@ -56,6 +56,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 </div>
 <script>
 const JSSRC="https://wcstudios.github.io/wcs-widgets/draft-grid.js";
+const STATSSRC="https://wcstudios.github.io/wcs-widgets/ig-stats.js";
 const ACCTS=["wcstudios.co","lifeofbennyy"];
 const INIT={"wcstudios.co":"W","lifeofbennyy":"B"};
 let raw=null, acct=0, rows=[]; // rows = working order for current account
@@ -67,7 +68,10 @@ function itemsFor(a){return ((raw&&raw.items)||[]).filter(x=>(x.account||"wcstud
 
 function render(){
   const a=ACCTS[acct];
-  $('pic').textContent=INIT[a]||a[0].toUpperCase();
+  const pic=$('pic');
+  const pp=(window.IGDATA&&window.IGDATA[a]&&window.IGDATA[a].profilePic)||null;
+  if(pp){pic.style.backgroundImage="url('"+pp+"')";pic.style.backgroundSize="cover";pic.style.backgroundPosition="center";pic.textContent="";}
+  else{pic.style.backgroundImage="";pic.textContent=INIT[a]||a[0].toUpperCase();}
   $('handle').textContent="@"+a;
   $('hint').textContent="tap to switch ▸";
   const n=rows.length;
@@ -75,11 +79,12 @@ function render(){
   const sc=$('scroll');
   if(!n){sc.innerHTML='<div class="empty">No draft grid posts for this account.<br>Set a post’s type to <b>IG Grid Post</b> and it’ll show up here.</div>';return;}
   sc.innerHTML=rows.map((it,i)=>{
+    const gnum=rows.length-i; // top row = highest number (most recent), bottom = 1
     const tiles=(it.tiles||[]).slice(0,3);
     const cells=[0,1,2].map(k=>{
       const u=tiles[k];
       return '<div class="cell">'+(u?'<img src="'+u+'" referrerpolicy="no-referrer" alt="">':'')+
-        (k===0?'<div class="badge">'+(i+1)+'</div>':'')+
+        (k===0?'<div class="badge">'+gnum+'</div>':'')+
         (k===0?'<div class="rlabel">'+esc(it.title||'')+'</div>':'')+'</div>';
     }).join('');
     return '<div class="row" draggable="true" data-i="'+i+'">'+cells+
@@ -87,8 +92,8 @@ function render(){
       '<button class="mv" onclick="move('+i+',1)" '+(i===n-1?'disabled':'')+'>▼</button></div></div>';
   }).join('');
   wireDrag();
-  const changed=rows.some((it,i)=>(it.order??(i+1))!==(i+1));
-  $('status').textContent=changed?"Order changed — set each post’s Grid Order to match the numbers":"Drag a row to reorder · numbers = Grid Order";
+  const changed=rows.some((it,i)=>(it.order)!==(rows.length-i));
+  $('status').textContent=changed?"Order changed — set each post’s Grid Order to match the numbers":"Drag a row to reorder · 1 = bottom, newest on top";
 }
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
@@ -113,20 +118,22 @@ function loadOrder(a){
   if(saved&&Array.isArray(saved)){
     const byId=Object.fromEntries(base.map(x=>[x.pageId,x]));
     const ordered=saved.map(id=>byId[id]).filter(Boolean);
-    base.forEach(x=>{if(!saved.includes(x.pageId))ordered.push(x);}); // new posts to end
+    base.forEach(x=>{if(!saved.includes(x.pageId))ordered.unshift(x);}); // new posts to top (newest)
     return ordered;
   }
-  return base.slice().sort((x,y)=>((x.order??1e9)-(y.order??1e9)));
+  // Highest Grid Order (newest) on top; unnumbered posts float to the very top.
+  return base.slice().sort((x,y)=>((y.order??1e18)-(x.order??1e18)));
 }
 function resetOrder(){try{localStorage.removeItem(keyFor(ACCTS[acct]));}catch(_){}rows=loadOrder(ACCTS[acct]);render();toast("Reset to saved order");}
 function copyOrder(){
-  const lines=rows.map((it,i)=>(i+1)+"  "+(it.title||it.pageId));
-  const txt="Grid Order (top = 1):\n"+lines.join("\n");
+  const lines=rows.map((it,i)=>(rows.length-i)+"  "+(it.title||it.pageId));
+  const txt="Grid Order (top = newest):\n"+lines.join("\n");
   try{navigator.clipboard.writeText(txt);toast("Order copied");}catch(_){toast("Copy failed");}
 }
 function cycle(){acct=(acct+1)%ACCTS.length;rows=loadOrder(ACCTS[acct]);render();}
 
 function apply(){rows=loadOrder(ACCTS[acct]);render();}
+function loadStats(){const s=document.createElement('script');s.src=STATSSRC+"?t="+Date.now();s.onload=()=>{render();s.remove();};s.onerror=()=>s.remove();document.head.appendChild(s);}
 function load(){const s=document.createElement('script');s.src=JSSRC+"?t="+Date.now();s.onload=()=>{raw=window.DRAFTGRID;apply();s.remove();};s.onerror=()=>{$('meta').textContent="feed offline";s.remove();};document.head.appendChild(s);}
-load();setInterval(load,300000);
+load();loadStats();setInterval(()=>{load();loadStats();},300000);
 </script></body></html>
