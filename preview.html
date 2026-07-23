@@ -48,7 +48,7 @@ function render(){if(!data)return;const a=accts[i],d=data[a]||{};
  const g=d.grid||[];
  if(!g.length){grid.innerHTML='<div class="empty" style="grid-column:1/4">No recent posts</div>';return;}
  grid.innerHTML=g.map(p=>'<div class="cell" onclick="window.open(\''+(p.permalink||'#')+'\',\'_blank\')">'+
-   (p.thumb?'<img src="'+p.thumb+'" referrerpolicy="no-referrer" alt="">':'')+
+   (p.thumb?'<img loading="lazy" src="'+p.thumb+'" referrerpolicy="no-referrer" alt="">':'')+
    (p.pinned?'<div class="pin">📌</div>':'')+
    '<div class="ov">♥ '+fmt(p.likes)+' &nbsp; 💬 '+fmt(p.comments)+'</div></div>').join('');}
 function cycle(){if(accts.length>1){i=(i+1)%accts.length;render();}}
