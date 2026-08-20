@@ -1,0 +1,267 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Outstanding Invoices</title>
+<style>
+:root{--bg:#fff;--line:#ececec;--text:#111;--muted:#8a8a8a;--accent:#e8622c;--soft:#f2f2f2;
+ --up:#0ca30c;--down:#d03b3b;--warn:#fab219;--ring:rgba(11,11,11,.10);
+ --s1:#eb6834;--s2:#2a78d6;--s3:#1baf7a;--s4:#4a3aa7;--s5:#eda100}
+@media (prefers-color-scheme:dark){:root{--bg:#171717;--line:#2a2a2a;--text:#f4f4f4;--soft:#262626;--ring:rgba(255,255,255,.10);
+ --s1:#e8622c;--s2:#3987e5;--s3:#199e70;--s4:#9085e9;--s5:#c98500}}
+*{margin:0;box-sizing:border-box}html,body{width:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);padding:clamp(14px,1.7vw,22px)}
+.hd{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.k{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.big{font-size:clamp(28px,3.4vw,44px);font-weight:800;letter-spacing:-1.6px;line-height:1;margin-top:8px}
+.sub{font-size:11.5px;color:var(--muted);margin-top:7px}
+.stats{display:flex;gap:26px}
+.n{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.nl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
+.sec{margin-top:22px}
+.stack{display:flex;gap:2px;height:26px;margin-top:10px;border-radius:5px;overflow:hidden}
+.seg{border-radius:4px;position:relative;cursor:default}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:11px}
+.li{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+.li b{color:var(--text);font-variant-numeric:tabular-nums;font-weight:700}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:12.5px}
+th{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);text-align:left;
+ font-weight:600;padding:0 10px 7px 0;border-bottom:1px solid var(--line)}
+th.r,td.r{text-align:right;padding-right:0}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--soft)}
+.cl{display:flex;align-items:center;gap:8px;font-weight:600}
+.amt{font-variant-numeric:tabular-nums;font-weight:800}
+.mono{font-variant-numeric:tabular-nums;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:700;letter-spacing:.3px;
+ text-transform:uppercase;padding:3px 8px;border-radius:11px;background:var(--soft);color:var(--muted);white-space:nowrap}
+.chip.bad{color:var(--down);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--down) 35%,transparent)}
+.chip.ok{color:var(--up)}
+.nm{font-size:10.5px;color:var(--muted);margin-top:2px}
+.empty{font-size:12px;color:var(--muted);padding:18px 0}
+tbody tr{cursor:pointer}
+tbody tr:hover .doc{opacity:1}
+.doc{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.4px;
+ text-transform:uppercase;color:var(--accent);margin-left:8px;opacity:.5;transition:opacity .12s;
+ vertical-align:middle;white-space:nowrap}
+.doc.none{color:var(--muted)}
+.ov{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.72);display:none;
+ flex-direction:column;padding:clamp(10px,2vw,26px)}
+.ov.on{display:flex}
+.ovh{display:flex;align-items:center;gap:12px;padding:0 2px 11px;color:#fff}
+.ovt{flex:1;min-width:0;font-size:12px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ovt small{display:block;font-weight:400;font-size:10px;color:rgba(255,255,255,.62);margin-top:2px;
+ white-space:normal}
+.ovb{font:inherit;font-size:10.5px;font-weight:700;cursor:pointer;white-space:nowrap;
+ border:1px solid rgba(255,255,255,.28);background:transparent;color:#fff;padding:6px 11px;border-radius:8px}
+.ovb:hover{background:rgba(255,255,255,.12)}
+.ovf{flex:1;min-height:0;border:0;border-radius:10px;background:#fff;width:100%}
+.ovpages{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;gap:14px}
+.ovpages canvas{max-width:100%;border-radius:10px;box-shadow:0 4px 22px rgba(0,0,0,.5);background:#fff}
+.ovmsg{color:rgba(255,255,255,.75);font-size:12px;padding:26px;text-align:center;line-height:1.6}
+</style></head><body>
+
+<div class="hd">
+  <div>
+    <div class="k">Outstanding invoices</div>
+    <div class="big" id="total">—</div>
+    <div class="sub" id="sub">loading…</div>
+  </div>
+  <div class="stats">
+    <div><div class="n" id="nOpen">—</div><div class="nl">Open</div></div>
+    <div><div class="n" id="nOver" style="color:var(--down)">—</div><div class="nl">Overdue</div></div>
+    <div><div class="n" id="nAvg">—</div><div class="nl">Avg days out</div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="k">Aging</div>
+  <div class="stack" id="stack"></div>
+  <div class="legend" id="legend"></div>
+</div>
+
+<div class="sec">
+  <div class="k">Detail</div>
+  <table>
+    <thead><tr><th>Client</th><th>Invoice</th><th class="r">Amount</th><th class="r">Due</th><th class="r">Status</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div class="empty" id="empty" style="display:none">Nothing outstanding — every invoice is settled.</div>
+</div>
+
+<div class="ov" id="ov">
+  <div class="ovh">
+    <div class="ovt" id="ovt">—<small id="ovs"></small></div>
+    <button class="ovb" id="ovNotion">Open in Notion &#8599;</button>
+    <button class="ovb" id="ovNew">Open PDF &#8599;</button>
+    <button class="ovb" id="ovX">&#10005;</button>
+  </div>
+  <div class="ovpages" id="ovPages"><div class="ovmsg">Loading…</div></div>
+</div>
+
+<script>
+/* Baked at build time so the widget renders even where a
+   sandbox blocks the follow-up request (e.g. a Notion embed). */
+/* WCStudios Finance Manager — generated by build_finance_data.py. Do not edit by hand. */
+window.FINDATA = {"updated":"2026-08-19","sourcePulled":"2026-08-17","currency":"USD","summary":{"cashOnHand":null,"cardBalance":null,"cardLimit":null,"cardUtilization":null,"arTotal":14500,"arOverdue":14500,"arCount":4,"apTotal":2882.5,"apCount":7,"monthlyBurn":7714.97,"mrr":18500,"monthlyNet":10785.03,"runwayMonths":null},"accounts":[{"name":"Business Checking","institution":"Wells Fargo","type":"checking","last4":"4067","balance":null,"source":"manual"},{"name":"Business Savings","institution":"Wells Fargo","type":"savings","last4":null,"balance":null,"source":"manual"},{"name":"PayPal","institution":"PayPal","type":"paypal","last4":null,"balance":null,"source":"manual"},{"name":"Business Card","institution":"Mastercard","type":"credit","last4":"8641","balance":null,"limit":null,"source":"manual"},{"name":"Card \u2022\u20226707","institution":"Visa","type":"credit","last4":"6707","balance":null,"limit":null,"source":"manual"}],"ar":[{"name":"Pulltab Sports - December Retainer","client":"Pulltab Sports","amount":7500,"status":"Outstanding","invoiceDate":"2025-12-01","dueDate":"2025-12-15","daysOverdue":247,"bucket":"90+ days","notionUrl":"https://app.notion.com/2c4421efc76681f4b7d4d3036174da4e","pdfUrl":"invoices/Dec-2025-Retainer-Pulltab-Sports.pdf","pdfSource":"rebuilt"},{"name":"Tripine Creative - December Retainer","client":"Tripine Creative","amount":3750,"status":"Outstanding","invoiceDate":"2025-12-01","dueDate":"2025-12-15","daysOverdue":247,"bucket":"90+ days","notionUrl":"https://app.notion.com/2c4421efc76681b5b955c1078bc8950e","pdfUrl":"invoices/Dec-2025-Retainer-Tripine-Creative.pdf","pdfSource":"rebuilt"},{"name":"The Local Farmer - December Retainer","client":"The Local Farmer","amount":1750,"status":"Outstanding","invoiceDate":"2025-12-01","dueDate":"2025-12-15","daysOverdue":247,"bucket":"90+ days","notionUrl":"https://app.notion.com/2c4421efc7668179b251e700d3c1c17e","pdfUrl":"invoices/Dec-2025-Retainer-The-Local-Farmer.pdf","pdfSource":"rebuilt"},{"name":"Niccum Docks - December Retainer","client":"Niccum Docks","amount":1500,"status":"Outstanding","invoiceDate":"2025-12-01","dueDate":"2025-12-15","daysOverdue":247,"bucket":"90+ days","notionUrl":"https://app.notion.com/2c4421efc7668193b913f88b63fd9db5","pdfUrl":"invoices/Dec-2025-Retainer-Niccum-Docks.pdf","pdfSource":"rebuilt"}],"arByClient":[{"client":"Pulltab Sports","amount":7500.0},{"client":"Tripine Creative","amount":3750.0},{"client":"The Local Farmer","amount":1750.0},{"client":"Niccum Docks","amount":1500.0}],"arAging":[{"bucket":"90+ days","amount":14500.0}],"ap":[{"name":"Preston Leininger - Invoice #3 (Services + mileage)","vendor":"Preston Leininger","amount":930.9,"status":"Outstanding","invoiceDate":"2026-04-23","dueDate":null,"daysOverdue":null},{"name":"Preston Leininger - Invoice No. 2 (Rodger's/Hastings/Bloomington + mileage)","vendor":"Preston Leininger","amount":920.9,"status":"Outstanding","invoiceDate":"2026-03-18","dueDate":"2026-03-15","daysOverdue":157},{"name":"BWP - Wedding Edits","vendor":"Brooks Witta","amount":500,"status":"Outstanding","invoiceDate":"2025-12-15","dueDate":"2025-12-17","daysOverdue":245},{"name":"BWP - OW Coverage (Day Rate)","vendor":"Brooks Witta","amount":500,"status":"Outstanding","invoiceDate":"2025-12-15","dueDate":"2025-12-17","daysOverdue":245},{"name":"Pop Invoice - Monthly plan subscription renewal","vendor":"Pop Invoice (via Paddle)","amount":10.85,"status":"Outstanding","invoiceDate":"2026-04-13","dueDate":"2026-04-13","daysOverdue":128},{"name":"Pop Invoice (Paddle) - Monthly plan renewal","vendor":"Pop Invoice / Paddle","amount":10.85,"status":"Outstanding","invoiceDate":"2026-04-08","dueDate":"2026-04-13","daysOverdue":128},{"name":"2sync - Solo plan subscription renewal","vendor":"2sync","amount":9,"status":"Outstanding","invoiceDate":"2026-03-30","dueDate":"2026-04-05","daysOverdue":136}],"burn":{"total":7714.97,"categories":[{"category":"Contractors","amount":4500.0,"items":[{"name":"Preston Leignher","category":"Contractors","amount":2000,"detail":"Production Artist"},{"name":"Connor Pohl","category":"Contractors","amount":2000,"detail":"Editor"},{"name":"Bethany Bishop","category":"Contractors","amount":500,"detail":"Social Manager"}]},{"category":"Utilities","amount":2822.61,"items":[{"name":"CenterSpace LP","category":"Utilities","amount":2481.73},{"name":"Geico Auto","category":"Utilities","amount":213.99},{"name":"Quantum Fiber","category":"Utilities","amount":80},{"name":"Mister Car Wash","category":"Utilities","amount":28.21},{"name":"CenterPoint Energy","category":"Utilities","amount":18.68}]},{"category":"Software/Apps","amount":311.99,"items":[{"name":"Musicbed","category":"Software/Apps","amount":109.99},{"name":"Notion","category":"Software/Apps","amount":72},{"name":"Squarespace","category":"Software/Apps","amount":36},{"name":"Apple Services","category":"Software/Apps","amount":35},{"name":"Blackmagic Cloud","category":"Software/Apps","amount":30},{"name":"Adobe LR & PS","category":"Software/Apps","amount":20},{"name":"2Sync.com","category":"Software/Apps","amount":9}]},{"category":"Streaming/Entertainment","amount":80.37,"items":[{"name":"Prime Video Channels","category":"Streaming/Entertainment","amount":25.87},{"name":"Netflix","category":"Streaming/Entertainment","amount":19.52},{"name":"Amazon Prime","category":"Streaming/Entertainment","amount":19.51},{"name":"Kindle Services","category":"Streaming/Entertainment","amount":15.47}]}]},"retainers":[{"client":"Pulltab Sports","monthly":7500,"active":true},{"client":"Minnesota Hockey","monthly":4000,"active":true},{"client":"Tripine Creative","monthly":3750,"active":true},{"client":"The Local Farmer","monthly":1750,"active":true},{"client":"Niccum Docks","monthly":1500,"active":true}],"history":[{"month":"2025-12","in":4000.0,"out":1000.0,"net":3000.0},{"month":"2026-02","in":0.0,"out":441.79,"net":-441.79},{"month":"2026-03","in":0.0,"out":130.0,"net":-130.0},{"month":"2026-04","in":0.0,"out":1820.83,"net":-1820.83},{"month":"2026-05","in":0.0,"out":713.0,"net":-713.0}],"invoicing":{"_note":"Client directory synced from the Notion Clients database. nextNumber seeds the builder; highest PayPal invoice seen is 0167 (Coral Seegers).","nextNumber":"0168","defaultTerms":"Net 15","clients":[{"name":"Pulltab Sports","contact":"John King","email":"king@pulltabsports.com","type":"Retainer","website":"www.pulltabsports.com","retainer":7500},{"name":"Minnesota Hockey","contact":"Jacob LeVasseur","email":"jacobl@minnesotahockey.org","type":"Retainer","website":"www.minnesotahockey.org","retainer":4000},{"name":"Minnesota Wild","contact":"Matt Hussey","email":"Matt.Hussey@wild.com, Chris.barriere@wild.com","type":"Retainer","website":"www.minnesotawild.com","retainer":null},{"name":"Tradition Companies","contact":"Nina Lemke","email":"nina.lemke@traditioncompanies.com","type":"Retainer","website":"www.traditioncompanies.com","retainer":null},{"name":"Walser Automotive","contact":"","email":"nicolemeier@walser.com, daynakleve@walser.com","type":"Retainer","website":"www.walser.com","retainer":null},{"name":"River Valley Marine","contact":"Coral Anderson","email":"Coral@rivervalleymarine.com","type":"Retainer","website":"www.rivervalleymarine.com","retainer":null},{"name":"Andar Goods","contact":"Russ Tuehler","email":"jack@andar.com","type":"Retainer","website":"www.andar.com","retainer":null},{"name":"Cascade CBX Sport","contact":"Matt Hussey","email":"Matt.Hussey@wild.com, Chris.barriere@wild.com","type":"Retainer","website":"www.minnesotawild.com","retainer":null},{"name":"DripDrop","contact":"Matt Hussey","email":"Matt.Hussey@wild.com, Chris.barriere@wild.com","type":"Retainer","website":"www.minnesotawild.com","retainer":null},{"name":"TRIA Orthopedics","contact":"Matt Hussey","email":"Matt.Hussey@wild.com, Chris.barriere@wild.com","type":"Retainer","website":"www.minnesotawild.com","retainer":null},{"name":"Tripine Creative","contact":"","email":"","type":"Retainer","website":"","retainer":3750},{"name":"The Local Farmer","contact":"Ross Mann","email":"","type":"One-Off","website":"","retainer":1750},{"name":"Niccum Docks","contact":"Matt Lemke","email":"info@niccumdocks.com","type":"One-Off","website":"www.niccumdocks.com","retainer":1500},{"name":"USHL","contact":"Matthew Mcgreevy","email":"mcgreevy@ushl.com","type":"One-Off","website":"https://ushl.com","retainer":null},{"name":"Gateway Fiber","contact":"David Workman","email":"david.workman@gatewayfiber.com","type":"One-Off","website":"https://www.gatewayfiber.com","retainer":null},{"name":"McDonald Construction","contact":"Erika Dahl","email":"erikad@mcdonaldconstruction.com","type":"One-Off","website":"https://mcdonaldconstruction.com","retainer":null},{"name":"Robert Thomas Homes","contact":"Nina Lemke","email":"nina.lemke@traditioncompanies.com","type":"One-Off","website":"www.traditioncompanies.com","retainer":null},{"name":"PIKKL","contact":"Stephen Krause","email":"stephen@pikkl.com","type":"One-Off","website":"www.pikkl.com","retainer":null},{"name":"Booe Bags","contact":"Stephen Krause","email":"stephen@xtrudex.com","type":"One-Off","website":"www.booebags.com","retainer":null},{"name":"Nautique Boats","contact":"Andy Weigman","email":"andyweigman@gmail.com","type":"One-Off","website":"www.nautiqueboats.com","retainer":null},{"name":"Spirit Of The Lakes Festival","contact":"Austin Harbor","email":"","type":"One-Off","website":"www.spiritofthelakes.com","retainer":null},{"name":"United Heroes League","contact":"","email":"Mike@traditioncompanies.com","type":"One-Off","website":"www.unitedheroesleague.com","retainer":null},{"name":"Waterfront Restoration","contact":"","email":"benmaki@waterfrontrestoration.com","type":"One-Off","website":"www.waterfrontrestoration.com","retainer":null},{"name":"Wiggle Your Toes","contact":"Aaron Holm","email":"aaron@wiggleyourtoes.org","type":"One-Off","website":"www.wiggleyourtoes.org","retainer":null}],"dataIssues":["The Local Farmer's email in Notion is erikad@mcdonaldconstruction.com \u2014 looks like a copy-paste from McDonald Construction. Left blank here.","Cascade CBX Sport, DripDrop, and TRIA Orthopedics all carry Minnesota Wild's contact (Matt Hussey). Correct if they bill separately.","Tripine Creative bills a $3,750 retainer but has no row in the Clients database."],"presets":[{"label":"Monthly retainer","description":"Monthly creative retainer","detail":"","qty":1,"unit":"mo","rate":0,"dynamic":"retainer"},{"label":"Shoot day","description":"Production day \u2014 full day","detail":"On-site capture, crew and camera package.","qty":1,"unit":"day","rate":0},{"label":"Half day","description":"Production day \u2014 half day","detail":"","qty":1,"unit":"day","rate":0},{"label":"Edit / post","description":"Editing and post production","detail":"","qty":1,"unit":"hr","rate":0},{"label":"Mileage","description":"Mileage","detail":"","qty":1,"unit":"mi","rate":0},{"label":"Revision round","description":"Additional revision round","detail":"Beyond the two included in scope.","qty":1,"unit":"","rate":0},{"label":"Music license","description":"Licensed music","detail":"","qty":1,"unit":"","rate":0}],"_presetsNote":"Seed presets. Rates start at 0 on purpose \u2014 set each one once in the builder and it saves locally. 'dynamic: retainer' pulls the selected client's monthly amount.","pdfBase":"invoices/"}};
+</script>
+<script>
+const JSSRC = "https://wcstudios.github.io/wcs-widgets/finance-data.js";
+const usd = n => "$" + Number(n||0).toLocaleString("en-US",{maximumFractionDigits:0});
+const SERIES = ["--s1","--s2","--s3","--s4","--s5"];
+const fmtDate = s => s ? new Date(s+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"2-digit"}) : "—";
+
+function render(D){
+  const s = D.summary, ar = D.ar || [];
+  total.textContent = usd(s.arTotal);
+  sub.textContent = "Money owed to WCStudios · updated " + fmtDate(D.updated);
+  nOpen.textContent = s.arCount;
+  nOver.textContent = usd(s.arOverdue);
+  const days = ar.map(i => i.daysOverdue).filter(d => d != null);
+  nAvg.textContent = days.length ? Math.round(days.reduce((a,b)=>a+b,0)/days.length) : "—";
+
+  /* Aging — one stacked bar, 2px surface gaps, legend + direct values */
+  const ag = D.arAging || [], tot = ag.reduce((a,b)=>a+b.amount,0) || 1;
+  stack.innerHTML = ag.map((b,i) =>
+    '<div class="seg" style="flex:' + b.amount + ' 0 0;background:var(' + SERIES[i%SERIES.length] + ')" title="' + b.bucket + ': ' + usd(b.amount) + '"></div>').join("");
+  legend.innerHTML = ag.map((b,i) =>
+    '<span class="li"><span class="dot" style="background:var(' + SERIES[i%SERIES.length] + ')"></span>'
+    + b.bucket + ' <b>' + usd(b.amount) + '</b> · ' + Math.round(b.amount/tot*100) + '%</span>').join("");
+
+  /* Detail table */
+  const byClient = {};
+  (D.arByClient||[]).forEach((c,i) => byClient[c.client] = SERIES[i%SERIES.length]);
+  document.getElementById("empty").style.display = ar.length ? "none" : "block";
+  rows.innerHTML = ar.map((i, x) => {
+    const over = (i.daysOverdue||0) > 0;
+    const badge = i.pdfUrl ? '<span class="doc">\u25A4 PDF</span>'
+                : (i.notionUrl ? '<span class="doc none">\u2197 Notion</span>' : '');
+    return '<tr data-i="' + x + '" title="' + (i.pdfUrl ? "Open the invoice PDF" : "Open the Notion record") + '">'
+      + '<td><div class="cl"><span class="dot" style="background:var(' + (byClient[i.client]||"--s1") + ')"></span>' + i.client + '</div></td>'
+      + '<td>' + i.name.replace(i.client + " - ","") + badge + '<div class="nm">Issued ' + fmtDate(i.invoiceDate) + '</div></td>'
+      + '<td class="r amt">' + usd(i.amount) + '</td>'
+      + '<td class="r mono">' + fmtDate(i.dueDate) + '</td>'
+      + '<td class="r"><span class="chip ' + (over?"bad":"ok") + '">' + (over ? i.daysOverdue + "d overdue" : i.status) + '</span></td>'
+      + '</tr>';
+  }).join("");
+
+  /* Click a row: the PDF if we have one, otherwise its Notion record. */
+  rows.querySelectorAll("tr").forEach(tr =>
+    tr.addEventListener("click", () => open_(ar[+tr.dataset.i])));
+}
+
+/* ── PDF overlay ──────────────────────────────────────────────
+   Embedded rather than opened in a tab, so the invoice appears without
+   leaving the Notion page. Hosts that refuse framing still work via the
+   "Open PDF" button. */
+let current = null;
+function open_(inv){
+  current = inv;
+  if(!inv.pdfUrl){ if(inv.notionUrl) window.open(inv.notionUrl, "_blank"); return; }
+  document.getElementById("ovt").innerHTML =
+    inv.client + " \u2014 " + inv.name.replace(inv.client + " - ","")
+    + '<small>' + usd(inv.amount) + ' \u00b7 issued ' + fmtDate(inv.invoiceDate)
+    + (inv.pdfSource === "rebuilt"
+        ? ' \u00b7 rebuilt from the Notion record \u2014 not the document originally sent' : '')
+    + '</small>';
+  document.getElementById("ovNotion").style.display = inv.notionUrl ? "" : "none";
+  document.getElementById("ov").classList.add("on");
+  renderPdf(inv.pdfUrl);
+}
+function close_(){
+  document.getElementById("ov").classList.remove("on");
+  document.getElementById("ovPages").innerHTML = '<div class="ovmsg">Loading…</div>';
+}
+
+/* Rendered with pdf.js rather than an <iframe>, because Notion serves embeds
+   inside a sandboxed frame where the browser's native PDF viewer is often
+   blocked. Canvas rendering works the same everywhere. */
+/* Self-hosted next to the widget so the embed never depends on a CDN
+   staying reachable; cdnjs is only a fallback. */
+const PDFJS = [
+  ["vendor/pdf.min.js", "vendor/pdf.worker.min.js"],
+  ["https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
+   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"]
+];
+let pdfjsReady = null;
+
+function loadPdfJs(){
+  if(pdfjsReady) return pdfjsReady;
+  pdfjsReady = new Promise((res, rej) => {
+    const attempt = i => {
+      if(i >= PDFJS.length) return rej(new Error("pdf.js unavailable"));
+      const sc = document.createElement("script");
+      sc.src = PDFJS[i][0];
+      const timer = setTimeout(() => { sc.onerror = sc.onload = null; sc.remove(); attempt(i+1); }, 3000);
+      sc.onload = () => {
+        clearTimeout(timer);
+        const lib = window["pdfjs-dist/build/pdf"] || window.pdfjsLib;
+        if(!lib) return attempt(i+1);
+        lib.GlobalWorkerOptions.workerSrc = PDFJS[i][1];
+        res(lib);
+      };
+      sc.onerror = () => { clearTimeout(timer); sc.remove(); attempt(i+1); };
+      document.head.appendChild(sc);
+    };
+    attempt(0);
+  });
+  return pdfjsReady;
+}
+
+async function renderPdf(url){
+  const box = document.getElementById("ovPages");
+  box.innerHTML = '<div class="ovmsg">Loading…</div>';
+  try{
+    const lib = await loadPdfJs();
+    const doc = await lib.getDocument(url).promise;
+    box.innerHTML = "";
+    const wide = Math.min(box.clientWidth, 1000);
+    for(let n = 1; n <= doc.numPages; n++){
+      const page = await doc.getPage(n);
+      const base = page.getViewport({scale: 1});
+      const scale = (wide / base.width) * (window.devicePixelRatio || 1);
+      const vp = page.getViewport({scale: scale});
+      const cv = document.createElement("canvas");
+      cv.width = vp.width; cv.height = vp.height;
+      cv.style.width = wide + "px";
+      box.appendChild(cv);
+      await page.render({canvasContext: cv.getContext("2d"), viewport: vp}).promise;
+    }
+  }catch(e){
+    // pdf.js unavailable (offline, blocked CDN, local preview) — hand off to
+    // the browser's own PDF viewer, and only then give up.
+    box.innerHTML = "";
+    const fr = document.createElement("iframe");
+    fr.className = "ovf"; fr.title = "Invoice PDF"; fr.src = url;
+    box.appendChild(fr);
+    setTimeout(() => {
+      if(!fr.contentWindow || fr.clientHeight < 40){
+        box.innerHTML = '<div class="ovmsg">Couldn\u2019t render the PDF inline.<br>'
+          + 'Use <b>Open PDF</b> above to view it in a new tab.</div>';
+      }
+    }, 1500);
+  }
+}
+document.getElementById("ovX").addEventListener("click", close_);
+document.getElementById("ov").addEventListener("click", e => { if(e.target.id === "ov") close_(); });
+document.addEventListener("keydown", e => { if(e.key === "Escape") close_(); });
+document.getElementById("ovNew").addEventListener("click", () => current && window.open(current.pdfUrl, "_blank"));
+document.getElementById("ovNotion").addEventListener("click", () => current && window.open(current.notionUrl, "_blank"));
+
+function load(){
+  // Try the published feed first, fall back to a sibling finance-data.js
+  // (lets the same file preview locally before it's pushed to Pages).
+  const tryLoad = (srcs, i) => {
+    if(i >= srcs.length){ if(!rendered){ document.getElementById("sub").textContent = "data feed offline"; } return; }
+    const sc = document.createElement("script");
+    sc.src = srcs[i] + "?t=" + Date.now();
+    sc.onload = () => { sc.remove(); if(window.FINDATA) render(window.FINDATA); else tryLoad(srcs, i+1); };
+    sc.onerror = () => { sc.remove(); tryLoad(srcs, i+1); };
+    document.head.appendChild(sc);
+  };
+  tryLoad([JSSRC, "finance-data.js"], 0);
+}
+// Baked-in data first, so there is never an empty widget.
+let rendered = false;
+if(window.FINDATA){ render(window.FINDATA); rendered = true; }
+load(); setInterval(load, 300000);
+</script></body></html>
