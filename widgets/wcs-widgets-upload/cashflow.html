@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Cash Flow</title>
+<style>
+:root{--bg:#fff;--line:#ececec;--text:#111;--muted:#8a8a8a;--accent:#e8622c;--soft:#f2f2f2;
+ --grid:#e1e0d9;--up:#0ca30c;--down:#d03b3b;--warn:#fab219;
+ --in:#2a78d6;--out:#eb6834}
+@media (prefers-color-scheme:dark){:root{--bg:#171717;--line:#2a2a2a;--text:#f4f4f4;--soft:#262626;--grid:#2c2c2a;
+ --in:#3987e5;--out:#e8622c}}
+*{margin:0;box-sizing:border-box}html,body{width:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);padding:clamp(14px,1.7vw,22px)}
+.hd{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.k{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.big{font-size:clamp(26px,3.2vw,40px);font-weight:800;letter-spacing:-1.5px;line-height:1;margin-top:8px}
+.sub{font-size:11.5px;color:var(--muted);margin-top:7px}
+.stats{display:flex;gap:26px}
+.n{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.nl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
+.legend{display:flex;gap:16px;margin-top:16px}
+.li{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+.plot{position:relative;margin-top:10px;height:170px}
+.grid{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between}
+.gl{border-top:1px solid var(--grid);position:relative}
+.gl span{position:absolute;left:0;top:-6px;font-size:8.5px;color:var(--muted);background:var(--bg);padding-right:5px}
+.cols{position:absolute;inset:0 0 0 44px;display:flex;align-items:flex-end;gap:clamp(6px,1.4vw,20px)}
+.col{flex:1;display:flex;align-items:flex-end;justify-content:center;gap:2px;height:100%;position:relative;cursor:default}
+.bar{width:42%;max-width:26px;border-radius:4px 4px 0 0;min-height:2px;transition:opacity .12s}
+.col:hover .bar{opacity:.82}
+.axis{display:flex;gap:clamp(6px,1.4vw,20px);margin-left:44px;margin-top:7px}
+.ax{flex:1;text-align:center;font-size:9px;color:var(--muted);white-space:nowrap}
+.tip{position:absolute;z-index:5;pointer-events:none;opacity:0;transform:translate(-50%,-108%);
+ background:var(--text);color:var(--bg);font-size:10.5px;line-height:1.5;padding:7px 10px;border-radius:7px;
+ white-space:nowrap;transition:opacity .1s;font-variant-numeric:tabular-nums}
+.tip b{font-weight:800}
+.note{margin-top:16px;font-size:11.5px;line-height:1.5;color:var(--muted);
+ border-left:2px solid var(--warn);padding:2px 0 2px 11px}
+.note b{color:var(--text)}
+</style></head><body>
+
+<div class="hd">
+  <div>
+    <div class="k">Cash flow — logged actuals</div>
+    <div class="big" id="net">—</div>
+    <div class="sub" id="sub">loading…</div>
+  </div>
+  <div class="stats">
+    <div><div class="n" id="tIn" style="color:var(--in)">—</div><div class="nl">Total in</div></div>
+    <div><div class="n" id="tOut" style="color:var(--out)">—</div><div class="nl">Total out</div></div>
+    <div><div class="n" id="mos">—</div><div class="nl">Months logged</div></div>
+  </div>
+</div>
+
+<div class="legend">
+  <span class="li"><span class="dot" style="background:var(--in)"></span>Money in</span>
+  <span class="li"><span class="dot" style="background:var(--out)"></span>Money out</span>
+</div>
+
+<div class="plot" id="plot">
+  <div class="grid" id="grid"></div>
+  <div class="cols" id="cols"></div>
+  <div class="tip" id="tip"></div>
+</div>
+<div class="axis" id="axis"></div>
+
+<div class="note" id="note" style="display:none"></div>
+
+<script>
+const JSSRC = "https://wcstudios.github.io/wcs-widgets/finance-data.js";
+const usd = n => "$" + Number(n||0).toLocaleString("en-US",{maximumFractionDigits:0});
+const usdk = n => Math.abs(n) >= 1000 ? "$" + (n/1000).toFixed(n%1000?1:0) + "k" : "$" + Math.round(n);
+const mLabel = k => { const [y,m] = k.split("-");
+  return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+m-1] + " '" + y.slice(2); };
+
+function render(D){
+  const h = D.history || [];
+  const totIn = h.reduce((a,b)=>a+b.in,0), totOut = h.reduce((a,b)=>a+b.out,0), n = totIn - totOut;
+  net.textContent = (n>=0?"+":"−") + usd(Math.abs(n));
+  net.style.color = n>=0 ? "var(--up)" : "var(--down)";
+  sub.textContent = "Paid invoices booked to the month they were issued";
+  tIn.textContent = usd(totIn); tOut.textContent = usd(totOut); mos.textContent = h.length;
+
+  const max = Math.max(...h.flatMap(m=>[m.in,m.out]), 1);
+  const step = Math.pow(10, Math.floor(Math.log10(max)));
+  const top = Math.ceil(max/step)*step;
+
+  grid.innerHTML = [1,.75,.5,.25,0].map(f =>
+    '<div class="gl"><span>' + usdk(top*f) + '</span></div>').join("");
+
+  cols.innerHTML = h.map((m,i) =>
+    '<div class="col" data-i="' + i + '">'
+    + '<div class="bar" style="height:' + (m.in/top*100) + '%;background:var(--in)"></div>'
+    + '<div class="bar" style="height:' + (m.out/top*100) + '%;background:var(--out)"></div>'
+    + '</div>').join("");
+
+  axis.innerHTML = h.map(m => '<div class="ax">' + mLabel(m.month) + '</div>').join("");
+
+  /* hover layer */
+  cols.querySelectorAll(".col").forEach(el => {
+    el.addEventListener("mouseenter", e => {
+      const m = h[+el.dataset.i], r = el.getBoundingClientRect(), p = plot.getBoundingClientRect();
+      tip.innerHTML = "<b>" + mLabel(m.month) + "</b><br>In " + usd(m.in) + " · Out " + usd(m.out)
+        + "<br>Net " + (m.net>=0?"+":"−") + usd(Math.abs(m.net));
+      tip.style.left = (r.left - p.left + r.width/2) + "px";
+      tip.style.top = (r.top - p.top + 8) + "px";
+      tip.style.opacity = 1;
+    });
+    el.addEventListener("mouseleave", () => tip.style.opacity = 0);
+  });
+
+  /* honest empty-income callout */
+  const monthsNoIncome = h.filter(m => m.in === 0).length;
+  if(monthsNoIncome){
+    note.style.display = "block";
+    note.innerHTML = "<b>" + monthsNoIncome + " of " + h.length + " months show no income.</b> "
+      + "Client payments aren't being logged in the Invoice Tracker yet — only expenses are. "
+      + "Log receivables (or connect PayPal) and this chart becomes the real picture. "
+      + "Recurring retainer income is currently " + usd(D.summary.mrr) + "/mo.";
+  }
+}
+
+function load(){
+  // Try the published feed first, fall back to a sibling finance-data.js
+  // (lets the same file preview locally before it's pushed to Pages).
+  const tryLoad = (srcs, i) => {
+    if(i >= srcs.length){ document.getElementById("sub").textContent = "data feed offline"; return; }
+    const sc = document.createElement("script");
+    sc.src = srcs[i] + "?t=" + Date.now();
+    sc.onload = () => { sc.remove(); if(window.FINDATA) render(window.FINDATA); else tryLoad(srcs, i+1); };
+    sc.onerror = () => { sc.remove(); tryLoad(srcs, i+1); };
+    document.head.appendChild(sc);
+  };
+  tryLoad([JSSRC, "finance-data.js"], 0);
+}
+load(); setInterval(load, 300000);
+</script></body></html>

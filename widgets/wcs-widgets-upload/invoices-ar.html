@@ -1,0 +1,258 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Outstanding Invoices</title>
+<style>
+:root{--bg:#fff;--line:#ececec;--text:#111;--muted:#8a8a8a;--accent:#e8622c;--soft:#f2f2f2;
+ --up:#0ca30c;--down:#d03b3b;--warn:#fab219;--ring:rgba(11,11,11,.10);
+ --s1:#eb6834;--s2:#2a78d6;--s3:#1baf7a;--s4:#4a3aa7;--s5:#eda100}
+@media (prefers-color-scheme:dark){:root{--bg:#171717;--line:#2a2a2a;--text:#f4f4f4;--soft:#262626;--ring:rgba(255,255,255,.10);
+ --s1:#e8622c;--s2:#3987e5;--s3:#199e70;--s4:#9085e9;--s5:#c98500}}
+*{margin:0;box-sizing:border-box}html,body{width:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);padding:clamp(14px,1.7vw,22px)}
+.hd{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.k{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.big{font-size:clamp(28px,3.4vw,44px);font-weight:800;letter-spacing:-1.6px;line-height:1;margin-top:8px}
+.sub{font-size:11.5px;color:var(--muted);margin-top:7px}
+.stats{display:flex;gap:26px}
+.n{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.nl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
+.sec{margin-top:22px}
+.stack{display:flex;gap:2px;height:26px;margin-top:10px;border-radius:5px;overflow:hidden}
+.seg{border-radius:4px;position:relative;cursor:default}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:11px}
+.li{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+.li b{color:var(--text);font-variant-numeric:tabular-nums;font-weight:700}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:12.5px}
+th{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);text-align:left;
+ font-weight:600;padding:0 10px 7px 0;border-bottom:1px solid var(--line)}
+th.r,td.r{text-align:right;padding-right:0}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--soft)}
+.cl{display:flex;align-items:center;gap:8px;font-weight:600}
+.amt{font-variant-numeric:tabular-nums;font-weight:800}
+.mono{font-variant-numeric:tabular-nums;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:700;letter-spacing:.3px;
+ text-transform:uppercase;padding:3px 8px;border-radius:11px;background:var(--soft);color:var(--muted);white-space:nowrap}
+.chip.bad{color:var(--down);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--down) 35%,transparent)}
+.chip.ok{color:var(--up)}
+.nm{font-size:10.5px;color:var(--muted);margin-top:2px}
+.empty{font-size:12px;color:var(--muted);padding:18px 0}
+tbody tr{cursor:pointer}
+tbody tr:hover .doc{opacity:1}
+.doc{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.4px;
+ text-transform:uppercase;color:var(--accent);margin-left:8px;opacity:.5;transition:opacity .12s;
+ vertical-align:middle;white-space:nowrap}
+.doc.none{color:var(--muted)}
+.ov{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.72);display:none;
+ flex-direction:column;padding:clamp(10px,2vw,26px)}
+.ov.on{display:flex}
+.ovh{display:flex;align-items:center;gap:12px;padding:0 2px 11px;color:#fff}
+.ovt{flex:1;min-width:0;font-size:12px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ovt small{display:block;font-weight:400;font-size:10px;color:rgba(255,255,255,.62);margin-top:2px;
+ white-space:normal}
+.ovb{font:inherit;font-size:10.5px;font-weight:700;cursor:pointer;white-space:nowrap;
+ border:1px solid rgba(255,255,255,.28);background:transparent;color:#fff;padding:6px 11px;border-radius:8px}
+.ovb:hover{background:rgba(255,255,255,.12)}
+.ovf{flex:1;min-height:0;border:0;border-radius:10px;background:#fff;width:100%}
+.ovpages{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;gap:14px}
+.ovpages canvas{max-width:100%;border-radius:10px;box-shadow:0 4px 22px rgba(0,0,0,.5);background:#fff}
+.ovmsg{color:rgba(255,255,255,.75);font-size:12px;padding:26px;text-align:center;line-height:1.6}
+</style></head><body>
+
+<div class="hd">
+  <div>
+    <div class="k">Outstanding invoices</div>
+    <div class="big" id="total">—</div>
+    <div class="sub" id="sub">loading…</div>
+  </div>
+  <div class="stats">
+    <div><div class="n" id="nOpen">—</div><div class="nl">Open</div></div>
+    <div><div class="n" id="nOver" style="color:var(--down)">—</div><div class="nl">Overdue</div></div>
+    <div><div class="n" id="nAvg">—</div><div class="nl">Avg days out</div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="k">Aging</div>
+  <div class="stack" id="stack"></div>
+  <div class="legend" id="legend"></div>
+</div>
+
+<div class="sec">
+  <div class="k">Detail</div>
+  <table>
+    <thead><tr><th>Client</th><th>Invoice</th><th class="r">Amount</th><th class="r">Due</th><th class="r">Status</th></tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div class="empty" id="empty" style="display:none">Nothing outstanding — every invoice is settled.</div>
+</div>
+
+<div class="ov" id="ov">
+  <div class="ovh">
+    <div class="ovt" id="ovt">—<small id="ovs"></small></div>
+    <button class="ovb" id="ovNotion">Open in Notion &#8599;</button>
+    <button class="ovb" id="ovNew">Open PDF &#8599;</button>
+    <button class="ovb" id="ovX">&#10005;</button>
+  </div>
+  <div class="ovpages" id="ovPages"><div class="ovmsg">Loading…</div></div>
+</div>
+
+<script>
+const JSSRC = "https://wcstudios.github.io/wcs-widgets/finance-data.js";
+const usd = n => "$" + Number(n||0).toLocaleString("en-US",{maximumFractionDigits:0});
+const SERIES = ["--s1","--s2","--s3","--s4","--s5"];
+const fmtDate = s => s ? new Date(s+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"2-digit"}) : "—";
+
+function render(D){
+  const s = D.summary, ar = D.ar || [];
+  total.textContent = usd(s.arTotal);
+  sub.textContent = "Money owed to WCStudios · updated " + fmtDate(D.updated);
+  nOpen.textContent = s.arCount;
+  nOver.textContent = usd(s.arOverdue);
+  const days = ar.map(i => i.daysOverdue).filter(d => d != null);
+  nAvg.textContent = days.length ? Math.round(days.reduce((a,b)=>a+b,0)/days.length) : "—";
+
+  /* Aging — one stacked bar, 2px surface gaps, legend + direct values */
+  const ag = D.arAging || [], tot = ag.reduce((a,b)=>a+b.amount,0) || 1;
+  stack.innerHTML = ag.map((b,i) =>
+    '<div class="seg" style="flex:' + b.amount + ' 0 0;background:var(' + SERIES[i%SERIES.length] + ')" title="' + b.bucket + ': ' + usd(b.amount) + '"></div>').join("");
+  legend.innerHTML = ag.map((b,i) =>
+    '<span class="li"><span class="dot" style="background:var(' + SERIES[i%SERIES.length] + ')"></span>'
+    + b.bucket + ' <b>' + usd(b.amount) + '</b> · ' + Math.round(b.amount/tot*100) + '%</span>').join("");
+
+  /* Detail table */
+  const byClient = {};
+  (D.arByClient||[]).forEach((c,i) => byClient[c.client] = SERIES[i%SERIES.length]);
+  document.getElementById("empty").style.display = ar.length ? "none" : "block";
+  rows.innerHTML = ar.map((i, x) => {
+    const over = (i.daysOverdue||0) > 0;
+    const badge = i.pdfUrl ? '<span class="doc">\u25A4 PDF</span>'
+                : (i.notionUrl ? '<span class="doc none">\u2197 Notion</span>' : '');
+    return '<tr data-i="' + x + '" title="' + (i.pdfUrl ? "Open the invoice PDF" : "Open the Notion record") + '">'
+      + '<td><div class="cl"><span class="dot" style="background:var(' + (byClient[i.client]||"--s1") + ')"></span>' + i.client + '</div></td>'
+      + '<td>' + i.name.replace(i.client + " - ","") + badge + '<div class="nm">Issued ' + fmtDate(i.invoiceDate) + '</div></td>'
+      + '<td class="r amt">' + usd(i.amount) + '</td>'
+      + '<td class="r mono">' + fmtDate(i.dueDate) + '</td>'
+      + '<td class="r"><span class="chip ' + (over?"bad":"ok") + '">' + (over ? i.daysOverdue + "d overdue" : i.status) + '</span></td>'
+      + '</tr>';
+  }).join("");
+
+  /* Click a row: the PDF if we have one, otherwise its Notion record. */
+  rows.querySelectorAll("tr").forEach(tr =>
+    tr.addEventListener("click", () => open_(ar[+tr.dataset.i])));
+}
+
+/* ── PDF overlay ──────────────────────────────────────────────
+   Embedded rather than opened in a tab, so the invoice appears without
+   leaving the Notion page. Hosts that refuse framing still work via the
+   "Open PDF" button. */
+let current = null;
+function open_(inv){
+  current = inv;
+  if(!inv.pdfUrl){ if(inv.notionUrl) window.open(inv.notionUrl, "_blank"); return; }
+  document.getElementById("ovt").innerHTML =
+    inv.client + " \u2014 " + inv.name.replace(inv.client + " - ","")
+    + '<small>' + usd(inv.amount) + ' \u00b7 issued ' + fmtDate(inv.invoiceDate)
+    + (inv.pdfSource === "rebuilt"
+        ? ' \u00b7 rebuilt from the Notion record \u2014 not the document originally sent' : '')
+    + '</small>';
+  document.getElementById("ovNotion").style.display = inv.notionUrl ? "" : "none";
+  document.getElementById("ov").classList.add("on");
+  renderPdf(inv.pdfUrl);
+}
+function close_(){
+  document.getElementById("ov").classList.remove("on");
+  document.getElementById("ovPages").innerHTML = '<div class="ovmsg">Loading…</div>';
+}
+
+/* Rendered with pdf.js rather than an <iframe>, because Notion serves embeds
+   inside a sandboxed frame where the browser's native PDF viewer is often
+   blocked. Canvas rendering works the same everywhere. */
+/* Self-hosted next to the widget so the embed never depends on a CDN
+   staying reachable; cdnjs is only a fallback. */
+const PDFJS = [
+  ["vendor/pdf.min.js", "vendor/pdf.worker.min.js"],
+  ["https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
+   "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"]
+];
+let pdfjsReady = null;
+
+function loadPdfJs(){
+  if(pdfjsReady) return pdfjsReady;
+  pdfjsReady = new Promise((res, rej) => {
+    const attempt = i => {
+      if(i >= PDFJS.length) return rej(new Error("pdf.js unavailable"));
+      const sc = document.createElement("script");
+      sc.src = PDFJS[i][0];
+      const timer = setTimeout(() => { sc.onerror = sc.onload = null; sc.remove(); attempt(i+1); }, 3000);
+      sc.onload = () => {
+        clearTimeout(timer);
+        const lib = window["pdfjs-dist/build/pdf"] || window.pdfjsLib;
+        if(!lib) return attempt(i+1);
+        lib.GlobalWorkerOptions.workerSrc = PDFJS[i][1];
+        res(lib);
+      };
+      sc.onerror = () => { clearTimeout(timer); sc.remove(); attempt(i+1); };
+      document.head.appendChild(sc);
+    };
+    attempt(0);
+  });
+  return pdfjsReady;
+}
+
+async function renderPdf(url){
+  const box = document.getElementById("ovPages");
+  box.innerHTML = '<div class="ovmsg">Loading…</div>';
+  try{
+    const lib = await loadPdfJs();
+    const doc = await lib.getDocument(url).promise;
+    box.innerHTML = "";
+    const wide = Math.min(box.clientWidth, 1000);
+    for(let n = 1; n <= doc.numPages; n++){
+      const page = await doc.getPage(n);
+      const base = page.getViewport({scale: 1});
+      const scale = (wide / base.width) * (window.devicePixelRatio || 1);
+      const vp = page.getViewport({scale: scale});
+      const cv = document.createElement("canvas");
+      cv.width = vp.width; cv.height = vp.height;
+      cv.style.width = wide + "px";
+      box.appendChild(cv);
+      await page.render({canvasContext: cv.getContext("2d"), viewport: vp}).promise;
+    }
+  }catch(e){
+    // pdf.js unavailable (offline, blocked CDN, local preview) — hand off to
+    // the browser's own PDF viewer, and only then give up.
+    box.innerHTML = "";
+    const fr = document.createElement("iframe");
+    fr.className = "ovf"; fr.title = "Invoice PDF"; fr.src = url;
+    box.appendChild(fr);
+    setTimeout(() => {
+      if(!fr.contentWindow || fr.clientHeight < 40){
+        box.innerHTML = '<div class="ovmsg">Couldn\u2019t render the PDF inline.<br>'
+          + 'Use <b>Open PDF</b> above to view it in a new tab.</div>';
+      }
+    }, 1500);
+  }
+}
+document.getElementById("ovX").addEventListener("click", close_);
+document.getElementById("ov").addEventListener("click", e => { if(e.target.id === "ov") close_(); });
+document.addEventListener("keydown", e => { if(e.key === "Escape") close_(); });
+document.getElementById("ovNew").addEventListener("click", () => current && window.open(current.pdfUrl, "_blank"));
+document.getElementById("ovNotion").addEventListener("click", () => current && window.open(current.notionUrl, "_blank"));
+
+function load(){
+  // Try the published feed first, fall back to a sibling finance-data.js
+  // (lets the same file preview locally before it's pushed to Pages).
+  const tryLoad = (srcs, i) => {
+    if(i >= srcs.length){ document.getElementById("sub").textContent = "data feed offline"; return; }
+    const sc = document.createElement("script");
+    sc.src = srcs[i] + "?t=" + Date.now();
+    sc.onload = () => { sc.remove(); if(window.FINDATA) render(window.FINDATA); else tryLoad(srcs, i+1); };
+    sc.onerror = () => { sc.remove(); tryLoad(srcs, i+1); };
+    document.head.appendChild(sc);
+  };
+  tryLoad([JSSRC, "finance-data.js"], 0);
+}
+load(); setInterval(load, 300000);
+</script></body></html>
