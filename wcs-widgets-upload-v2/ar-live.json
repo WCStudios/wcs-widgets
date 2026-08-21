@@ -1,0 +1,87 @@
+{
+ "updated": "2026-08-21T03:35:32.173Z",
+ "source": "worker",
+ "ar": [
+  {
+   "name": "Pulltab Sports - December Retainer",
+   "client": "Pulltab Sports",
+   "amount": 7500,
+   "status": "Outstanding",
+   "invoiceDate": "2025-12-01",
+   "dueDate": "2025-12-15",
+   "daysOverdue": 249,
+   "bucket": "90+ days",
+   "notionUrl": "https://app.notion.com/2c4421efc76681f4b7d4d3036174da4e",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "name": "Tripine Creative - December Retainer",
+   "client": "Tripine Creative",
+   "amount": 3750,
+   "status": "Outstanding",
+   "invoiceDate": "2025-12-01",
+   "dueDate": "2025-12-15",
+   "daysOverdue": 249,
+   "bucket": "90+ days",
+   "notionUrl": "https://app.notion.com/2c4421efc76681b5b955c1078bc8950e",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "name": "The Local Farmer - December Retainer",
+   "client": "The Local Farmer",
+   "amount": 1750,
+   "status": "Outstanding",
+   "invoiceDate": "2025-12-01",
+   "dueDate": "2025-12-15",
+   "daysOverdue": 249,
+   "bucket": "90+ days",
+   "notionUrl": "https://app.notion.com/2c4421efc7668179b251e700d3c1c17e",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "name": "Niccum Docks - December Retainer",
+   "client": "Niccum Docks",
+   "amount": 1500,
+   "status": "Outstanding",
+   "invoiceDate": "2025-12-01",
+   "dueDate": "2025-12-15",
+   "daysOverdue": 249,
+   "bucket": "90+ days",
+   "notionUrl": "https://app.notion.com/2c4421efc7668193b913f88b63fd9db5",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  }
+ ],
+ "arAging": [
+  {
+   "bucket": "90+ days",
+   "amount": 14500
+  }
+ ],
+ "arByClient": [
+  {
+   "client": "Pulltab Sports",
+   "amount": 7500
+  },
+  {
+   "client": "Tripine Creative",
+   "amount": 3750
+  },
+  {
+   "client": "The Local Farmer",
+   "amount": 1750
+  },
+  {
+   "client": "Niccum Docks",
+   "amount": 1500
+  }
+ ],
+ "summary": {
+  "arTotal": 14500,
+  "arOverdue": 14500,
+  "arCount": 4
+ }
+}
