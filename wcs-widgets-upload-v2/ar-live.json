@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-21T03:56:25.325Z",
+ "updated": "2026-08-21T04:52:30.646Z",
  "source": "worker",
  "ar": [
   {
@@ -38,6 +38,19 @@
    "daysOverdue": 0,
    "bucket": "Not yet due",
    "notionUrl": "https://app.notion.com/3c3421efc7668165904bee866dc826f5",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "name": "Tripine Creative - Invoice 0175",
+   "client": "Tripine Creative",
+   "amount": 3750,
+   "status": "Draft",
+   "invoiceDate": "2026-08-20",
+   "dueDate": "2026-09-04",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3c3421efc766812d9c2dee910370a8a6",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -97,7 +110,7 @@
  "arAging": [
   {
    "bucket": "Not yet due",
-   "amount": 15250
+   "amount": 19000
   },
   {
    "bucket": "90+ days",
@@ -111,7 +124,7 @@
   },
   {
    "client": "Tripine Creative",
-   "amount": 7500
+   "amount": 11250
   },
   {
    "client": "Minnesota Hockey",
@@ -127,8 +140,8 @@
   }
  ],
  "summary": {
-  "arTotal": 29750,
+  "arTotal": 33500,
   "arOverdue": 14500,
-  "arCount": 7
+  "arCount": 8
  }
 }
