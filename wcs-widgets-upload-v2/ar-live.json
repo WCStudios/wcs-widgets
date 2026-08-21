@@ -1,7 +1,75 @@
 {
- "updated": "2026-08-21T16:08:56.045Z",
+ "updated": "2026-08-21T16:09:28.989Z",
  "source": "worker",
  "ar": [
+  {
+   "notionPageId": "3c3421ef-c766-8165-b39e-c61d44a73bb1",
+   "name": "Tripine Creative - Invoice 0172",
+   "client": "Tripine Creative",
+   "project": null,
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 0
+    },
+    {
+     "description": "Production day — half day",
+     "detail": null,
+     "qty": 1,
+     "unit": "day",
+     "rate": 0
+    },
+    {
+     "description": "Editing and post production",
+     "detail": null,
+     "qty": 1,
+     "unit": "hr",
+     "rate": 0
+    },
+    {
+     "description": "Mileage",
+     "detail": null,
+     "qty": 1,
+     "unit": "mi",
+     "rate": 0
+    },
+    {
+     "description": "Licensed music",
+     "detail": null,
+     "qty": 1,
+     "unit": null,
+     "rate": 0
+    },
+    {
+     "description": "Additional revision round",
+     "detail": "Beyond the two included in scope.",
+     "qty": 1,
+     "unit": null,
+     "rate": 0
+    },
+    {
+     "description": "Monthly creative retainer — August 2026",
+     "detail": null,
+     "qty": 1,
+     "unit": "mo",
+     "rate": 3750
+    }
+   ],
+   "threaded": false,
+   "amount": 3750,
+   "status": "Draft",
+   "invoiceDate": "2026-08-20",
+   "dueDate": "2026-09-04",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3c3421efc7668165b39ec61d44a73bb1",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
   {
    "notionPageId": "3c3421ef-c766-81b6-9857-df270d644bc2",
    "name": "Tripine Creative - Invoice 0174",
@@ -24,18 +92,18 @@
  "arAging": [
   {
    "bucket": "Not yet due",
-   "amount": 3750
+   "amount": 7500
   }
  ],
  "arByClient": [
   {
    "client": "Tripine Creative",
-   "amount": 3750
+   "amount": 7500
   }
  ],
  "summary": {
-  "arTotal": 3750,
+  "arTotal": 7500,
   "arOverdue": 0,
-  "arCount": 1
+  "arCount": 2
  }
 }
