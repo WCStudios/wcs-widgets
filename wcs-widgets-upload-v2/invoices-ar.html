@@ -158,7 +158,12 @@ function render(D){
   (D.arByClient||[]).forEach((c,i) => byClient[c.client] = SERIES[i%SERIES.length]);
   document.getElementById("empty").style.display = ar.length ? "none" : "block";
   rows.innerHTML = ar.map((i, x) => {
-    const over = (i.daysOverdue||0) > 0;
+    /* Four states, no day counts: Draft until it's been sent, Due once it is,
+       Overdue past its terms date, Paid when settled. */
+    const st = String(i.status || "");
+    const over = st !== "Paid" && st !== "Draft" && (i.daysOverdue || 0) > 0;
+    const label = st === "Paid" ? "Paid" : st === "Draft" ? "Draft" : over ? "Overdue" : "Due";
+    const cls = st === "Paid" ? "ok" : over ? "bad" : "";
     const badge = i.pdfUrl ? '<span class="doc">\u25A4 PDF</span>'
                 : (i.notionUrl ? '<span class="doc none">\u2197 Notion</span>' : '');
     return '<tr data-i="' + x + '" title="' + (i.pdfUrl ? "Open the invoice PDF" : "Open the Notion record") + '">'
@@ -168,7 +173,7 @@ function render(D){
         + '<span class="duem"> \u00b7 due ' + fmtDate(i.dueDate) + '</span></div></td>'
       + '<td class="r amt">' + usd(i.amount) + '</td>'
       + '<td class="r mono">' + fmtDate(i.dueDate) + '</td>'
-      + '<td class="r"><span class="chip ' + (over?"bad":"ok") + '">' + (over ? i.daysOverdue + "d overdue" : i.status) + '</span></td>'
+      + '<td class="r"><span class="chip ' + cls + '">' + label + '</span></td>'
       + '</tr>';
   }).join("");
 
