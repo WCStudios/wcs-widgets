@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-21T03:54:03.004Z",
+ "updated": "2026-08-21T03:56:25.325Z",
  "source": "worker",
  "ar": [
   {
@@ -38,6 +38,19 @@
    "daysOverdue": 0,
    "bucket": "Not yet due",
    "notionUrl": "https://app.notion.com/3c3421efc7668165904bee866dc826f5",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "name": "Tripine Creative - Invoice 0174",
+   "client": "Tripine Creative",
+   "amount": 3750,
+   "status": "Draft",
+   "invoiceDate": "2026-08-20",
+   "dueDate": "2026-09-04",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3c3421efc76681b69857df270d644bc2",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -83,12 +96,12 @@
  ],
  "arAging": [
   {
-   "bucket": "90+ days",
-   "amount": 14500
+   "bucket": "Not yet due",
+   "amount": 15250
   },
   {
-   "bucket": "Not yet due",
-   "amount": 11500
+   "bucket": "90+ days",
+   "amount": 14500
   }
  ],
  "arByClient": [
@@ -97,12 +110,12 @@
    "amount": 15000
   },
   {
-   "client": "Minnesota Hockey",
-   "amount": 4000
+   "client": "Tripine Creative",
+   "amount": 7500
   },
   {
-   "client": "Tripine Creative",
-   "amount": 3750
+   "client": "Minnesota Hockey",
+   "amount": 4000
   },
   {
    "client": "The Local Farmer",
@@ -114,8 +127,8 @@
   }
  ],
  "summary": {
-  "arTotal": 26000,
+  "arTotal": 29750,
   "arOverdue": 14500,
-  "arCount": 6
+  "arCount": 7
  }
 }
