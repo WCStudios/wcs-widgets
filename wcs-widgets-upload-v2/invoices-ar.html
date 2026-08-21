@@ -132,6 +132,7 @@ const fmtDate = s => s ? new Date(s+"T12:00:00").toLocaleDateString("en-US",{mon
 
 function render(D){
   if(!D.__live) baked = D;   // keep the slow-moving half to merge onto
+  shown = D;
   const s = D.summary;
 
   /* Newest invoice first. Numbers live inside the title ("… - Invoice 0172 - …"),
@@ -320,6 +321,91 @@ function load(){
   };
   tryLoad([JSSRC, "finance-data.js"], 0);
 }
+/* ── Instant updates ──────────────────────────────────────────
+   A change has to reach GitHub, wait for Pages to publish, and then be fetched
+   before the feed knows about it — tens of seconds at best. But the builder
+   already knows what it just did, and both widgets are served from the same
+   origin, so it can say so directly. The row appears immediately and the feed
+   reconciles behind it.
+
+   BroadcastChannel carries it; a localStorage write is the fallback for
+   contexts where the channel is unavailable. */
+const BUS = "wcs-invoices";
+const EVENT_KEY = "wcsInvoiceEvent.v1";
+
+function bucketFor(dueDate){
+  if(!dueDate) return "No due date";
+  const days = Math.round((Date.now() - Date.parse(dueDate + "T12:00:00Z")) / 86400000);
+  if(days <= 0) return "Not yet due";
+  if(days <= 30) return "1-30 days";
+  if(days <= 60) return "31-60 days";
+  if(days <= 90) return "61-90 days";
+  return "90+ days";
+}
+
+/* Recompute the derived numbers locally so the totals move with the table
+   rather than lagging a poll behind it. */
+function recompute(D){
+  const ar = D.ar || [];
+  const round = n => Math.round(n * 100) / 100;
+  const by = key => {
+    const m = new Map();
+    ar.forEach(x => m.set(key(x), (m.get(key(x)) || 0) + x.amount));
+    return [...m.entries()];
+  };
+  D.summary = {...D.summary,
+    arTotal: round(ar.reduce((t, x) => t + x.amount, 0)),
+    arOverdue: round(ar.filter(x => (x.daysOverdue || 0) > 0).reduce((t, x) => t + x.amount, 0)),
+    arCount: ar.length};
+  D.arAging = by(x => x.bucket).map(([bucket, amount]) => ({bucket, amount: round(amount)}))
+                               .sort((a, b) => b.amount - a.amount);
+  D.arByClient = by(x => x.client).map(([client, amount]) => ({client, amount: round(amount)}))
+                                  .sort((a, b) => b.amount - a.amount);
+  return D;
+}
+
+function onInvoiceEvent(ev){
+  if(!ev || !ev.invoice || !shown) return;
+  const D = JSON.parse(JSON.stringify(shown));
+  D.ar = D.ar || [];
+  const inv = ev.invoice;
+  const match = r => (inv.notionPageId && r.notionPageId === inv.notionPageId)
+                  || (r.name && inv.name && r.name === inv.name);
+
+  if(ev.kind === "deleted"){
+    D.ar = D.ar.filter(r => !match(r));
+  } else {
+    const row = {
+      notionPageId: inv.notionPageId || null, name: inv.name, client: inv.client,
+      project: inv.project || null, terms: inv.terms || null, items: inv.items || [],
+      amount: inv.amount || 0, status: inv.status || "Draft",
+      invoiceDate: inv.invoiceDate || null, dueDate: inv.dueDate || null,
+      daysOverdue: 0, bucket: bucketFor(inv.dueDate), threaded: !!inv.threaded,
+      notionUrl: inv.notionUrl || null, pdfUrl: null, pdfSource: "pending"
+    };
+    const at = D.ar.findIndex(match);
+    if(at >= 0) D.ar[at] = {...D.ar[at], ...row}; else D.ar.unshift(row);
+  }
+
+  render(recompute(D));
+  chaseFeed();   // let the real feed catch up and correct anything
+}
+
+/* After a change, poll harder for a short while instead of waiting out the
+   idle interval — Pages usually publishes within this window. */
+function chaseFeed(){
+  [2000, 5000, 11000, 20000, 35000].forEach(ms => setTimeout(applyLive, ms));
+}
+
+try {
+  const ch = new BroadcastChannel(BUS);
+  ch.onmessage = e => onInvoiceEvent(e.data);
+} catch(e){ /* fall back to the storage event below */ }
+window.addEventListener("storage", e => {
+  if(e.key !== EVENT_KEY || !e.newValue) return;
+  try { onInvoiceEvent(JSON.parse(e.newValue)); } catch(err){}
+});
+
 /* ── Editing and deleting ─────────────────────────────────────
    The builder lives on another Notion page, so the row is handed over through
    localStorage: both widgets are served from the same origin, so they share a
@@ -350,7 +436,9 @@ function editInBuilder(row){
 }
 
 async function removeInvoice(row, btn){
-  if(!row || !row.notionPageId){ flash("No Notion row to delete"); return; }
+  // Only rows from the live feed carry a Notion id. Baked snapshot rows don't,
+  // so say why rather than failing blankly.
+  if(!row || !row.notionPageId){ flash("Waiting on the live feed \u2014 try again in a moment"); return; }
   const c = conn();
   if(!c.url || !c.key){ flash("Connect the worker in the builder first"); return; }
 
@@ -366,13 +454,21 @@ async function removeInvoice(row, btn){
         payload: { notionPageId: row.notionPageId, number: null }
       })
     });
-    tr.remove();
+    announce("deleted", row);
     flash("Deleted \u00b7 recoverable from Notion's trash");
-    setTimeout(applyLive, 2500);   // let the worker republish, then reconcile
+    chaseFeed();
   } catch(e){
     tr.style.opacity = "";
     flash("Couldn't reach the worker");
   }
+}
+
+/* Tell every other widget on this origin what just happened. */
+function announce(kind, invoice){
+  const msg = {kind, invoice, at: Date.now()};
+  try { new BroadcastChannel(BUS).postMessage(msg); } catch(e){}
+  try { localStorage.setItem(EVENT_KEY, JSON.stringify(msg)); } catch(e){}
+  onInvoiceEvent(msg);          // this widget too
 }
 
 /* Small transient message in the subtitle line. */
@@ -399,7 +495,7 @@ const LIVE_SRCS = [
   "ar-live.json",
   "https://raw.githubusercontent.com/wcstudios/wcs-widgets/main/wcs-widgets-upload-v2/ar-live.json"
 ];
-let baked = null, liveAt = null;
+let baked = null, liveAt = null, shown = null;
 
 function applyLive(){
   if(!baked) return;

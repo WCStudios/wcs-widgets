@@ -890,6 +890,30 @@ function workerPayload(){
   };
 }
 
+/* Tell the Invoice Tracker what just happened, so it updates on the spot
+   rather than waiting for the change to reach GitHub, get published, and be
+   fetched back. Same origin, so BroadcastChannel reaches the other embed;
+   the localStorage write covers contexts where it isn't available. */
+function announce(kind){
+  const I = spec(), T = totals(I);
+  const num = $("iNum").value.trim();
+  const project = $("iProject").value.trim();
+  const msg = {
+    kind, at: Date.now(),
+    invoice: {
+      notionPageId: editingPageId || null,
+      name: (I.client.name || "") + " - Invoice " + num + (project ? " - " + project : ""),
+      client: I.client.name || "", project: project || null, terms: I.terms || null,
+      items: I.items, amount: T.due,
+      status: $("iStatus").value === "Draft" ? "Draft" : "Outstanding",
+      invoiceDate: I.date || null, dueDate: I.dueDate || null,
+      threaded: editingThreaded
+    }
+  };
+  try { new BroadcastChannel("wcs-invoices").postMessage(msg); } catch(e){}
+  try { localStorage.setItem("wcsInvoiceEvent.v1", JSON.stringify(msg)); } catch(e){}
+}
+
 async function fire(action, payload){
   const c = conn();
   if(!c.url || !c.key){ openConn(true); flag("Connect the worker first"); return false; }
@@ -980,8 +1004,11 @@ $("bCreate").addEventListener("click", async () => {
   const ok = await fire(editing ? "update" : "create",
                         editing ? {...workerPayload(), notionPageId: editing} : workerPayload());
   $("bCreate").disabled = false;
-  if(ok) flag(editing ? "Invoice " + I.number + " saved \u2713"
-                      : "Invoice " + I.number + " created \u2713 \u00b7 it's a draft", "saved");
+  if(ok){
+    announce(editing ? "updated" : "created");
+    flag(editing ? "Invoice " + I.number + " saved \u2713"
+                 : "Invoice " + I.number + " created \u2713 \u00b7 it's a draft", "saved");
+  }
 });
 
 $("bSend").addEventListener("click", async () => {
@@ -992,6 +1019,7 @@ $("bSend").addEventListener("click", async () => {
   $("bSend").disabled = false;
   if(ok){
     if($("iStatus").value === "Draft"){ $("iStatus").value = "Sent"; paint(); }
+    announce("sent");
     flag(editingThreaded
       ? "Update drafted in the existing thread \u2713"
       : "Draft queued \u2713 \u00b7 review it in Gmail", "saved");
