@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-21T15:21:26.630Z",
+ "updated": "2026-08-21T15:21:28.549Z",
  "source": "worker",
  "ar": [
   {
@@ -39,24 +39,6 @@
    "pdfSource": "live"
   },
   {
-   "notionPageId": "2c4421ef-c766-81f4-b7d4-d3036174da4e",
-   "name": "Pulltab Sports - December Retainer",
-   "client": "Pulltab Sports",
-   "project": null,
-   "terms": null,
-   "items": [],
-   "threaded": false,
-   "amount": 7500,
-   "status": "Outstanding",
-   "invoiceDate": "2025-12-01",
-   "dueDate": "2025-12-15",
-   "daysOverdue": 249,
-   "bucket": "90+ days",
-   "notionUrl": "https://app.notion.com/2c4421efc76681f4b7d4d3036174da4e",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
    "notionPageId": "3c3421ef-c766-81b6-9857-df270d644bc2",
    "name": "Tripine Creative - Invoice 0174",
    "client": "Tripine Creative",
@@ -71,42 +53,6 @@
    "daysOverdue": 0,
    "bucket": "Not yet due",
    "notionUrl": "https://app.notion.com/3c3421efc76681b69857df270d644bc2",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
-   "notionPageId": "2c4421ef-c766-81b5-b955-c1078bc8950e",
-   "name": "Tripine Creative - December Retainer",
-   "client": "Tripine Creative",
-   "project": null,
-   "terms": null,
-   "items": [],
-   "threaded": false,
-   "amount": 3750,
-   "status": "Outstanding",
-   "invoiceDate": "2025-12-01",
-   "dueDate": "2025-12-15",
-   "daysOverdue": 249,
-   "bucket": "90+ days",
-   "notionUrl": "https://app.notion.com/2c4421efc76681b5b955c1078bc8950e",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
-   "notionPageId": "2c4421ef-c766-8179-b251-e700d3c1c17e",
-   "name": "The Local Farmer - December Retainer",
-   "client": "The Local Farmer",
-   "project": null,
-   "terms": null,
-   "items": [],
-   "threaded": false,
-   "amount": 1750,
-   "status": "Outstanding",
-   "invoiceDate": "2025-12-01",
-   "dueDate": "2025-12-15",
-   "daysOverdue": 249,
-   "bucket": "90+ days",
-   "notionUrl": "https://app.notion.com/2c4421efc7668179b251e700d3c1c17e",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -136,21 +82,17 @@
   },
   {
    "bucket": "90+ days",
-   "amount": 14500
+   "amount": 1500
   }
  ],
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 22500
+   "amount": 15000
   },
   {
    "client": "Tripine Creative",
-   "amount": 7500
-  },
-  {
-   "client": "The Local Farmer",
-   "amount": 1750
+   "amount": 3750
   },
   {
    "client": "Niccum Docks",
@@ -158,8 +100,8 @@
   }
  ],
  "summary": {
-  "arTotal": 33250,
-  "arOverdue": 14500,
-  "arCount": 7
+  "arTotal": 20250,
+  "arOverdue": 1500,
+  "arCount": 4
  }
 }
