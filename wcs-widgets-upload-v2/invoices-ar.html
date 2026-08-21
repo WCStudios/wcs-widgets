@@ -58,17 +58,31 @@ tbody tr:hover .doc{opacity:1}
 .ovpages{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;gap:14px}
 .ovpages canvas{max-width:100%;border-radius:10px;box-shadow:0 4px 22px rgba(0,0,0,.5);background:#fff}
 .ovmsg{color:rgba(255,255,255,.75);font-size:12px;padding:26px;text-align:center;line-height:1.6}
+.duem{display:none}
+
+/* Narrow: the header stacks, and the Due column folds under the invoice name
+   rather than squeezing every column until the dates wrap. */
+@media (max-width:640px){
+  .hd{flex-direction:column;align-items:flex-start;gap:13px}
+  .stats{width:100%;justify-content:space-between;gap:10px}
+  .big{font-size:34px}
+  table{font-size:12px}
+  th:nth-child(4),td:nth-child(4){display:none}
+  .duem{display:inline}
+  .chip{font-size:9px;padding:3px 7px}
+  td{padding:8px 7px 8px 0}
+}
 </style></head><body>
 
 <div class="hd">
   <div>
-    <div class="k">Outstanding invoices</div>
+    <div class="k">Invoice tracker</div>
     <div class="big" id="total">—</div>
     <div class="sub" id="sub">loading…</div>
   </div>
   <div class="stats">
     <div><div class="n" id="nOpen">—</div><div class="nl">Open</div></div>
-    <div><div class="n" id="nOver" style="color:var(--down)">—</div><div class="nl">Overdue</div></div>
+    <div><div class="n" id="nOver">—</div><div class="nl">Total out</div></div>
     <div><div class="n" id="nAvg">—</div><div class="nl">Avg days out</div></div>
   </div>
 </div>
@@ -111,11 +125,12 @@ const SERIES = ["--s1","--s2","--s3","--s4","--s5"];
 const fmtDate = s => s ? new Date(s+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"2-digit"}) : "—";
 
 function render(D){
+  if(!D.__live) baked = D;   // keep the slow-moving half to merge onto
   const s = D.summary, ar = D.ar || [];
   total.textContent = usd(s.arTotal);
   sub.textContent = "Money owed to WCStudios · updated " + fmtDate(D.updated);
   nOpen.textContent = s.arCount;
-  nOver.textContent = usd(s.arOverdue);
+  nOver.textContent = usd(s.arTotal);
   const days = ar.map(i => i.daysOverdue).filter(d => d != null);
   nAvg.textContent = days.length ? Math.round(days.reduce((a,b)=>a+b,0)/days.length) : "—";
 
@@ -137,7 +152,9 @@ function render(D){
                 : (i.notionUrl ? '<span class="doc none">\u2197 Notion</span>' : '');
     return '<tr data-i="' + x + '" title="' + (i.pdfUrl ? "Open the invoice PDF" : "Open the Notion record") + '">'
       + '<td><div class="cl"><span class="dot" style="background:var(' + (byClient[i.client]||"--s1") + ')"></span>' + i.client + '</div></td>'
-      + '<td>' + i.name.replace(i.client + " - ","") + badge + '<div class="nm">Issued ' + fmtDate(i.invoiceDate) + '</div></td>'
+      + '<td>' + i.name.replace(i.client + " - ","") + badge
+        + '<div class="nm">Issued ' + fmtDate(i.invoiceDate)
+        + '<span class="duem"> \u00b7 due ' + fmtDate(i.dueDate) + '</span></div></td>'
       + '<td class="r amt">' + usd(i.amount) + '</td>'
       + '<td class="r mono">' + fmtDate(i.dueDate) + '</td>'
       + '<td class="r"><span class="chip ' + (over?"bad":"ok") + '">' + (over ? i.daysOverdue + "d overdue" : i.status) + '</span></td>'
@@ -260,8 +277,44 @@ function load(){
   };
   tryLoad([JSSRC, "finance-data.js"], 0);
 }
+/* ── Live overlay ─────────────────────────────────────────────
+   finance-data.js is a snapshot; receivables move constantly. The worker
+   republishes just the AR slice to the widget repo after every change, and
+   raw.githubusercontent.com serves it with CORS and no build step — unlike
+   Pages, which would take a minute. If it's missing or unreachable the baked
+   data simply stands, so this can only ever add freshness. */
+const LIVE = "https://raw.githubusercontent.com/wcstudios/wcs-widgets/main/"
+           + "wcs-widgets-upload-v2/ar-live.json";
+let baked = null;
+
+function applyLive(){
+  if(!baked) return;
+  fetch(LIVE + "?t=" + Date.now(), {cache: "no-store"})
+    .then(r => r.ok ? r.json() : null)
+    .then(live => {
+      if(!live || !Array.isArray(live.ar)) return;
+      render({
+        ...baked,
+        __live: true,
+        ar: live.ar,
+        arAging: live.arAging || baked.arAging,
+        arByClient: live.arByClient || baked.arByClient,
+        updated: live.updated,
+        summary: {...baked.summary, ...live.summary}
+      });
+      document.getElementById("sub").textContent =
+        "Money owed to WCStudios \u00b7 live \u00b7 " + fmtDate(live.updated);
+    })
+    .catch(() => {});   // stay on the baked snapshot
+}
+
 // Baked-in data first, so there is never an empty widget.
 let rendered = false;
 if(window.FINDATA){ render(window.FINDATA); rendered = true; }
-load(); setInterval(load, 300000);
+load();
+setInterval(load, 300000);
+setTimeout(applyLive, 400);
+setInterval(applyLive, 45000);
+// Coming back to the tab should feel current, not 45 seconds stale.
+document.addEventListener("visibilitychange", () => { if(!document.hidden) applyLive(); });
 </script></body></html>
