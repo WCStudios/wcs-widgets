@@ -8,12 +8,14 @@
  --s1:#e8622c;--s2:#3987e5;--s3:#199e70;--s4:#9085e9;--s5:#c98500}}
 *{margin:0;box-sizing:border-box}html,body{width:100%;background:var(--bg)}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);padding:clamp(14px,1.7vw,22px)}
-.hd{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.hd{display:flex;flex-direction:column;align-items:flex-start;gap:0}
 .k{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
-.big{font-size:clamp(28px,3.4vw,44px);font-weight:800;letter-spacing:-1.6px;line-height:1;margin-top:8px}
+.ttl{font-size:clamp(26px,3.2vw,40px);font-weight:800;letter-spacing:-1.4px;line-height:1.02}
 .sub{font-size:11.5px;color:var(--muted);margin-top:7px}
-.stats{display:flex;gap:26px}
-.n{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.stats{display:flex;gap:34px;margin-top:16px;flex-wrap:wrap}
+.n{font-size:clamp(19px,2vw,25px);font-weight:800;font-variant-numeric:tabular-nums;
+ letter-spacing:-.6px;line-height:1}
+.stats .lead .n{color:var(--accent)}
 .nl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
 .sec{margin-top:22px}
 .stack{display:flex;gap:2px;height:26px;margin-top:10px;border-radius:5px;overflow:hidden}
@@ -75,14 +77,11 @@ tbody tr:hover .doc{opacity:1}
 </style></head><body>
 
 <div class="hd">
-  <div>
-    <div class="k">Invoice tracker</div>
-    <div class="big" id="total">—</div>
-    <div class="sub" id="sub">loading…</div>
-  </div>
+  <div class="ttl">Invoice Tracker</div>
+  <div class="sub" id="sub">loading…</div>
   <div class="stats">
+    <div class="lead"><div class="n" id="total">—</div><div class="nl">Total out</div></div>
     <div><div class="n" id="nOpen">—</div><div class="nl">Open</div></div>
-    <div><div class="n" id="nOver">—</div><div class="nl">Total out</div></div>
     <div><div class="n" id="nAvg">—</div><div class="nl">Avg days out</div></div>
   </div>
 </div>
@@ -126,11 +125,23 @@ const fmtDate = s => s ? new Date(s+"T12:00:00").toLocaleDateString("en-US",{mon
 
 function render(D){
   if(!D.__live) baked = D;   // keep the slow-moving half to merge onto
-  const s = D.summary, ar = D.ar || [];
+  const s = D.summary;
+
+  /* Newest invoice first. Numbers live inside the title ("… - Invoice 0172 - …"),
+     and the older December rows carry no number at all, so those fall to the
+     bottom ordered by date. Sorting here rather than in the worker means the
+     baked snapshot and the live feed always agree. */
+  const invNo = x => { const m = /invoice\s+#?(\d+)/i.exec(x.name || ""); return m ? +m[1] : null; };
+  const ar = (D.ar || []).slice().sort((a, b) => {
+    const na = invNo(a), nb = invNo(b);
+    if(na !== null && nb !== null) return nb - na;
+    if(na !== null) return -1;
+    if(nb !== null) return 1;
+    return String(b.invoiceDate || "").localeCompare(String(a.invoiceDate || ""));
+  });
   total.textContent = usd(s.arTotal);
   sub.textContent = "Money owed to WCStudios · updated " + fmtDate(D.updated);
   nOpen.textContent = s.arCount;
-  nOver.textContent = usd(s.arTotal);
   const days = ar.map(i => i.daysOverdue).filter(d => d != null);
   nAvg.textContent = days.length ? Math.round(days.reduce((a,b)=>a+b,0)/days.length) : "—";
 
@@ -283,16 +294,28 @@ function load(){
    raw.githubusercontent.com serves it with CORS and no build step — unlike
    Pages, which would take a minute. If it's missing or unreachable the baked
    data simply stands, so this can only ever add freshness. */
-const LIVE = "https://raw.githubusercontent.com/wcstudios/wcs-widgets/main/"
-           + "wcs-widgets-upload-v2/ar-live.json";
-let baked = null;
+/* Two sources for the same file, because neither is reliably fresh on its own.
+   Pages sits beside this widget (same origin, no CORS) and purges on each
+   commit; raw.githubusercontent has a 5-minute edge cache that ignores
+   cache-busting query strings — measured 3 minutes behind Pages. Ask both and
+   keep whichever reports the newer timestamp. */
+const LIVE_SRCS = [
+  "ar-live.json",
+  "https://raw.githubusercontent.com/wcstudios/wcs-widgets/main/wcs-widgets-upload-v2/ar-live.json"
+];
+let baked = null, liveAt = null;
 
 function applyLive(){
   if(!baked) return;
-  fetch(LIVE + "?t=" + Date.now(), {cache: "no-store"})
-    .then(r => r.ok ? r.json() : null)
-    .then(live => {
-      if(!live || !Array.isArray(live.ar)) return;
+  const bust = "?t=" + Date.now();
+  Promise.all(LIVE_SRCS.map(u =>
+    fetch(u + bust, {cache: "no-store"}).then(r => r.ok ? r.json() : null).catch(() => null)
+  )).then(feeds => {
+      const live = feeds.filter(f => f && Array.isArray(f.ar))
+                        .sort((a, b) => (b.updated || "").localeCompare(a.updated || ""))[0];
+      if(!live) return;
+      if(live.updated === liveAt) return;   // nothing new since last poll
+      liveAt = live.updated;
       render({
         ...baked,
         __live: true,
@@ -302,8 +325,9 @@ function applyLive(){
         updated: live.updated,
         summary: {...baked.summary, ...live.summary}
       });
+      // live.updated is a full ISO timestamp; fmtDate wants a plain date.
       document.getElementById("sub").textContent =
-        "Money owed to WCStudios \u00b7 live \u00b7 " + fmtDate(live.updated);
+        "Money owed to WCStudios \u00b7 live \u00b7 " + fmtDate(String(live.updated).slice(0, 10));
     })
     .catch(() => {});   // stay on the baked snapshot
 }
