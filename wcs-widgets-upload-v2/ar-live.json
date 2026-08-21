@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-21T16:11:08.677Z",
+ "updated": "2026-08-21T16:11:25.082Z",
  "source": "worker",
  "ar": [
   {
@@ -33,8 +33,16 @@
    "name": "Tripine Creative - Invoice 0174",
    "client": "Tripine Creative",
    "project": null,
-   "terms": null,
-   "items": [],
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Tripine Creative - Invoice 0174",
+     "detail": null,
+     "qty": 1,
+     "unit": null,
+     "rate": 3750
+    }
+   ],
    "threaded": false,
    "amount": 3750,
    "status": "Draft",
