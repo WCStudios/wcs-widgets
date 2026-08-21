@@ -873,6 +873,10 @@ function workerPayload(){
   const I = spec();
   return {
     client: I.client.name,
+    // Sent alongside the name so the worker can address the email from what is
+    // typed here, instead of insisting the client already exists in Notion.
+    email: I.client.email || null,
+    contact: I.client.company || null,
     number: I.number,
     project: $("iProject").value.trim() || null,
     date: I.date || null,
