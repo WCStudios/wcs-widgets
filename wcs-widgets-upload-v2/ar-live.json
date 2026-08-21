@@ -1,7 +1,33 @@
 {
- "updated": "2026-08-21T16:09:28.989Z",
+ "updated": "2026-08-21T16:09:57.714Z",
  "source": "worker",
  "ar": [
+  {
+   "notionPageId": "3c3421ef-c766-81a2-ad8d-c544b9a64f96",
+   "name": "Pulltab Sports - Invoice 0173",
+   "client": "Pulltab Sports",
+   "project": null,
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Monthly creative retainer — August 2026",
+     "detail": null,
+     "qty": 1,
+     "unit": "mo",
+     "rate": 7500
+    }
+   ],
+   "threaded": false,
+   "amount": 7500,
+   "status": "Draft",
+   "invoiceDate": "2026-08-21",
+   "dueDate": "2026-09-05",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3c3421efc76681a2ad8dc544b9a64f96",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
   {
    "notionPageId": "3c3421ef-c766-8165-b39e-c61d44a73bb1",
    "name": "Tripine Creative - Invoice 0172",
@@ -92,18 +118,22 @@
  "arAging": [
   {
    "bucket": "Not yet due",
-   "amount": 7500
+   "amount": 15000
   }
  ],
  "arByClient": [
+  {
+   "client": "Pulltab Sports",
+   "amount": 7500
+  },
   {
    "client": "Tripine Creative",
    "amount": 7500
   }
  ],
  "summary": {
-  "arTotal": 7500,
+  "arTotal": 15000,
   "arOverdue": 0,
-  "arCount": 2
+  "arCount": 3
  }
 }
