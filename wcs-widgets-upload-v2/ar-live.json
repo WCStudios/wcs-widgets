@@ -1,7 +1,20 @@
 {
- "updated": "2026-08-21T04:52:30.646Z",
+ "updated": "2026-08-21T04:54:50.528Z",
  "source": "worker",
  "ar": [
+  {
+   "name": "Pulltab Sports - Invoice 0172 - Hockey",
+   "client": "Pulltab Sports",
+   "amount": 7500,
+   "status": "Draft",
+   "invoiceDate": "2026-08-20",
+   "dueDate": "2026-09-04",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3c3421efc766812e8aa8c1bf9961a966",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
   {
    "name": "Pulltab Sports - Invoice 0172",
    "client": "Pulltab Sports",
@@ -110,7 +123,7 @@
  "arAging": [
   {
    "bucket": "Not yet due",
-   "amount": 19000
+   "amount": 26500
   },
   {
    "bucket": "90+ days",
@@ -120,7 +133,7 @@
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 15000
+   "amount": 22500
   },
   {
    "client": "Tripine Creative",
@@ -140,8 +153,8 @@
   }
  ],
  "summary": {
-  "arTotal": 33500,
+  "arTotal": 41000,
   "arOverdue": 14500,
-  "arCount": 8
+  "arCount": 9
  }
 }
