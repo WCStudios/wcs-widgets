@@ -1,33 +1,7 @@
 {
- "updated": "2026-08-21T15:21:24.926Z",
+ "updated": "2026-08-21T15:21:26.630Z",
  "source": "worker",
  "ar": [
-  {
-   "notionPageId": "3c3421ef-c766-8106-b458-dec6eae503f6",
-   "name": "Tripine Creative - Invoice 0172",
-   "client": "Tripine Creative",
-   "project": null,
-   "terms": "Net 15",
-   "items": [
-    {
-     "description": "Pulltab Sports - Invoice 0172",
-     "detail": null,
-     "qty": 1,
-     "unit": null,
-     "rate": 7500
-    }
-   ],
-   "threaded": false,
-   "amount": 7500,
-   "status": "Draft",
-   "invoiceDate": "2026-08-20",
-   "dueDate": "2026-09-04",
-   "daysOverdue": 0,
-   "bucket": "Not yet due",
-   "notionUrl": "https://app.notion.com/3c3421efc7668106b458dec6eae503f6",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
   {
    "notionPageId": "3c3421ef-c766-812e-8aa8-c1bf9961a966",
    "name": "Pulltab Sports - Invoice 0172 - Hockey",
@@ -158,7 +132,7 @@
  "arAging": [
   {
    "bucket": "Not yet due",
-   "amount": 26250
+   "amount": 18750
   },
   {
    "bucket": "90+ days",
@@ -172,7 +146,7 @@
   },
   {
    "client": "Tripine Creative",
-   "amount": 15000
+   "amount": 7500
   },
   {
    "client": "The Local Farmer",
@@ -184,8 +158,8 @@
   }
  ],
  "summary": {
-  "arTotal": 40750,
+  "arTotal": 33250,
   "arOverdue": 14500,
-  "arCount": 8
+  "arCount": 7
  }
 }
