@@ -1,0 +1,170 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Balances</title>
+<style>
+:root{--bg:#fff;--panel:#fafaf9;--line:#e9e9e7;
+ --text:#191918;--muted:#5f5f5c;--faint:#8f8f8b;--accent:#d4551f;--soft:#f2f2f0;
+ --over:#c2410c;--overbg:rgba(194,65,12,.10);
+ --good:#15803d;--track:rgba(212,85,31,.16)}
+@media (prefers-color-scheme:dark){:root{--bg:#191919;--panel:#1f1f1f;--line:#2e2e2e;
+ --text:#f2f2f0;--muted:#a3a39e;--faint:#7c7c78;--accent:#f97b47;--soft:#262626;
+ --over:#ff8a6b;--overbg:rgba(255,138,107,.13);
+ --good:#5ddd91;--track:rgba(249,123,71,.20)}}
+*{margin:0;box-sizing:border-box}
+html,body{height:100%;width:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);
+ -webkit-font-smoothing:antialiased;position:relative}
+
+.strip{display:flex;height:100%;width:100%;overflow-x:auto}
+.panel{flex:1 1 0;min-width:172px;padding:clamp(14px,1.5vw,20px);border-right:1px solid var(--line);
+ display:flex;flex-direction:column;justify-content:center;position:relative}
+.panel:last-child{border-right:none}
+
+.inst{font-size:9.5px;letter-spacing:.9px;text-transform:uppercase;color:var(--faint);font-weight:700;
+ display:flex;align-items:center;gap:6px}
+.last4{color:var(--faint);opacity:.6;font-weight:700;letter-spacing:.5px}
+.kind{font-size:10.5px;color:var(--muted);margin-top:3px}
+
+/* Proportional figures on purpose — tabular-nums gives every digit a zero's
+   width, which reads loose at display size. Tabular is for columns. */
+.bal{font-size:clamp(23px,2.7vw,33px);font-weight:800;letter-spacing:-1.3px;line-height:1;margin-top:11px}
+.bal.owed{color:var(--accent)}
+.sub{font-size:10.5px;color:var(--faint);margin-top:6px;font-variant-numeric:tabular-nums}
+.sub b{color:var(--muted);font-weight:700}
+
+/* Meter: one ratio against a limit. The unfilled track is a lighter step of
+   the fill's own ramp, so the whole bar reads as one scale. */
+.meter{margin-top:11px}
+.meter.spacer{visibility:hidden}
+.track{height:5px;border-radius:3px;background:var(--track);overflow:hidden}
+.fill{height:100%;border-radius:3px;background:var(--accent);transition:width .4s ease}
+.fill.hot{background:var(--over)}
+.mlab{display:flex;justify-content:space-between;gap:8px;margin-top:6px;
+ font-size:9.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+.mlab b{color:var(--muted);font-weight:700}
+.mlab .hot{color:var(--over);font-weight:800}
+
+.flag{position:absolute;top:8px;right:9px;z-index:2;
+ font-size:8px;letter-spacing:.9px;text-transform:uppercase;font-weight:800;
+ color:var(--faint);border:1px dashed var(--line);border-radius:4px;padding:2px 6px;
+ background:var(--bg)}
+
+/* Mobile: the four-across strip becomes a 2x2 stack, same as the finance strip. */
+@media (max-width:640px){
+  .strip{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+   height:100%;width:100%;overflow:hidden}
+  .panel{min-width:0;padding:12px 13px;
+   border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .panel:nth-child(2n){border-right:none}
+  .panel:nth-child(n+3){border-bottom:none}
+  .inst{font-size:8.5px;letter-spacing:.6px}
+  .kind{font-size:9.5px;margin-top:2px}
+  .bal{font-size:21px;letter-spacing:-1px;margin-top:7px}
+  .sub{font-size:9.5px;margin-top:4px}
+  .meter{margin-top:8px}
+  .mlab{font-size:8.5px;margin-top:5px}
+  .flag{top:6px;right:7px;font-size:7.5px;padding:2px 5px}
+}
+</style></head><body>
+
+<div class="flag" title="Placeholder figures — not connected to any bank">Sample data</div>
+<div class="strip" id="strip"></div>
+
+<script>
+/* ── The only thing you need to edit ──────────────────────────
+   Four slots, in display order. Cash accounts take `balance` (and optionally
+   `pending`). Credit accounts take `owed` and `limit` — the meter and the
+   available figure are derived, so they can never disagree with each other.
+
+   These are placeholder numbers. Nothing here talks to a bank. */
+const ACCOUNTS = [
+  { inst:"Wells Fargo", kind:"Business checking", last4:"4067",
+    type:"cash",   balance:18432.06, pending:1240.00 },
+
+  { inst:"Chase", kind:"Ink Business card", last4:"8641",
+    type:"credit", owed:4218.55, limit:15000 },
+
+  { inst:"B&H Photo", kind:"Payboo store card", last4:"2290",
+    type:"credit", owed:1864.20, limit:6500 },
+
+  { inst:"PayPal", kind:"Business balance", last4:null,
+    type:"cash",   balance:2105.88, pending:340.00 }
+];
+
+/* Above this share of the limit the meter turns red. It always ships with the
+   percentage written beside it, so the state never rests on colour alone. */
+const HOT = 0.85;
+
+const usd = n => "$" + Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const usd0 = n => "$" + Number(n||0).toLocaleString("en-US",{maximumFractionDigits:0});
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function paint(list, live){
+  document.querySelector(".flag").style.display = live ? "none" : "";
+  document.getElementById("strip").innerHTML = list.map(a => {
+  const head = '<div class="inst">' + esc(a.inst)
+             + (a.last4 ? '<span class="last4">••' + esc(a.last4) + '</span>' : '')
+             + '</div><div class="kind">' + esc(a.kind) + '</div>';
+
+  if(a.type === "credit"){
+    const limit = a.limit || 0;
+    const owed  = a.owed || 0;
+    const used  = limit ? Math.min(owed / limit, 1) : 0;
+    const avail = Math.max(limit - owed, 0);
+    const hot   = used >= HOT;
+    const pct   = Math.round(used * 100);
+    return '<div class="panel">' + head
+      + '<div class="bal owed">' + usd(owed) + '</div>'
+      + '<div class="sub"><b>' + usd0(avail) + '</b> available</div>'
+      + '<div class="meter"><div class="track">'
+      +   '<div class="fill' + (hot ? ' hot' : '') + '" style="width:' + (used*100) + '%"></div></div>'
+      +   '<div class="mlab"><span class="' + (hot ? 'hot' : '') + '">' + pct + '% used</span>'
+      +     '<span>of <b>' + usd0(limit) + '</b></span></div>'
+      + '</div></div>';
+  }
+
+  return '<div class="panel">' + head
+    + '<div class="bal">' + usd(a.balance) + '</div>'
+    + '<div class="sub">' + (a.pending
+        ? '<b>' + usd0(a.pending) + '</b> pending'
+        : 'Available now') + '</div>'
+    + '<div class="meter spacer"><div class="track"></div><div class="mlab"><span>&nbsp;</span></div></div>'
+    + '</div>';
+  }).join("");
+}
+
+paint(ACCOUNTS, false);
+
+/* ── Live overlay (inert until you connect something) ─────────
+   Drop a balances-live.json beside this file, shaped exactly like ACCOUNTS
+   above — {"updated":"...","accounts":[ ... ]} — and the widget switches to it
+   and hides the "Sample data" flag. Until that file exists this fetch fails
+   quietly and the placeholders simply stand, so wiring it up later is a
+   one-file change with nothing to edit in here.
+
+   Same pattern the invoice tracker uses: Pages sits on this origin (no CORS,
+   purges on commit), raw.githubusercontent has a 5-minute edge cache. Ask both
+   and keep whichever reports the newer timestamp. */
+const LIVE_SRCS = [
+  "balances-live.json",
+  "https://raw.githubusercontent.com/wcstudios/wcs-widgets/main/wcs-widgets-upload-v2/balances-live.json"
+];
+let liveAt = null;
+
+function applyLive(){
+  const bust = "?t=" + Date.now();
+  Promise.all(LIVE_SRCS.map(u =>
+    fetch(u + bust, {cache:"no-store"}).then(r => r.ok ? r.json() : null).catch(() => null)
+  )).then(feeds => {
+    const live = feeds.filter(f => f && Array.isArray(f.accounts))
+                      .sort((a,b) => String(b.updated||"").localeCompare(String(a.updated||"")))[0];
+    if(!live || live.updated === liveAt) return;
+    liveAt = live.updated;
+    paint(live.accounts, true);
+  }).catch(() => {});   // stay on the placeholders
+}
+
+applyLive();
+setInterval(applyLive, 120000);
+document.addEventListener("visibilitychange", () => { if(!document.hidden) applyLive(); });
+</script>
+</body></html>
