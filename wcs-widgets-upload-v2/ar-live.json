@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-21T15:21:29.645Z",
+ "updated": "2026-08-21T15:21:38.557Z",
  "source": "worker",
  "ar": [
   {
@@ -17,24 +17,6 @@
    "daysOverdue": 0,
    "bucket": "Not yet due",
    "notionUrl": "https://app.notion.com/3c3421efc766812e8aa8c1bf9961a966",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
-   "notionPageId": "3c3421ef-c766-81f5-9fb7-cbe99b5747dc",
-   "name": "Pulltab Sports - Invoice 0172",
-   "client": "Pulltab Sports",
-   "project": null,
-   "terms": null,
-   "items": [],
-   "threaded": false,
-   "amount": 7500,
-   "status": "Outstanding",
-   "invoiceDate": "2026-08-20",
-   "dueDate": "2026-09-04",
-   "daysOverdue": 0,
-   "bucket": "Not yet due",
-   "notionUrl": "https://app.notion.com/3c3421efc76681f59fb7cbe99b5747dc",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -60,13 +42,13 @@
  "arAging": [
   {
    "bucket": "Not yet due",
-   "amount": 18750
+   "amount": 11250
   }
  ],
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 15000
+   "amount": 7500
   },
   {
    "client": "Tripine Creative",
@@ -74,8 +56,8 @@
   }
  ],
  "summary": {
-  "arTotal": 18750,
+  "arTotal": 11250,
   "arOverdue": 0,
-  "arCount": 3
+  "arCount": 2
  }
 }
