@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-21T15:21:28.549Z",
+ "updated": "2026-08-21T15:21:29.645Z",
  "source": "worker",
  "ar": [
   {
@@ -55,34 +55,12 @@
    "notionUrl": "https://app.notion.com/3c3421efc76681b69857df270d644bc2",
    "pdfUrl": null,
    "pdfSource": "live"
-  },
-  {
-   "notionPageId": "2c4421ef-c766-8193-b913-f88b63fd9db5",
-   "name": "Niccum Docks - December Retainer",
-   "client": "Niccum Docks",
-   "project": null,
-   "terms": null,
-   "items": [],
-   "threaded": false,
-   "amount": 1500,
-   "status": "Outstanding",
-   "invoiceDate": "2025-12-01",
-   "dueDate": "2025-12-15",
-   "daysOverdue": 249,
-   "bucket": "90+ days",
-   "notionUrl": "https://app.notion.com/2c4421efc7668193b913f88b63fd9db5",
-   "pdfUrl": null,
-   "pdfSource": "live"
   }
  ],
  "arAging": [
   {
    "bucket": "Not yet due",
    "amount": 18750
-  },
-  {
-   "bucket": "90+ days",
-   "amount": 1500
   }
  ],
  "arByClient": [
@@ -93,15 +71,11 @@
   {
    "client": "Tripine Creative",
    "amount": 3750
-  },
-  {
-   "client": "Niccum Docks",
-   "amount": 1500
   }
  ],
  "summary": {
-  "arTotal": 20250,
-  "arOverdue": 1500,
-  "arCount": 4
+  "arTotal": 18750,
+  "arOverdue": 0,
+  "arCount": 3
  }
 }
