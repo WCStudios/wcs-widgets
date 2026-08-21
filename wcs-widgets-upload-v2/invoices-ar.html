@@ -1,58 +1,68 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>Outstanding Invoices</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Invoice Tracker</title>
 <style>
-:root{--bg:#fff;--line:#ececec;--text:#111;--muted:#8a8a8a;--accent:#e8622c;--soft:#f2f2f2;
- --up:#0ca30c;--down:#d03b3b;--warn:#fab219;--ring:rgba(11,11,11,.10);
- --s1:#eb6834;--s2:#2a78d6;--s3:#1baf7a;--s4:#4a3aa7;--s5:#eda100}
-@media (prefers-color-scheme:dark){:root{--bg:#171717;--line:#2a2a2a;--text:#f4f4f4;--soft:#262626;--ring:rgba(255,255,255,.10);
- --s1:#e8622c;--s2:#3987e5;--s3:#199e70;--s4:#9085e9;--s5:#c98500}}
+:root{--bg:#fff;--panel:#fafaf9;--line:#e9e9e7;--hair:#f2f2f0;
+ --text:#191918;--muted:#5f5f5c;--faint:#8f8f8b;--accent:#d4551f;--soft:#f2f2f0;
+ --over:#c2410c;--overbg:rgba(194,65,12,.10);
+ --paid:#15803d;--paidbg:rgba(21,128,61,.10);
+ --draft:#7a7a76;--down:#c2410c}
+@media (prefers-color-scheme:dark){:root{--bg:#191919;--panel:#1f1f1f;--line:#2e2e2e;--hair:#262626;
+ --text:#f2f2f0;--muted:#a3a39e;--faint:#7c7c78;--accent:#f97b47;--soft:#262626;
+ --over:#ff8a6b;--overbg:rgba(255,138,107,.13);
+ --paid:#5ddd91;--paidbg:rgba(93,221,145,.13);
+ --draft:#8b8b86;--down:#ff8a6b}}
 *{margin:0;box-sizing:border-box}html,body{width:100%;background:var(--bg)}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);padding:clamp(14px,1.7vw,22px)}
-.hd{display:flex;flex-direction:column;align-items:flex-start;gap:0}
-.k{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
-.ttl{font-size:clamp(26px,3.2vw,40px);font-weight:800;letter-spacing:-1.4px;line-height:1.02}
-.sub{font-size:11.5px;color:var(--muted);margin-top:7px}
-.stats{display:flex;gap:34px;margin-top:16px;flex-wrap:wrap}
-.n{font-size:clamp(19px,2vw,25px);font-weight:800;font-variant-numeric:tabular-nums;
- letter-spacing:-.6px;line-height:1}
-.stats .lead .n{color:var(--accent)}
-.nl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
-.sec{margin-top:22px}
-.stack{display:flex;gap:2px;height:26px;margin-top:10px;border-radius:5px;overflow:hidden}
-.seg{border-radius:4px;position:relative;cursor:default}
-.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:11px}
-.li{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--muted)}
-.dot{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
-.li b{color:var(--text);font-variant-numeric:tabular-nums;font-weight:700}
-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:12.5px}
-th{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);text-align:left;
- font-weight:600;padding:0 10px 7px 0;border-bottom:1px solid var(--line)}
-th.r,td.r{text-align:right;padding-right:0}
-td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tbody tr:hover{background:var(--soft)}
-.cl{display:flex;align-items:center;gap:8px;font-weight:600}
-.amt{font-variant-numeric:tabular-nums;font-weight:800}
-.mono{font-variant-numeric:tabular-nums;color:var(--muted)}
-.chip{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:700;letter-spacing:.3px;
- text-transform:uppercase;padding:3px 8px;border-radius:11px;background:var(--soft);color:var(--muted);white-space:nowrap}
-.chip.bad{color:var(--down);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--down) 35%,transparent)}
-.chip.ok{color:var(--up)}
-.nm{font-size:10.5px;color:var(--muted);margin-top:2px}
-.empty{font-size:12px;color:var(--muted);padding:18px 0}
-/* Delete stays hidden until the row is hovered — present when wanted, silent
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);
+ padding:clamp(15px,1.7vw,22px);-webkit-font-smoothing:antialiased}
+
+/* header */
+.hd-top{display:flex;justify-content:space-between;align-items:flex-end;gap:18px}
+.ttl{font-size:clamp(18px,2.1vw,23px);font-weight:800;letter-spacing:-.55px;line-height:1.1}
+.sub{font-size:11px;color:var(--faint);margin-top:4px}
+.lbl{font-size:9px;letter-spacing:.9px;text-transform:uppercase;color:var(--faint);font-weight:700}
+.fig{text-align:right;flex:0 0 auto}
+.fig .lbl{margin-bottom:5px}
+.hero{font-size:clamp(27px,3.4vw,37px);font-weight:800;letter-spacing:-1.7px;line-height:1;color:var(--accent)}
+.meta{display:flex;gap:24px;margin-top:15px;padding-top:13px;border-top:1px solid var(--line)}
+.meta .v{font-size:14px;font-weight:800;margin-top:3px;display:block;font-variant-numeric:tabular-nums}
+.meta .v.warn{color:var(--over)}
+
+/* invoice cards */
+.rows{margin-top:17px;display:flex;flex-direction:column;gap:6px}
+.row{display:flex;align-items:center;gap:12px;padding:11px 11px 11px 12px;border-radius:8px;
+ background:var(--panel);border:1px solid var(--line);position:relative;overflow:hidden;cursor:pointer}
+.row:hover{border-color:var(--faint)}
+.row::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--line)}
+.row.is-over::before{background:var(--over)}
+.row.is-paid::before{background:var(--paid)}
+.row.is-draft::before{background:repeating-linear-gradient(180deg,var(--line) 0 4px,transparent 4px 8px)}
+.r-id{flex:1 1 auto;min-width:0}
+.r-cl{font-size:13px;font-weight:800;letter-spacing:-.15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.r-sub{font-size:10.5px;color:var(--faint);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.r-end{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:0 0 auto}
+.amt{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:800;letter-spacing:.7px;
+ text-transform:uppercase;padding:3px 7px;border-radius:5px;white-space:nowrap}
+.chip::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:0 0 auto}
+.c-over{color:var(--over);background:var(--overbg)}
+.c-paid{color:var(--paid);background:var(--paidbg)}
+.c-due{color:var(--muted);background:var(--soft)}
+.c-draft{color:var(--draft);background:transparent;border:1px dashed var(--line);padding:2px 6px}
+.c-draft::before{background:transparent;border:1.5px solid currentColor;width:6px;height:6px}
+/* Delete stays hidden until the row is hovered - present when wanted, silent
    otherwise, and never a target for a stray click. */
-.del{margin-left:8px;width:20px;height:20px;padding:0;border-radius:6px;border:1px solid transparent;
- background:transparent;color:var(--muted);font-size:11px;line-height:1;cursor:pointer;
- opacity:0;transition:opacity .12s,color .12s,border-color .12s;vertical-align:middle}
-tbody tr:hover .del{opacity:1}
+.del{flex:0 0 auto;width:20px;height:20px;padding:0;border-radius:6px;border:1px solid transparent;
+ background:transparent;color:var(--faint);font-size:11px;line-height:1;cursor:pointer;
+ opacity:0;transition:opacity .12s,color .12s,border-color .12s}
+.row:hover .del{opacity:1}
 .del:hover{color:var(--down);border-color:var(--down)}
-tbody tr{cursor:pointer}
-tbody tr:hover .doc{opacity:1}
-.doc{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.4px;
- text-transform:uppercase;color:var(--accent);margin-left:8px;opacity:.5;transition:opacity .12s;
- vertical-align:middle;white-space:nowrap}
-.doc.none{color:var(--muted)}
+.doc{font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--accent);
+ opacity:.55;transition:opacity .12s;font-size:9px}
+.row:hover .doc{opacity:1}
+.doc.none{color:var(--faint)}
+.empty{font-size:12px;color:var(--muted);padding:20px 2px}
+
+/* document viewer */
 .ov{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.72);display:none;
  flex-direction:column;padding:clamp(10px,2vw,26px)}
 .ov.on{display:flex}
@@ -67,46 +77,38 @@ tbody tr:hover .doc{opacity:1}
 .ovpages{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;gap:14px}
 .ovpages canvas{max-width:100%;border-radius:10px;box-shadow:0 4px 22px rgba(0,0,0,.5);background:#fff}
 .ovmsg{color:rgba(255,255,255,.75);font-size:12px;padding:26px;text-align:center;line-height:1.6}
-.duem{display:none}
 
-/* Narrow: the header stacks, and the Due column folds under the invoice name
-   rather than squeezing every column until the dates wrap. */
-@media (max-width:640px){
-  .hd{flex-direction:column;align-items:flex-start;gap:13px}
-  .stats{width:100%;justify-content:space-between;gap:10px}
-  .big{font-size:34px}
-  table{font-size:12px}
-  th:nth-child(4),td:nth-child(4){display:none}
-  .duem{display:inline}
-  .chip{font-size:9px;padding:3px 7px}
-  td{padding:8px 7px 8px 0}
+/* Narrow: the hero drops under the title and the meta row spreads. */
+@media (max-width:560px){
+  .hd-top{flex-direction:column;align-items:flex-start;gap:12px}
+  .fig{text-align:left}
+  .meta{width:100%;justify-content:space-between;gap:10px}
+  .r-cl{font-size:12.5px}
+  .amt{font-size:14px}
+  .doc{display:none}   /* truncates to an ellipsis at this width - drop it */
 }
 </style></head><body>
 
 <div class="hd">
-  <div class="ttl">Invoice Tracker</div>
-  <div class="sub" id="sub">loading…</div>
-  <div class="stats">
-    <div class="lead"><div class="n" id="total">—</div><div class="nl">Total out</div></div>
-    <div><div class="n" id="nOpen">—</div><div class="nl">Open</div></div>
-    <div><div class="n" id="nAvg">—</div><div class="nl">Avg days out</div></div>
+  <div class="hd-top">
+    <div>
+      <div class="ttl">Invoice Tracker</div>
+      <div class="sub" id="sub">loading…</div>
+    </div>
+    <div class="fig">
+      <div class="lbl">Outstanding</div>
+      <div class="hero" id="total">—</div>
+    </div>
+  </div>
+  <div class="meta">
+    <div><span class="lbl">Open</span><span class="v" id="nOpen">—</span></div>
+    <div><span class="lbl">Overdue</span><span class="v warn" id="nOver">—</span></div>
+    <div><span class="lbl">Next due</span><span class="v" id="nNext">—</span></div>
   </div>
 </div>
 
-<div class="sec">
-  <div class="k">Aging</div>
-  <div class="stack" id="stack"></div>
-  <div class="legend" id="legend"></div>
-</div>
-
-<div class="sec">
-  <div class="k">Detail</div>
-  <table>
-    <thead><tr><th>Client</th><th>Invoice</th><th class="r">Amount</th><th class="r">Due</th><th class="r">Status</th></tr></thead>
-    <tbody id="rows"></tbody>
-  </table>
-  <div class="empty" id="empty" style="display:none">Nothing outstanding — every invoice is settled.</div>
-</div>
+<div class="rows" id="rows"></div>
+<div class="empty" id="empty" style="display:none">Nothing outstanding — every invoice is settled.</div>
 
 <div class="ov" id="ov">
   <div class="ovh">
@@ -128,14 +130,21 @@ window.FINDATA = {"updated":"2026-08-19","sourcePulled":"2026-08-17","currency":
 const JSSRC = "https://wcstudios.github.io/wcs-widgets/finance-data.js";
 const usd = n => "$" + Number(n||0).toLocaleString("en-US",{maximumFractionDigits:0});
 const SERIES = ["--s1","--s2","--s3","--s4","--s5"];
-const fmtDate = s => s ? new Date(s+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"2-digit"}) : "—";
+/* Tolerant of both a plain date and a full ISO timestamp. The live feed sends
+   the latter, and blindly appending "T12:00:00" to it produced "Invalid Date". */
+const fmtDate = s => {
+  if(!s) return "\u2014";
+  const d = new Date(String(s).slice(0,10) + "T12:00:00");
+  return isNaN(d) ? "\u2014" : d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"2-digit"});
+};
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 function render(D){
   if(!D.__live) baked = D;   // keep the slow-moving half to merge onto
   shown = D;
   const s = D.summary;
 
-  /* Newest invoice first. Numbers live inside the title ("… - Invoice 0172 - …"),
+  /* Newest invoice first. Numbers live inside the title ("... - Invoice 0172 - ..."),
      and the older December rows carry no number at all, so those fall to the
      bottom ordered by date. Sorting here rather than in the worker means the
      baked snapshot and the live feed always agree. */
@@ -147,59 +156,61 @@ function render(D){
     if(nb !== null) return 1;
     return String(b.invoiceDate || "").localeCompare(String(a.invoiceDate || ""));
   });
-  total.textContent = usd(s.arTotal);
-  sub.textContent = "Money owed to WCStudios · updated " + fmtDate(D.updated);
-  nOpen.textContent = s.arCount;
-  const days = ar.map(i => i.daysOverdue).filter(d => d != null);
-  nAvg.textContent = days.length ? Math.round(days.reduce((a,b)=>a+b,0)/days.length) : "—";
 
-  /* Aging — one stacked bar, 2px surface gaps, legend + direct values */
-  const ag = D.arAging || [], tot = ag.reduce((a,b)=>a+b.amount,0) || 1;
-  stack.innerHTML = ag.map((b,i) =>
-    '<div class="seg" style="flex:' + b.amount + ' 0 0;background:var(' + SERIES[i%SERIES.length] + ')" title="' + b.bucket + ': ' + usd(b.amount) + '"></div>').join("");
-  legend.innerHTML = ag.map((b,i) =>
-    '<span class="li"><span class="dot" style="background:var(' + SERIES[i%SERIES.length] + ')"></span>'
-    + b.bucket + ' <b>' + usd(b.amount) + '</b> · ' + Math.round(b.amount/tot*100) + '%</span>').join("");
-
-  /* Detail table */
-  const byClient = {};
-  (D.arByClient||[]).forEach((c,i) => byClient[c.client] = SERIES[i%SERIES.length]);
-  document.getElementById("empty").style.display = ar.length ? "none" : "block";
-  rows.innerHTML = ar.map((i, x) => {
-    /* Four states, no day counts: Draft until it's been sent, Due once it is,
-       Overdue past its terms date, Paid when settled. */
+  /* Four states, no day counts: Draft until it's been sent, Due once it is,
+     Overdue past its terms date, Paid when settled. Each ships with a written
+     label as well as a colour, so state never rests on hue alone. */
+  const state = i => {
     const st = String(i.status || "");
-    const over = st !== "Paid" && st !== "Draft" && (i.daysOverdue || 0) > 0;
-    const label = st === "Paid" ? "Paid" : st === "Draft" ? "Draft" : over ? "Overdue" : "Due";
-    const cls = st === "Paid" ? "ok" : over ? "bad" : "";
-    const badge = i.pdfUrl ? '<span class="doc">\u25A4 PDF</span>'
-                : (i.notionUrl ? '<span class="doc none">\u2197 Notion</span>' : '');
-    return '<tr data-i="' + x + '" title="' + (i.pdfUrl ? "Open the invoice PDF" : "Open the Notion record") + '">'
-      + '<td><div class="cl"><span class="dot" style="background:var(' + (byClient[i.client]||"--s1") + ')"></span>' + i.client + '</div></td>'
-      + '<td>' + i.name.replace(i.client + " - ","") + badge
-        + '<div class="nm">Issued ' + fmtDate(i.invoiceDate)
-        + '<span class="duem"> \u00b7 due ' + fmtDate(i.dueDate) + '</span></div></td>'
-      + '<td class="r amt">' + usd(i.amount) + '</td>'
-      + '<td class="r mono">' + fmtDate(i.dueDate) + '</td>'
-      + '<td class="r"><span class="chip ' + cls + '">' + label + '</span>'
-      +   '<button class="del" data-del="' + x + '" title="Delete this invoice">\u2715</button></td>'
-      + '</tr>';
+    if(st === "Paid")  return {key:"paid",  label:"Paid",    cls:"c-paid"};
+    if(st === "Draft") return {key:"draft", label:"Draft",   cls:"c-draft"};
+    if((i.daysOverdue || 0) > 0) return {key:"over", label:"Overdue", cls:"c-over"};
+    return {key:"due", label:"Due", cls:"c-due"};
+  };
+
+  const marked  = ar.map(i => ({inv: i, st: state(i)}));
+  const open    = marked.filter(m => m.st.key !== "paid");
+  const overSum = open.filter(m => m.st.key === "over").reduce((t, m) => t + (m.inv.amount || 0), 0);
+  const next    = open.filter(m => m.st.key !== "over")
+                      .map(m => m.inv.dueDate).filter(Boolean).sort()[0];
+
+  total.textContent = usd(s.arTotal);
+  sub.textContent   = "Money owed to WCStudios \u00b7 updated " + fmtDate(D.updated);
+  nOpen.textContent = open.length;
+  nOver.textContent = overSum ? usd(overSum) : "None";
+  nOver.classList.toggle("warn", !!overSum);
+  nNext.textContent = next ? fmtDate(next) : "\u2014";
+
+  document.getElementById("empty").style.display = ar.length ? "none" : "block";
+  rows.innerHTML = marked.map((m, x) => {
+    const i = m.inv;
+    const badge = i.pdfUrl ? ' \u00b7 <span class="doc">\u25A4 PDF</span>'
+                : (i.notionUrl ? ' \u00b7 <span class="doc none">\u2197 Notion</span>' : '');
+    return '<div class="row is-' + m.st.key + '" data-i="' + x + '" title="'
+      + (i.pdfUrl ? "Open the invoice PDF" : "Open the Notion record") + ' \u00b7 double-click to edit">'
+      + '<div class="r-id"><div class="r-cl">' + esc(i.client) + '</div>'
+      +   '<div class="r-sub">' + esc(String(i.name || "").replace(i.client + " - ", ""))
+      +     ' \u00b7 due ' + fmtDate(i.dueDate) + badge + '</div></div>'
+      + '<div class="r-end"><div class="amt">' + usd(i.amount) + '</div>'
+      +   '<span class="chip ' + m.st.cls + '">' + m.st.label + '</span></div>'
+      + '<button class="del" data-del="' + x + '" title="Delete this invoice">\u2715</button>'
+      + '</div>';
   }).join("");
 
   /* One click opens the PDF, two reopen the invoice in the builder. The single
-     click is held briefly so the second can cancel it — otherwise every edit
-     would flash the PDF overlay on its way. */
-  rows.querySelectorAll("tr").forEach(tr => {
+     click is held briefly so the second can cancel it - otherwise every edit
+     would flash the document viewer on its way. */
+  rows.querySelectorAll(".row").forEach(el => {
     let timer = null;
-    tr.addEventListener("click", e => {
+    el.addEventListener("click", e => {
       if(e.target.closest(".del")) return;          // delete handles itself
       clearTimeout(timer);
-      timer = setTimeout(() => open_(ar[+tr.dataset.i]), 260);
+      timer = setTimeout(() => open_(ar[+el.dataset.i]), 260);
     });
-    tr.addEventListener("dblclick", e => {
+    el.addEventListener("dblclick", e => {
       if(e.target.closest(".del")) return;
       clearTimeout(timer);
-      editInBuilder(ar[+tr.dataset.i]);
+      editInBuilder(ar[+el.dataset.i]);
     });
   });
 
@@ -210,10 +221,9 @@ function render(D){
     }));
 }
 
-/* ── PDF overlay ──────────────────────────────────────────────
-   Embedded rather than opened in a tab, so the invoice appears without
-   leaving the Notion page. Hosts that refuse framing still work via the
-   "Open PDF" button. */
+/* The invoice document, shown in place rather than in a new tab so it appears
+   without leaving the Notion page. Hosts that refuse framing still work via
+   the "Open PDF" button. */
 let current = null;
 function open_(inv){
   current = inv;
@@ -442,8 +452,8 @@ async function removeInvoice(row, btn){
   const c = conn();
   if(!c.url || !c.key){ flash("Connect the worker in the builder first"); return; }
 
-  const tr = btn.closest("tr");
-  tr.style.opacity = ".35";
+  const card = btn.closest(".row");
+  card.style.opacity = ".35";
   try {
     await fetch(c.url, {
       method: "POST",
@@ -458,7 +468,7 @@ async function removeInvoice(row, btn){
     flash("Deleted \u00b7 recoverable from Notion's trash");
     chaseFeed();
   } catch(e){
-    tr.style.opacity = "";
+    card.style.opacity = "";
     flash("Couldn't reach the worker");
   }
 }
