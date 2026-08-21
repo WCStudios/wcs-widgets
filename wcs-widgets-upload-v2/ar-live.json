@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-21T03:36:56.530Z",
+ "updated": "2026-08-21T03:38:20.117Z",
  "source": "worker",
  "ar": [
   {
@@ -25,6 +25,19 @@
    "daysOverdue": 249,
    "bucket": "90+ days",
    "notionUrl": "https://app.notion.com/2c4421efc76681f4b7d4d3036174da4e",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "name": "Minnesota Hockey - Invoice 0173",
+   "client": "Minnesota Hockey",
+   "amount": 4000,
+   "status": "Outstanding",
+   "invoiceDate": "2026-08-20",
+   "dueDate": "2026-09-04",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3c3421efc7668165904bee866dc826f5",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -75,13 +88,17 @@
   },
   {
    "bucket": "Not yet due",
-   "amount": 7500
+   "amount": 11500
   }
  ],
  "arByClient": [
   {
    "client": "Pulltab Sports",
    "amount": 15000
+  },
+  {
+   "client": "Minnesota Hockey",
+   "amount": 4000
   },
   {
    "client": "Tripine Creative",
@@ -97,8 +114,8 @@
   }
  ],
  "summary": {
-  "arTotal": 22000,
+  "arTotal": 26000,
   "arOverdue": 14500,
-  "arCount": 5
+  "arCount": 6
  }
 }
