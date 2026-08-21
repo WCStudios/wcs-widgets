@@ -1,10 +1,15 @@
 {
- "updated": "2026-08-21T04:54:50.528Z",
+ "updated": "2026-08-21T15:06:47.005Z",
  "source": "worker",
  "ar": [
   {
+   "notionPageId": "3c3421ef-c766-812e-8aa8-c1bf9961a966",
    "name": "Pulltab Sports - Invoice 0172 - Hockey",
    "client": "Pulltab Sports",
+   "project": null,
+   "terms": null,
+   "items": [],
+   "threaded": false,
    "amount": 7500,
    "status": "Draft",
    "invoiceDate": "2026-08-20",
@@ -16,8 +21,13 @@
    "pdfSource": "live"
   },
   {
+   "notionPageId": "3c3421ef-c766-81f5-9fb7-cbe99b5747dc",
    "name": "Pulltab Sports - Invoice 0172",
    "client": "Pulltab Sports",
+   "project": null,
+   "terms": null,
+   "items": [],
+   "threaded": false,
    "amount": 7500,
    "status": "Outstanding",
    "invoiceDate": "2026-08-20",
@@ -29,8 +39,13 @@
    "pdfSource": "live"
   },
   {
+   "notionPageId": "2c4421ef-c766-81f4-b7d4-d3036174da4e",
    "name": "Pulltab Sports - December Retainer",
    "client": "Pulltab Sports",
+   "project": null,
+   "terms": null,
+   "items": [],
+   "threaded": false,
    "amount": 7500,
    "status": "Outstanding",
    "invoiceDate": "2025-12-01",
@@ -42,8 +57,13 @@
    "pdfSource": "live"
   },
   {
+   "notionPageId": "3c3421ef-c766-8165-904b-ee866dc826f5",
    "name": "Minnesota Hockey - Invoice 0173",
    "client": "Minnesota Hockey",
+   "project": null,
+   "terms": null,
+   "items": [],
+   "threaded": false,
    "amount": 4000,
    "status": "Outstanding",
    "invoiceDate": "2026-08-20",
@@ -55,8 +75,13 @@
    "pdfSource": "live"
   },
   {
+   "notionPageId": "3c3421ef-c766-812d-9c2d-ee910370a8a6",
    "name": "Tripine Creative - Invoice 0175",
    "client": "Tripine Creative",
+   "project": null,
+   "terms": null,
+   "items": [],
+   "threaded": false,
    "amount": 3750,
    "status": "Draft",
    "invoiceDate": "2026-08-20",
@@ -68,8 +93,13 @@
    "pdfSource": "live"
   },
   {
+   "notionPageId": "3c3421ef-c766-81b6-9857-df270d644bc2",
    "name": "Tripine Creative - Invoice 0174",
    "client": "Tripine Creative",
+   "project": null,
+   "terms": null,
+   "items": [],
+   "threaded": false,
    "amount": 3750,
    "status": "Draft",
    "invoiceDate": "2026-08-20",
@@ -81,8 +111,13 @@
    "pdfSource": "live"
   },
   {
+   "notionPageId": "2c4421ef-c766-81b5-b955-c1078bc8950e",
    "name": "Tripine Creative - December Retainer",
    "client": "Tripine Creative",
+   "project": null,
+   "terms": null,
+   "items": [],
+   "threaded": false,
    "amount": 3750,
    "status": "Outstanding",
    "invoiceDate": "2025-12-01",
@@ -94,8 +129,13 @@
    "pdfSource": "live"
   },
   {
+   "notionPageId": "2c4421ef-c766-8179-b251-e700d3c1c17e",
    "name": "The Local Farmer - December Retainer",
    "client": "The Local Farmer",
+   "project": null,
+   "terms": null,
+   "items": [],
+   "threaded": false,
    "amount": 1750,
    "status": "Outstanding",
    "invoiceDate": "2025-12-01",
@@ -107,8 +147,13 @@
    "pdfSource": "live"
   },
   {
+   "notionPageId": "2c4421ef-c766-8193-b913-f88b63fd9db5",
    "name": "Niccum Docks - December Retainer",
    "client": "Niccum Docks",
+   "project": null,
+   "terms": null,
+   "items": [],
+   "threaded": false,
    "amount": 1500,
    "status": "Outstanding",
    "invoiceDate": "2025-12-01",
