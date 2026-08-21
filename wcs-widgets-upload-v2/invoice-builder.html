@@ -904,6 +904,65 @@ async function fire(action, payload){
   }catch(e){ flag("Couldn't reach the worker"); return false; }
 }
 
+/* ── Editing an existing invoice ──────────────────────────────
+   Double-clicking a row in the Invoice Tracker drops the invoice into
+   localStorage and opens this page. Both widgets are served from the same
+   origin, so they share that store even though they live in separate embeds.
+
+   While editing, Create becomes Save — the row is rewritten rather than a
+   second invoice being created — and Send carries the Notion page id so the
+   worker can reply into the original email thread. */
+const HANDOFF = "wcsInvoiceHandoff.v1";
+let editingPageId = null;
+let editingThreaded = false;
+
+function setEditing(row){
+  editingPageId = row ? (row.notionPageId || null) : null;
+  editingThreaded = !!(row && row.threaded);
+  $("bCreate").textContent = editingPageId ? "Save changes" : "Create invoice";
+  $("bSend").textContent = editingThreaded ? "Send update" : "Send invoice";
+}
+
+function loadHandoff(){
+  let h = null;
+  try {
+    const raw = localStorage.getItem(HANDOFF);
+    if(!raw) return;
+    localStorage.removeItem(HANDOFF);      // consume it, so a refresh is a clean page
+    h = JSON.parse(raw);
+  } catch(e){ return; }
+
+  // Stale handoffs are ignored; this should only ever be seconds old.
+  if(!h || !h.invoice || Date.now() - (h.at || 0) > 120000) return;
+  const inv = h.invoice;
+
+  const num = (/invoice\s+#?(\d+)/i.exec(inv.name || "") || [])[1];
+  if(num) $("iNum").value = num;
+  $("cName").value = inv.client || "";
+  $("cPick").value = (clients || []).some(c => c.name === inv.client) ? inv.client : "";
+  $("iProject").value = inv.project || "";
+  if(inv.terms) $("iTerms").value = inv.terms;
+  if(inv.invoiceDate) $("iDate").value = inv.invoiceDate;
+  if(inv.dueDate){ $("iDue").value = inv.dueDate; dueTouched = true; }
+  $("iStatus").value = inv.status || "Draft";
+
+  // Fill in contact details the tracker doesn't carry.
+  const c = (clients || []).find(x => x.name === inv.client);
+  if(c){
+    $("cCompany").value = c.contact || "";
+    $("cEmail").value = c.email || "";
+  }
+
+  items = Array.isArray(inv.items) && inv.items.length
+    ? JSON.parse(JSON.stringify(inv.items))
+    : [{description: inv.name || "", detail: "", qty: 1, unit: "", rate: inv.amount || 0}];
+
+  setEditing(inv);
+  drawItems(); syncDue(); paint(); persist();
+  ["client", "invoice", "items"].forEach(g => setOpen(g, true));
+  flag("Editing invoice " + (num || "") + (inv.threaded ? " \u00b7 already sent" : ""), "saved");
+}
+
 /* Guards shared by both buttons, so neither can fire a half-built invoice. */
 function ready(needEmail){
   const I = spec();
@@ -917,20 +976,25 @@ function ready(needEmail){
 $("bCreate").addEventListener("click", async () => {
   const I = ready(false); if(!I) return;
   $("bCreate").disabled = true;
-  const ok = await fire("create", workerPayload());
+  const editing = editingPageId;
+  const ok = await fire(editing ? "update" : "create",
+                        editing ? {...workerPayload(), notionPageId: editing} : workerPayload());
   $("bCreate").disabled = false;
-  if(ok) flag("Invoice " + I.number + " created \u2713 \u00b7 it's in Outstanding now", "saved");
+  if(ok) flag(editing ? "Invoice " + I.number + " saved \u2713"
+                      : "Invoice " + I.number + " created \u2713 \u00b7 it's a draft", "saved");
 });
 
 $("bSend").addEventListener("click", async () => {
   const I = ready(true); if(!I) return;
   if(!I.payment.link) flag("Heads up: no pay-online link");
   $("bSend").disabled = true;
-  const ok = await fire("send", workerPayload());
+  const ok = await fire("send", {...workerPayload(), notionPageId: editingPageId});
   $("bSend").disabled = false;
   if(ok){
     if($("iStatus").value === "Draft"){ $("iStatus").value = "Sent"; paint(); }
-    flag("Draft queued \u2713 \u00b7 review it in Gmail", "saved");
+    flag(editingThreaded
+      ? "Update drafted in the existing thread \u2713"
+      : "Draft queued \u2713 \u00b7 review it in Gmail", "saved");
   }
 });
 
@@ -945,6 +1009,7 @@ $("bReset").addEventListener("click", () => {
   }
   // No confirm() here: an embed without allow-modals silently returns false,
   // which would make this button look broken rather than cautious.
+  setEditing(null);
   init(true);
   flag("New invoice \u00b7 " + $("iNum").value, "saved");
 });
@@ -953,6 +1018,7 @@ function init(reset){
   // Connection state is independent of the invoice draft, so repaint it here
   // too — init() is the one path every entry point goes through.
   setTimeout(paintConn, 0);
+  if(!reset) setTimeout(loadHandoff, 40);
   const D = window.FINDATA || {};
   const inv = D.invoicing || {};
   clients = inv.clients || (D.retainers || []).map(r => ({name:r.client, retainer:r.monthly}));

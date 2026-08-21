@@ -40,6 +40,13 @@ tbody tr:hover{background:var(--soft)}
 .chip.ok{color:var(--up)}
 .nm{font-size:10.5px;color:var(--muted);margin-top:2px}
 .empty{font-size:12px;color:var(--muted);padding:18px 0}
+/* Delete stays hidden until the row is hovered — present when wanted, silent
+   otherwise, and never a target for a stray click. */
+.del{margin-left:8px;width:20px;height:20px;padding:0;border-radius:6px;border:1px solid transparent;
+ background:transparent;color:var(--muted);font-size:11px;line-height:1;cursor:pointer;
+ opacity:0;transition:opacity .12s,color .12s,border-color .12s;vertical-align:middle}
+tbody tr:hover .del{opacity:1}
+.del:hover{color:var(--down);border-color:var(--down)}
 tbody tr{cursor:pointer}
 tbody tr:hover .doc{opacity:1}
 .doc{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.4px;
@@ -173,13 +180,33 @@ function render(D){
         + '<span class="duem"> \u00b7 due ' + fmtDate(i.dueDate) + '</span></div></td>'
       + '<td class="r amt">' + usd(i.amount) + '</td>'
       + '<td class="r mono">' + fmtDate(i.dueDate) + '</td>'
-      + '<td class="r"><span class="chip ' + cls + '">' + label + '</span></td>'
+      + '<td class="r"><span class="chip ' + cls + '">' + label + '</span>'
+      +   '<button class="del" data-del="' + x + '" title="Delete this invoice">\u2715</button></td>'
       + '</tr>';
   }).join("");
 
-  /* Click a row: the PDF if we have one, otherwise its Notion record. */
-  rows.querySelectorAll("tr").forEach(tr =>
-    tr.addEventListener("click", () => open_(ar[+tr.dataset.i])));
+  /* One click opens the PDF, two reopen the invoice in the builder. The single
+     click is held briefly so the second can cancel it — otherwise every edit
+     would flash the PDF overlay on its way. */
+  rows.querySelectorAll("tr").forEach(tr => {
+    let timer = null;
+    tr.addEventListener("click", e => {
+      if(e.target.closest(".del")) return;          // delete handles itself
+      clearTimeout(timer);
+      timer = setTimeout(() => open_(ar[+tr.dataset.i]), 260);
+    });
+    tr.addEventListener("dblclick", e => {
+      if(e.target.closest(".del")) return;
+      clearTimeout(timer);
+      editInBuilder(ar[+tr.dataset.i]);
+    });
+  });
+
+  rows.querySelectorAll("[data-del]").forEach(btn =>
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      removeInvoice(ar[+btn.dataset.del], btn);
+    }));
 }
 
 /* ── PDF overlay ──────────────────────────────────────────────
@@ -293,6 +320,70 @@ function load(){
   };
   tryLoad([JSSRC, "finance-data.js"], 0);
 }
+/* ── Editing and deleting ─────────────────────────────────────
+   The builder lives on another Notion page, so the row is handed over through
+   localStorage: both widgets are served from the same origin, so they share a
+   store even though they sit in different embeds. The builder picks the handoff
+   up on load and clears it.
+
+   Deleting reuses the worker's void action, which archives the Notion row —
+   recoverable from Notion's trash rather than destroyed. Connection details are
+   the same ones entered once in the builder's gear. */
+const HANDOFF = "wcsInvoiceHandoff.v1";
+const CONN = "wcsWorkerConn.v1";
+const BUILDER_PAGE = "https://app.notion.com/p/3c2421efc76680a796b6ce25ac3768b8";
+
+function conn(){
+  try { return JSON.parse(localStorage.getItem(CONN) || "{}"); } catch(e){ return {}; }
+}
+
+function editInBuilder(row){
+  if(!row) return;
+  try {
+    localStorage.setItem(HANDOFF, JSON.stringify({ at: Date.now(), invoice: row }));
+  } catch(e){
+    flash("This browser won't allow the handoff");
+    return;
+  }
+  const w = window.open(BUILDER_PAGE, "_blank");
+  flash(w ? "Opening in the builder…" : "Open the Invoice Builder page — it's loaded and waiting");
+}
+
+async function removeInvoice(row, btn){
+  if(!row || !row.notionPageId){ flash("No Notion row to delete"); return; }
+  const c = conn();
+  if(!c.url || !c.key){ flash("Connect the worker in the builder first"); return; }
+
+  const tr = btn.closest("tr");
+  tr.style.opacity = ".35";
+  try {
+    await fetch(c.url, {
+      method: "POST",
+      mode: "no-cors",                       // the endpoint sends no CORS headers
+      headers: {"Content-Type": "text/plain"},   // safelisted, so no preflight
+      body: JSON.stringify({
+        key: c.key, action: "void",
+        payload: { notionPageId: row.notionPageId, number: null }
+      })
+    });
+    tr.remove();
+    flash("Deleted \u00b7 recoverable from Notion's trash");
+    setTimeout(applyLive, 2500);   // let the worker republish, then reconcile
+  } catch(e){
+    tr.style.opacity = "";
+    flash("Couldn't reach the worker");
+  }
+}
+
+/* Small transient message in the subtitle line. */
+function flash(text){
+  const el = document.getElementById("sub");
+  const was = el.textContent;
+  el.textContent = text;
+  clearTimeout(flash.t);
+  flash.t = setTimeout(() => { if(el.textContent === text) el.textContent = was; }, 3000);
+}
+
 /* ── Live overlay ─────────────────────────────────────────────
    finance-data.js is a snapshot; receivables move constantly. The worker
    republishes just the AR slice to the widget repo after every change, and
