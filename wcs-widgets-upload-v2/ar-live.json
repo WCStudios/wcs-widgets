@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-22T05:16:41.608Z",
+ "updated": "2026-08-22T05:17:24.556Z",
  "source": "worker",
  "ar": [
   {
@@ -79,12 +79,45 @@
    "notionUrl": "https://app.notion.com/3c3421efc76681b69857df270d644bc2",
    "pdfUrl": null,
    "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3c4421ef-c766-81cc-90d7-db39280516c9",
+   "name": "Tradition Companies - Invoice 0175",
+   "client": "Tradition Companies",
+   "project": null,
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Monthly creative retainer — August 2026",
+     "detail": null,
+     "qty": 1,
+     "unit": "mo",
+     "rate": 500
+    },
+    {
+     "description": "Production day — half day",
+     "detail": null,
+     "qty": 1,
+     "unit": "day",
+     "rate": 0
+    }
+   ],
+   "threaded": false,
+   "amount": 500,
+   "status": "Draft",
+   "invoiceDate": "2026-08-22",
+   "dueDate": "2026-09-06",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3c4421efc76681cc90d7db39280516c9",
+   "pdfUrl": null,
+   "pdfSource": "live"
   }
  ],
  "arAging": [
   {
    "bucket": "Not yet due",
-   "amount": 15000
+   "amount": 15500
   }
  ],
  "arByClient": [
@@ -95,11 +128,15 @@
   {
    "client": "Tripine Creative",
    "amount": 7500
+  },
+  {
+   "client": "Tradition Companies",
+   "amount": 500
   }
  ],
  "summary": {
-  "arTotal": 15000,
+  "arTotal": 15500,
   "arOverdue": 0,
-  "arCount": 3
+  "arCount": 4
  }
 }
