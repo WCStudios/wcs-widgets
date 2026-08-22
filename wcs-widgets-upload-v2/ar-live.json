@@ -1,33 +1,7 @@
 {
- "updated": "2026-08-22T05:17:24.556Z",
+ "updated": "2026-08-22T05:18:23.090Z",
  "source": "worker",
  "ar": [
-  {
-   "notionPageId": "3c3421ef-c766-81a2-ad8d-c544b9a64f96",
-   "name": "Pulltab Sports - Invoice 0173",
-   "client": "Pulltab Sports",
-   "project": null,
-   "terms": "Net 15",
-   "items": [
-    {
-     "description": "Monthly creative retainer — August 2026",
-     "detail": null,
-     "qty": 1,
-     "unit": "mo",
-     "rate": 7500
-    }
-   ],
-   "threaded": false,
-   "amount": 7500,
-   "status": "Draft",
-   "invoiceDate": "2026-08-21",
-   "dueDate": "2026-09-05",
-   "daysOverdue": 0,
-   "bucket": "Not yet due",
-   "notionUrl": "https://app.notion.com/3c3421efc76681a2ad8dc544b9a64f96",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
   {
    "notionPageId": "3c4421ef-c766-81f4-a0db-e936c4bc1c33",
    "name": "Tripine Creative - Invoice 0174",
@@ -51,32 +25,6 @@
    "daysOverdue": 0,
    "bucket": "Not yet due",
    "notionUrl": "https://app.notion.com/3c4421efc76681f4a0dbe936c4bc1c33",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
-   "notionPageId": "3c3421ef-c766-81b6-9857-df270d644bc2",
-   "name": "Tripine Creative - Invoice 0174",
-   "client": "Tripine Creative",
-   "project": null,
-   "terms": "Net 15",
-   "items": [
-    {
-     "description": "Tripine Creative - Invoice 0174",
-     "detail": null,
-     "qty": 1,
-     "unit": null,
-     "rate": 3750
-    }
-   ],
-   "threaded": false,
-   "amount": 3750,
-   "status": "Draft",
-   "invoiceDate": "2026-08-20",
-   "dueDate": "2026-09-04",
-   "daysOverdue": 0,
-   "bucket": "Not yet due",
-   "notionUrl": "https://app.notion.com/3c3421efc76681b69857df270d644bc2",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -117,17 +65,13 @@
  "arAging": [
   {
    "bucket": "Not yet due",
-   "amount": 15500
+   "amount": 4250
   }
  ],
  "arByClient": [
   {
-   "client": "Pulltab Sports",
-   "amount": 7500
-  },
-  {
    "client": "Tripine Creative",
-   "amount": 7500
+   "amount": 3750
   },
   {
    "client": "Tradition Companies",
@@ -135,8 +79,8 @@
   }
  ],
  "summary": {
-  "arTotal": 15500,
+  "arTotal": 4250,
   "arOverdue": 0,
-  "arCount": 4
+  "arCount": 2
  }
 }
