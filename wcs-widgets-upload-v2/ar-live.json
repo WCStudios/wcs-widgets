@@ -1,56 +1,12 @@
 {
- "updated": "2026-08-22T05:18:30.374Z",
+ "updated": "2026-08-22T05:18:53.251Z",
  "source": "worker",
- "ar": [
-  {
-   "notionPageId": "3c4421ef-c766-81cc-90d7-db39280516c9",
-   "name": "Tradition Companies - Invoice 0175",
-   "client": "Tradition Companies",
-   "project": null,
-   "terms": "Net 15",
-   "items": [
-    {
-     "description": "Monthly creative retainer — August 2026",
-     "detail": null,
-     "qty": 1,
-     "unit": "mo",
-     "rate": 500
-    },
-    {
-     "description": "Production day — half day",
-     "detail": null,
-     "qty": 1,
-     "unit": "day",
-     "rate": 0
-    }
-   ],
-   "threaded": false,
-   "amount": 500,
-   "status": "Draft",
-   "invoiceDate": "2026-08-22",
-   "dueDate": "2026-09-06",
-   "daysOverdue": 0,
-   "bucket": "Not yet due",
-   "notionUrl": "https://app.notion.com/3c4421efc76681cc90d7db39280516c9",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  }
- ],
- "arAging": [
-  {
-   "bucket": "Not yet due",
-   "amount": 500
-  }
- ],
- "arByClient": [
-  {
-   "client": "Tradition Companies",
-   "amount": 500
-  }
- ],
+ "ar": [],
+ "arAging": [],
+ "arByClient": [],
  "summary": {
-  "arTotal": 500,
+  "arTotal": 0,
   "arOverdue": 0,
-  "arCount": 1
+  "arCount": 0
  }
 }
