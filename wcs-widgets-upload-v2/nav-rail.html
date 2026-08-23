@@ -1,0 +1,147 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Navigation</title>
+<style>
+/* Same chassis, accent and flap grid as the departure board, turned on its side:
+   this one is built narrow-first, for a sidebar column rather than a page-wide bar. */
+:root{--bg:#191919;--panel:#1f1f1f;--flap:#242424;--line:#2c2c2c;
+ --text:#f0f0f0;--muted:#a3a39e;--faint:#7c7c78;--accent:#f97b47;--track:rgba(249,123,71,.16);--seam:rgba(249,123,71,.32)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;width:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);
+ -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;overflow:hidden}
+
+.hd{flex:0 0 auto;padding:16px 16px 13px}
+.brand{font-size:9px;letter-spacing:2.4px;text-transform:uppercase;color:var(--faint);font-weight:800}
+.ttl{display:flex;align-items:center;gap:7px;margin-top:6px;
+ font-size:13.5px;font-weight:800;letter-spacing:-.2px}
+.lamp{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:0 0 auto;
+ box-shadow:0 0 0 3px var(--track);animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.body{flex:1;min-height:0;overflow-y:auto;padding:0 16px 16px}
+.grp{font-size:7.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--faint);
+ font-weight:800;margin:0 0 7px}
+.grp.next{margin-top:14px}
+
+/* One column by default. A wider embed gets two, but the design is decided at
+   narrow — nothing here depends on horizontal room to make sense. */
+.stack{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);
+ border:1px solid var(--line);border-radius:9px;overflow:hidden}
+@media (min-width:540px){ .stack{grid-template-columns:1fr 1fr} }
+
+.dest{position:relative;background:var(--bg);text-decoration:none;color:inherit;
+ padding:11px 26px 10px 12px;display:block;transition:background .14s}
+.dest:hover{background:var(--panel)}
+
+/* Fixed-width cells, every name padded to the same count, so the character grid
+   lines up down the column the way the board's does across it. */
+.flaps{display:flex;gap:1.5px}
+.fl{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:10.5px;font-weight:700;line-height:1;width:10px;height:16px;flex:0 0 10px;
+ display:flex;align-items:center;justify-content:center;background:var(--flap);
+ border-radius:2px;color:var(--text);position:relative;overflow:hidden}
+/* The split line only belongs where a flap actually is — on the padded cells it
+   was drawing a dashed rule out into empty space. */
+.fl::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;
+ background:var(--seam)}
+.fl.sp{background:transparent}
+.fl.sp::after{display:none}
+.dest:hover .fl:not(.sp){color:var(--accent)}
+.dest:hover .fl::after{background:rgba(249,123,71,.6)}
+
+/* display:block — a bare span here collapses onto the flap line. */
+.dsub{display:block;font-size:8.5px;color:var(--faint);margin-top:7px;letter-spacing:.4px;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dest:hover .dsub{color:var(--muted)}
+.go{position:absolute;right:11px;top:50%;transform:translateY(-50%);
+ font-size:10px;font-weight:800;color:var(--accent);opacity:0;transition:opacity .14s}
+.dest:hover .go{opacity:1}
+
+:root{color-scheme:dark}
+*{scrollbar-width:thin;scrollbar-color:#3b3b3b transparent}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#3b3b3b;border-radius:8px;
+ border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:#525252;background-clip:content-box}
+</style></head><body>
+
+<div class="hd">
+  <div class="brand">WCStudios</div>
+  <div class="ttl"><span class="lamp"></span>Navigation</div>
+</div>
+<div class="body" id="body"></div>
+
+<script>
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -.&";
+
+const GROUPS = [
+  {g:"Studio", items:[
+    {n:"Website",   d:"wcstudios.co",        u:"https://www.wcstudios.co"},
+    {n:"Dropbox",   d:"WCStudios Team",      u:"https://www.dropbox.com/home/WCStudios%20Team"},
+    {n:"Instagram", d:"@wcstudios.co",       u:"https://www.instagram.com/wcstudios.co/"},
+    {n:"Vimeo",     d:"vimeo.com/wcstudios", u:"https://vimeo.com/wcstudios"}
+  ]},
+  {g:"Music licensing", items:[
+    {n:"Audiio",    d:"audiio.com",          u:"https://audiio.com/"},
+    {n:"Musicbed",  d:"musicbed.com/songs",  u:"https://www.musicbed.com/songs"}
+  ]}
+];
+const FLAT = GROUPS.flatMap(x => x.items);
+const NAMEW = Math.max(...FLAT.map(i => i.n.length));   // one grid width for all of them
+
+const fit = (s,n) => { s = String(s).toUpperCase();
+  return (s.length > n ? s.slice(0,n-1) + "." : s).padEnd(n," "); };
+const cells = (t,n) => '<span class="flaps">' + [...fit(t,n)].map(ch =>
+  '<span class="fl'+(ch===" "?" sp":"")+'" data-f="'+esc(ch)+'">'+esc(ch)+'</span>').join("") + '</span>';
+
+document.getElementById("body").innerHTML = GROUPS.map((sec,si) =>
+  '<div class="grp'+(si?" next":"")+'">'+esc(sec.g)+'</div><div class="stack">'
+  + sec.items.map(i => '<a class="dest" href="'+i.u+'" target="_blank" rel="noopener">'
+      + cells(i.n, NAMEW)
+      + '<span class="dsub">'+esc(i.d)+'</span>'
+      + '<span class="go">&#8599;</span></a>').join("")
+  + '</div>').join("");
+
+/* Stacked vertically, so the stagger runs top to bottom by row instead of left to
+   right by column — the board resolves along its own long axis, and so does this. */
+function riffle(){
+  document.querySelectorAll(".dest").forEach((row,ri) => {
+    row.querySelectorAll(".fl").forEach(el => {
+      const fin = el.dataset.f;
+      if(fin === " ") return;
+      let k = 0;
+      setTimeout(() => {
+        const t = setInterval(() => {
+          el.textContent = CHARS[Math.floor(Math.random()*CHARS.length)];
+          if(++k > 6){ clearInterval(t); el.textContent = fin; }
+        }, 40);
+      }, ri*70 + Math.random()*90);
+    });
+  });
+}
+riffle();
+document.addEventListener("visibilitychange", () => { if(!document.hidden) riffle(); });
+
+/* Re-riffle just the hovered row. Guarded per row so a fast mouse can't stack two
+   intervals on one cell and leave a letter stuck mid-shuffle. */
+document.querySelectorAll(".dest").forEach(a => {
+  let live = false;
+  a.addEventListener("mouseenter", () => {
+    if(live) return;
+    live = true;
+    let done = 0;
+    const els = [...a.querySelectorAll(".fl")].filter(el => el.dataset.f !== " ");
+    els.forEach(el => {
+      const fin = el.dataset.f;
+      let k = 0;
+      const t = setInterval(() => {
+        el.textContent = CHARS[Math.floor(Math.random()*CHARS.length)];
+        if(++k > 4){ clearInterval(t); el.textContent = fin; if(++done === els.length) live = false; }
+      }, 34);
+    });
+  });
+});
+</script>
+</body></html>
