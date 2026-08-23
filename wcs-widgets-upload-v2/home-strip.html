@@ -1,0 +1,293 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>WCStudios Home Strip</title>
+<style>
+:root{--bg:#fff;--line:#e9e9e7;--hair:#f2f2f0;--text:#191918;--muted:#5f5f5c;--faint:#8f8f8b;
+ --accent:#d4551f;--track:rgba(212,85,31,.14);--over:#c2410c;--good:#15803d;
+ --hover:rgba(0,0,0,.035)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f0f0f;--line:#242424;--hair:#1c1c1c;--text:#f0f0f0;
+ --muted:#a3a39e;--faint:#7c7c78;--accent:#f97b47;--track:rgba(249,123,71,.16);--over:#ff8a6b;
+ --good:#81b29a;--hover:rgba(255,255,255,.04)}}
+*{margin:0;box-sizing:border-box}
+html,body{height:100%;width:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);
+ -webkit-font-smoothing:antialiased}
+
+.strip{display:flex;height:100%;width:100%;overflow-x:auto}
+/* The panel centres a fixed-height inner block rather than its own ragged
+   content. That way the group sits centred in the strip AND all four labels
+   land on the same line — centring each panel's own content would do one or
+   the other, never both. */
+.panel{flex:1 1 0;min-width:196px;padding:16px clamp(15px,1.5vw,20px);
+ border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center}
+.panel:last-child{border-right:none}
+.inner{width:100%;min-height:136px}
+
+.k{font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--faint);font-weight:700}
+.big{font-size:clamp(28px,3vw,35px);font-weight:800;letter-spacing:-1.7px;line-height:1;margin-top:11px}
+.when{font-size:clamp(23px,2.5vw,28px);font-weight:800;letter-spacing:-1.2px;line-height:1;margin-top:11px}
+.sub{font-size:10.5px;color:var(--faint);margin-top:7px;line-height:1.45}
+.sub b{color:var(--muted);font-weight:700}
+.warn{color:var(--over);font-weight:800}
+
+/* Clock — tabular figures on purpose. This is the one number that rewrites
+   itself every second, and proportional digits make the line twitch. */
+.clock{display:flex;align-items:baseline;gap:5px;margin-top:11px;font-variant-numeric:tabular-nums}
+.hhmm{font-size:clamp(32px,3.5vw,41px);font-weight:800;letter-spacing:-2.1px;line-height:1}
+.ss{font-size:clamp(12px,1.3vw,15px);font-weight:800;letter-spacing:-.5px;color:var(--accent)}
+.mer{font-size:9.5px;font-weight:800;letter-spacing:1px;color:var(--faint)}
+.date{font-size:11.5px;color:var(--muted);margin-top:9px;font-weight:600}
+
+.week{display:flex;gap:5px;margin-top:11px}
+.wd{flex:1;text-align:center;font-size:8.5px;font-weight:800;letter-spacing:.5px;color:var(--faint);
+ padding:5px 0 6px;border-radius:5px;border:1px solid transparent}
+.wd.on{color:#fff;background:var(--accent);border-color:var(--accent)}
+.wd.past{opacity:.42}
+
+/* Clickable rows — at rest they're just a hairline; the tint and the arrow
+   only show on hover, so the strip stays quiet until you reach for it. */
+.row{display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;
+ border-top:1px solid var(--hair);margin:11px -7px 0;padding:9px 7px 3px;
+ border-radius:7px;transition:background .12s}
+.row:hover{background:var(--hover)}
+.rn{flex:1 1 auto;min-width:0;font-size:11.5px;font-weight:700;line-height:1.35;
+ display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dot{width:5px;height:5px;border-radius:50%;flex:0 0 auto}
+.d-rev{background:var(--accent)}.d-del{background:var(--good)}.d-over{background:var(--over)}
+.chip{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+ color:var(--accent);background:var(--track);padding:3px 7px;border-radius:5px;white-space:nowrap}
+.chip.unit{text-transform:none;letter-spacing:.2px}
+.chip.hot{color:var(--over);background:color-mix(in srgb,var(--over) 13%,transparent)}
+.arw{opacity:0;transition:opacity .12s;color:var(--accent);font-weight:800;font-size:10px;flex:0 0 auto}
+.row:hover .arw,.ping:hover .arw{opacity:1}
+
+.shoot{display:block;text-decoration:none;color:inherit;margin:0 -7px;padding:0 7px 4px;
+ border-radius:7px;transition:background .12s}
+.shoot:hover{background:var(--hover)}
+.shoot .line{display:flex;align-items:center;gap:6px;margin-top:9px}
+.shoot .what{font-size:10.5px;color:var(--muted);margin-top:7px;line-height:1.4;
+ display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+.pings{display:flex;flex-direction:column;margin-top:7px}
+.ping{display:flex;gap:8px;align-items:flex-start;text-decoration:none;color:inherit;
+ padding:6px 7px;margin:0 -7px;border-radius:7px;transition:background .12s}
+.ping:hover{background:var(--hover)}
+.ping .dot{margin-top:5px}
+.ping .pt{display:block;flex:1 1 auto;min-width:0}
+.ping .pw{display:block;font-size:11px;font-weight:700;line-height:1.3;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ping .pm{display:block;font-size:9.5px;color:var(--faint);margin-top:2px;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ping .pa{font-size:9px;color:var(--faint);flex:0 0 auto;margin-top:1px;font-variant-numeric:tabular-nums}
+
+/* Mobile: four across becomes a 2x2 stack, same as the finance strip. */
+@media (max-width:640px){
+  .strip{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+   height:100%;width:100%;overflow:hidden}
+  .panel{min-width:0;padding:12px 13px;
+   border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .panel:nth-child(2n){border-right:none}
+  .panel:nth-child(n+3){border-bottom:none}
+  .inner{min-height:0}
+  .k{font-size:8px;letter-spacing:.8px}
+  .big{font-size:24px;letter-spacing:-1.1px;margin-top:7px}
+  .hhmm{font-size:27px;letter-spacing:-1.3px}
+  .ss{font-size:11px}
+  .when{font-size:19px;letter-spacing:-.9px;margin-top:7px}
+  .sub{font-size:9.5px;margin-top:5px}
+  .date{font-size:9.5px;margin-top:6px}
+  .week{margin-top:8px;gap:3px}
+  .wd{font-size:7.5px;padding:4px 0 5px}
+  .row{margin-top:8px;padding-top:7px}
+  .rn{font-size:10.5px;-webkit-line-clamp:2}
+  .ping .pw{font-size:10px}.ping .pm{font-size:8.5px}
+  .shoot .what{font-size:9.5px}
+}
+
+/* Native scrollbars render light-mode white on a dark panel unless the page
+   declares which way it leans. Declare it, then restyle the bar so it reads as
+   part of the widget instead of the browser. Kept last on purpose — an earlier
+   version of this sat above the dark media query and was silently overridden. */
+:root{color-scheme:light dark}
+*{scrollbar-width:thin;scrollbar-color:#c9c9c7 transparent}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#c9c9c7;border-radius:9px;
+ border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:#aeaeac;background-clip:content-box}
+::-webkit-scrollbar-corner{background:transparent}
+@media (prefers-color-scheme:dark){
+  *{scrollbar-color:#3b3b3b transparent}
+  ::-webkit-scrollbar-thumb{background:#3b3b3b;background-clip:content-box}
+  ::-webkit-scrollbar-thumb:hover{background:#525252;background-clip:content-box}
+}
+</style></head><body>
+
+<div class="strip">
+
+  <div class="panel"><div class="inner">
+    <div class="k">WCStudios</div>
+    <div class="clock">
+      <span class="hhmm" id="hhmm">--:--</span><span class="ss" id="ss">00</span><span class="mer" id="mer"></span>
+    </div>
+    <div class="date" id="date">—</div>
+    <div class="week" id="week"></div>
+  </div></div>
+
+  <div class="panel"><div class="inner">
+    <div class="k">Work in flight</div>
+    <div class="big" id="nOpen">—</div>
+    <div class="sub" id="sOpen">—</div>
+    <a class="row" id="overdue" target="_blank" rel="noopener">
+      <span class="dot d-over"></span>
+      <span class="rn" id="oName">—</span>
+      <span class="chip hot unit" id="oDays"></span>
+      <span class="arw">↗</span>
+    </a>
+  </div></div>
+
+  <div class="panel"><div class="inner">
+    <div class="k">Pings</div>
+    <div class="pings" id="pings"></div>
+  </div></div>
+
+  <div class="panel"><div class="inner">
+    <div class="k">Next shoot</div>
+    <a class="shoot" id="shoot" target="_blank" rel="noopener">
+      <span class="when" id="sWhen">—</span>
+      <span class="line"><span class="chip" id="sAway">—</span><span class="arw">↗</span></span>
+      <span class="what" id="sWhat">—</span>
+    </a>
+  </div></div>
+
+</div>
+
+<script>
+/* Notion side peek: landing on the Home page with ?p=<task>&pm=s opens that
+   task in the right-hand peek. An embed can't drive Notion's own router across
+   origins, so these open a tab rather than peeking in place. */
+const HOME = "86b6278818f54a438240f0422f3d4b07";
+const peek = id => "https://www.notion.so/" + HOME + "?p=" + String(id).replace(/-/g,"") + "&pm=s";
+
+/* ── Baked snapshot ───────────────────────────────────────────
+   Counted out of the Tasks and Clients databases. Edit here, or drop a
+   home-live.json beside this file with the same shape and it takes over —
+   see the live overlay at the bottom. */
+const DATA = {
+  updated: "2026-08-23",
+  tasks: { open: 29, inPost: 8, overdue: 12 },
+  mostOverdue: {
+    name: "MN Wild — SIF Pilot Program Spotlights (Langford Park)",
+    id: "329421efc7668006b7bad4e77448cda6", days: 100
+  },
+  pings: [
+    { kind:"rev", who:"DripDrop",       what:"left revisions",
+      task:"“What’s In Your Bottle” Campaign",  id:"36e421efc76680508537f8e3888b0d04", ago:"9d" },
+    { kind:"rev", who:"Robert Thomas",  what:"left revisions",
+      task:"Neighborhood Drone Shoots",         id:"4bd2b506ce2c4cd3b1c4c1efaa817029", ago:"13d" },
+    { kind:"del", who:"RBC Wealth",     what:"delivered",
+      task:"The Great Northern Advisor Shoot",  id:"3a6421efc766815baf3dd4bb20a726ac", ago:"3d" }
+  ],
+  nextShoot: {
+    name:"Walser — 2026 CJD Dealership Videos", id:"3ab421efc76681d9afcfdd8ffdf24a1c",
+    date:"2026-08-27", time:"9:00 AM"
+  }
+};
+
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pad = n => String(n).padStart(2,"0");
+
+function tick(){
+  const now = new Date();
+  let h = now.getHours();
+  const merid = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  hhmm.textContent = h + ":" + pad(now.getMinutes());
+  ss.textContent   = pad(now.getSeconds());
+  mer.textContent  = merid;
+  date.textContent = now.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
+
+  const DOW = ["S","M","T","W","T","F","S"];
+  week.innerHTML = DOW.map((d,i) =>
+    '<div class="wd' + (i === now.getDay() ? " on" : i < now.getDay() ? " past" : "") + '">'+d+'</div>'
+  ).join("");
+}
+tick();
+setInterval(tick, 1000);
+
+function paint(D){
+  const t = D.tasks || {}, o = D.mostOverdue || {}, s = D.nextShoot || {};
+
+  nOpen.textContent = t.open != null ? t.open : "—";
+  sOpen.innerHTML = '<b>' + (t.inPost || 0) + '</b> in post'
+    + (t.overdue ? ' · <span class="warn">' + t.overdue + ' overdue</span>' : '');
+
+  if(o.name){
+    oName.textContent = o.name;
+    oDays.textContent = o.days != null ? o.days + "d over" : "";
+    overdue.href = peek(o.id);
+    overdue.style.display = "";
+  } else {
+    overdue.style.display = "none";
+  }
+
+  document.getElementById("pings").innerHTML = (D.pings || []).map(p =>
+    '<a class="ping" href="'+peek(p.id)+'" target="_blank" rel="noopener">'
+    + '<span class="dot d-'+(p.kind === "del" ? "del" : "rev")+'"></span>'
+    + '<span class="pt"><span class="pw">'+esc(p.who)+' '+esc(p.what)+'</span>'
+    +   '<span class="pm">'+esc(p.task)+'</span></span>'
+    + '<span class="pa">'+esc(p.ago)+'</span></a>').join("");
+
+  if(s.date){
+    const iso = String(s.date).slice(0,10);
+    const d = new Date(iso + "T12:00:00");
+    sWhen.textContent = isNaN(d) ? "—"
+      : d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+
+    /* Whole days midnight to midnight, so "Tomorrow" stays "Tomorrow" all day
+       instead of flipping at some arbitrary hour. */
+    const mid = new Date(); mid.setHours(0,0,0,0);
+    const days = Math.round((new Date(iso + "T00:00:00") - mid) / 86400000);
+    sAway.textContent = days < 0 ? "Past" : days === 0 ? "Today"
+                      : days === 1 ? "Tomorrow" : "In " + days + " days";
+    sWhat.textContent = s.name + (s.time ? " · " + s.time : "");
+    shoot.href = peek(s.id);
+  } else {
+    sWhen.textContent = "None booked";
+    sAway.style.display = "none";
+    sWhat.textContent = "Nothing on the shoot calendar.";
+    shoot.removeAttribute("href");
+  }
+}
+paint(DATA);
+
+/* ── Live overlay (inert until something publishes it) ────────
+   Drop a home-live.json beside this file shaped like DATA above and the widget
+   switches to it. Until that file exists this fetch fails quietly and the baked
+   counts stand, so the strip is never blank.
+
+   Two sources, same trick as the invoice tracker: Pages sits on this origin and
+   purges on commit, raw.githubusercontent has a 5-minute edge cache. Ask both,
+   keep whichever reports the newer timestamp. */
+const LIVE_SRCS = [
+  "home-live.json",
+  "https://raw.githubusercontent.com/wcstudios/wcs-widgets/main/wcs-widgets-upload-v2/home-live.json"
+];
+let liveAt = null;
+
+function applyLive(){
+  const bust = "?t=" + Date.now();
+  Promise.all(LIVE_SRCS.map(u =>
+    fetch(u + bust, {cache:"no-store"}).then(r => r.ok ? r.json() : null).catch(() => null)
+  )).then(feeds => {
+    const live = feeds.filter(f => f && (f.tasks || f.pings))
+                      .sort((a,b) => String(b.updated||"").localeCompare(String(a.updated||"")))[0];
+    if(!live || live.updated === liveAt) return;
+    liveAt = live.updated;
+    paint(live);
+  }).catch(() => {});   // baked counts stand
+}
+applyLive();
+setInterval(applyLive, 180000);
+document.addEventListener("visibilitychange", () => { if(!document.hidden) applyLive(); });
+</script>
+</body></html>
