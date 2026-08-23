@@ -445,14 +445,13 @@ window.addEventListener("storage", e => {
    recoverable from Notion's trash rather than destroyed. Connection details are
    the same ones entered once in the builder's gear. */
 /* Retarget the tab the widget already sits in rather than opening a second one.
-   Notion's embed sandbox includes allow-top-navigation-by-user-activation, so a
-   real click may do this. If that flag ever goes away the navigation is refused
-   silently — hence the timer, which only runs if the frame survived, i.e. if
-   the navigation never happened. */
+   Notion's embed sandbox carries allow-top-navigation-by-user-activation, so a
+   click may do this. No timed fallback here on purpose — a timer cannot tell a
+   blocked navigation from a slow one, and guessing wrong opens the extra tab
+   it was supposed to prevent. */
 function openInNotion(url){
   if(!url) return;
-  try { window.top.location.href = url; } catch(e){}
-  setTimeout(() => { try { window.open(url, "_blank", "noopener"); } catch(e){} }, 600);
+  window.top.location.href = url;
 }
 
 const HANDOFF = "wcsInvoiceHandoff.v1";

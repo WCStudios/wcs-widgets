@@ -142,7 +142,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
     <div class="body">
     <div class="big" id="nOpen">—</div>
     <div class="sub" id="sOpen">—</div>
-    <a class="row" id="overdue" target="_top" onclick="openPeek(event)">
+    <a class="row" id="overdue" target="_top">
       <span class="dot d-over"></span>
       <span class="rn" id="oName">—</span>
       <span class="chip hot unit" id="oDays"></span>
@@ -161,7 +161,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
   <div class="panel"><div class="inner">
     <div class="k">Next shoot</div>
     <div class="body">
-    <a class="shoot" id="shoot" target="_top" onclick="openPeek(event)">
+    <a class="shoot" id="shoot" target="_top">
       <span class="when" id="sWhen">—</span>
       <span class="line"><span class="chip" id="sAway">—</span><span class="arw">↗</span></span>
       <span class="what" id="sWhat">—</span>
@@ -178,18 +178,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 const HOME = "86b6278818f54a438240f0422f3d4b07";
 const peek = id => "https://www.notion.so/" + HOME + "?p=" + String(id).replace(/-/g,"") + "&pm=s";
 
-/* Retarget the tab the widget is already sitting in rather than opening a new
-   one. Notion's embed sandbox includes allow-top-navigation-by-user-activation,
-   so this is permitted from a real click. If that flag ever goes away the
-   navigation is refused silently — hence the timer, which only ever runs when
-   the frame survived, i.e. when the navigation did not happen. */
-function openPeek(e){
-  const url = e.currentTarget && e.currentTarget.href;
-  if(!url) return;
-  e.preventDefault();
-  try { window.top.location.href = url; } catch(err){}
-  setTimeout(() => { try { window.open(url, "_blank", "noopener"); } catch(err){} }, 600);
-}
 
 /* ── Baked snapshot ───────────────────────────────────────────
    Counted out of the Tasks and Clients databases. Edit here, or drop a
@@ -254,7 +242,7 @@ function paint(D){
   }
 
   document.getElementById("pings").innerHTML = (D.pings || []).map(p =>
-    '<a class="ping" href="'+peek(p.id)+'" target="_top" onclick="openPeek(event)">'
+    '<a class="ping" href="'+peek(p.id)+'" target="_top">'
     + '<span class="dot d-'+(p.kind === "del" ? "del" : "rev")+'"></span>'
     + '<span class="pt"><span class="pw">'+esc(p.who)+' '+esc(p.what)+'</span>'
     +   '<span class="pm">'+esc(p.task)+'</span></span>'
