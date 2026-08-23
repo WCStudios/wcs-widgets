@@ -27,12 +27,37 @@ td.d{color:var(--muted);font-size:11px;line-height:1.45}
 .ctx b{color:var(--text);font-weight:700}
 .verdict{margin-top:16px;border-left:3px solid var(--accent);background:var(--soft);padding:11px 14px;
  border-radius:0 8px 8px 0;font-size:12.5px;line-height:1.55}
+.where{margin-top:14px;padding:13px 16px;border-radius:9px;font-size:14px;font-weight:800;line-height:1.4}
+.where small{display:block;font-size:11.5px;font-weight:500;margin-top:4px;opacity:.85}
+.w-yes{color:#fff;background:var(--ok)}
+.w-no{color:#fff;background:var(--bad)}
+
+/* Native scrollbars render light-mode white on a dark panel unless the page
+   declares which way it leans. Declare it, then restyle the bar so it reads as
+   part of the widget instead of the browser. Kept at the end of the sheet on
+   purpose — an earlier version of this sat above the dark media query and was
+   silently overridden. */
+:root{color-scheme:light dark}
+*{scrollbar-width:thin;scrollbar-color:#c9c9c7 transparent}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#c9c9c7;border-radius:9px;
+ border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:#aeaeac;background-clip:content-box}
+::-webkit-scrollbar-corner{background:transparent}
+@media (prefers-color-scheme:dark){
+  *{scrollbar-color:#3b3b3b transparent}
+  ::-webkit-scrollbar-thumb{background:#3b3b3b;background-clip:content-box}
+  ::-webkit-scrollbar-thumb:hover{background:#525252;background-clip:content-box}
+}
 </style></head><body>
 
 <div class="eyebrow">WCStudios · diagnostic</div>
 <h1>Notion embed sandbox probe</h1>
 <p class="lede">Determines exactly which network paths survive inside a Notion embed. Whether the
 invoice widgets can ever write back to Notion depends entirely on these five rows.</p>
+
+<div id="where"></div>
 
 <table>
   <thead><tr><th style="width:31%">Test</th><th style="width:17%">Result</th><th>Detail</th></tr></thead>
@@ -68,8 +93,8 @@ const TESTS = [
       x.send();
     }) },
 
-  { name: "dynamic <script> inject",
-    why: "What the widgets do today. Known to fail here — included as the control.",
+  { name: "dynamic script inject",
+    why: "What the widgets do today. Included as the control.",
     run: () => new Promise((res, rej) => {
       const s = document.createElement("script");
       s.src = "finance-data.js?probe=" + Date.now();
@@ -80,14 +105,30 @@ const TESTS = [
     }) },
 ];
 
+// Am I actually inside a Notion embed? Everything below is meaningless if not.
+const framed = window.top !== window.self;
+const w = document.getElementById("where");
+w.className = "where " + (framed ? "w-yes" : "w-no");
+w.innerHTML = framed
+  ? 'Running inside an embed — these results are the real answer.'
+  : 'This is a plain browser tab, NOT a Notion embed.'
+    + '<small>These results do not answer the question. Embed this page in Notion '
+    + 'with /embed and read it there.</small>';
+
 const rows = document.getElementById("rows");
 const results = [];
 
 TESTS.forEach((t, i) => {
   const tr = document.createElement("tr");
-  tr.innerHTML = '<td class="n">' + t.name + '</td>'
-    + '<td><span class="pill p-wait" id="p' + i + '">running</span></td>'
-    + '<td class="d"><span id="d' + i + '">' + t.why + '</span></td>';
+  // textContent, not innerHTML — a test name containing markup would otherwise
+  // be parsed as markup and silently destroy its own row.
+  const c1 = document.createElement("td"); c1.className = "n"; c1.textContent = t.name;
+  const c2 = document.createElement("td");
+  c2.innerHTML = '<span class="pill p-wait" id="p' + i + '">running</span>';
+  const c3 = document.createElement("td"); c3.className = "d";
+  const why = document.createElement("span"); why.id = "d" + i; why.textContent = t.why;
+  c3.appendChild(why);
+  tr.append(c1, c2, c3);
   rows.appendChild(tr);
 
   const done = (ok, detail) => {

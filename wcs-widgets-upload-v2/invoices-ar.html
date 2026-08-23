@@ -87,6 +87,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
   .amt{font-size:14px}
   .doc{display:none}   /* truncates to an ellipsis at this width - drop it */
 }
+
+/* Native scrollbars render light-mode white on a dark panel unless the page
+   declares which way it leans. Declare it, then restyle the bar so it reads as
+   part of the widget instead of the browser. Kept at the end of the sheet on
+   purpose — an earlier version of this sat above the dark media query and was
+   silently overridden. */
+:root{color-scheme:light dark}
+*{scrollbar-width:thin;scrollbar-color:#c9c9c7 transparent}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#c9c9c7;border-radius:9px;
+ border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:#aeaeac;background-clip:content-box}
+::-webkit-scrollbar-corner{background:transparent}
+@media (prefers-color-scheme:dark){
+  *{scrollbar-color:#3b3b3b transparent}
+  ::-webkit-scrollbar-thumb{background:#3b3b3b;background-clip:content-box}
+  ::-webkit-scrollbar-thumb:hover{background:#525252;background-clip:content-box}
+}
 </style></head><body>
 
 <div class="hd">
