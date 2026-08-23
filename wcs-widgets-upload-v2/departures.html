@@ -1,0 +1,170 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Departures</title>
+<style>
+/* Committed to one warm dark surface in both themes — a board is a piece of
+   hardware, and hardware doesn't repaint itself when the room lights change. */
+:root{--bg:#141210;--panel:#1b1815;--flap:#100e0c;--line:#2a2723;--hair:#221f1c;
+ --text:#f4f1ec;--muted:#a9a29a;--faint:#6f6862;--accent:#e2703a;--track:rgba(226,112,58,.15)}
+*{margin:0;box-sizing:border-box}
+html,body{height:100%;width:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);
+ -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;overflow:hidden}
+
+.hd{flex:0 0 auto;padding:16px 16px 13px}
+.brand{font-size:9px;letter-spacing:2.4px;text-transform:uppercase;color:var(--faint);font-weight:800}
+.ttl{display:flex;align-items:center;gap:7px;margin-top:6px;
+ font-size:13.5px;font-weight:800;letter-spacing:-.2px}
+.lamp{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:0 0 auto;
+ box-shadow:0 0 0 3px var(--track);animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.board{flex:1;min-height:0;overflow-y:auto;padding:0 16px}
+/* One grid for the whole board, so the header and every row share the same two
+   column tracks. Rows laid out individually were what made it look crooked. */
+.grid{display:grid;grid-template-columns:1fr;border:1px solid var(--line);border-radius:9px;
+ overflow:hidden;background:var(--line);gap:1px}
+.hrow,.row{background:var(--flap);display:block;text-decoration:none;color:inherit}
+.hrow{padding:7px 11px;display:flex;justify-content:space-between;align-items:center}
+.hrow span{font-size:7.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);font-weight:800}
+.row{padding:11px 11px 10px;transition:background .14s}
+.row:hover{background:#151210}
+
+/* Split-flap line — every row renders exactly CELLS cells, padded with blanks,
+   so the character grid is identical top to bottom and nothing drifts. */
+.flaps{display:flex;gap:1.5px}
+.fl{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:10.5px;font-weight:700;line-height:1;
+ width:10px;height:16px;flex:0 0 10px;
+ display:flex;align-items:center;justify-content:center;
+ background:#1e1a17;border-radius:2px;color:var(--text);position:relative;overflow:hidden}
+.fl::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(0,0,0,.6)}
+.fl.sp{background:transparent}
+.row.shoot .fl:not(.sp){color:var(--accent)}
+
+.meta{display:flex;align-items:baseline;gap:0;margin-top:8px;
+ font-size:9px;letter-spacing:.9px;text-transform:uppercase;font-weight:800;color:var(--faint)}
+.m-date{flex:0 0 54px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.m-client{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.m-t{flex:0 0 40px;text-align:right;font-variant-numeric:tabular-nums}
+.row.shoot .m-t{color:var(--accent)}
+
+.ft{flex:0 0 auto;padding:12px 16px 14px;border-top:1px solid var(--line);background:var(--panel)}
+.ftk{font-size:7.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);
+ font-weight:800;margin-bottom:8px}
+.dock{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.dk{height:28px;border-radius:7px;border:1px solid var(--line);background:var(--flap);
+ display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;
+ letter-spacing:.1px;color:var(--muted);text-decoration:none;transition:all .14s;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px}
+.dk:hover{border-color:var(--accent);color:var(--accent);background:var(--track)}
+
+@media (max-width:260px){ .dock{grid-template-columns:1fr 1fr} }
+
+:root{color-scheme:dark}
+*{scrollbar-width:thin;scrollbar-color:#332e2a transparent}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#332e2a;border-radius:8px;
+ border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:#48413b;background-clip:content-box}
+</style></head><body>
+
+<div class="hd">
+  <div class="brand">WCStudios</div>
+  <div class="ttl"><span class="lamp"></span>Departures</div>
+</div>
+<div class="board"><div class="grid" id="grid"></div></div>
+<div class="ft">
+  <div class="ftk">Quick links</div>
+  <div class="dock" id="dock"></div>
+</div>
+
+<script>
+const HOME = "86b6278818f54a438240f0422f3d4b07";
+const peek = id => "https://www.notion.so/" + HOME + "?p=" + String(id).replace(/-/g,"") + "&pm=s";
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const LINKS = [
+  {n:"Website",   u:"https://www.wcstudios.co"},
+  {n:"Dropbox",   u:"https://www.dropbox.com/home/WCStudios%20Team"},
+  {n:"Instagram", u:"https://www.instagram.com/wcstudios.co/"},
+  {n:"Vimeo",     u:"https://vimeo.com/wcstudios"},
+  {n:"Audiio",    u:"https://audiio.com/"},
+  {n:"Musicbed",  u:"https://www.musicbed.com/songs"}
+];
+
+/* `flap` is what rides the split-flap line. It carries the PROJECT, not the
+   client — three consecutive TRADITION rows read as a stutter, whereas the
+   projects are all distinct. The client moves to the meta line underneath. */
+const BOARD = [
+  {kind:"due",  date:"2026-08-24", flap:"HONDA DEALERSHIP",  client:"Walser",    id:"3a5421efc766817d8024c961be3728db"},
+  {kind:"shoot",date:"2026-08-27", flap:"CJD DEALERSHIP",    client:"Walser",    id:"3ab421efc76681d9afcfdd8ffdf24a1c"},
+  {kind:"due",  date:"2026-08-28", flap:"GREAT NORTHERN",    client:"RBC",       id:"3a6421efc766815baf3dd4bb20a726ac"},
+  {kind:"due",  date:"2026-08-31", flap:"HF GOLF TOURNEY",   client:"Pulltab",   id:"3c2421efc766805b8bb8f3c926d22b34"},
+  {kind:"shoot",date:"2026-09-01", flap:"DEV SPOTLIGHT",     client:"Tradition", id:"3b8421efc766813a8f62d2609d4502e1"},
+  {kind:"due",  date:"2026-09-02", flap:"EMPLOYEE RETREAT",  client:"Tradition", id:"1b96e02b4ebf4d33b116ba8f9a2cc5e8"},
+  {kind:"shoot",date:"2026-09-03", flap:"PARADE OF HOMES",   client:"Tradition", id:"3b8421efc76681378e88d42418a26c21"},
+  {kind:"shoot",date:"2026-09-09", flap:"HAZELTINE EVENT",   client:"Tradition", id:"37c421efc766815fb90af86cfd418199"},
+  {kind:"shoot",date:"2026-09-17", flap:"GATEWAY ADVISORS",  client:"RBC",       id:"3b9421efc766819b9bbed20261528a12"}
+];
+
+const CELLS = 18;                    // every row renders exactly this many
+const MON = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -.&";
+const today = new Date(); today.setHours(0,0,0,0);
+const out = iso => Math.round((new Date(iso+"T00:00:00") - today)/86400000);
+
+/* Pad or clip to exactly CELLS so the grid never drifts between rows. */
+function fit(s){
+  s = String(s).toUpperCase();
+  return (s.length > CELLS ? s.slice(0, CELLS-1) + "." : s).padEnd(CELLS, " ");
+}
+function cells(text){
+  return '<span class="flaps">' + [...fit(text)].map((ch,i) =>
+    '<span class="fl'+(ch===" "?" sp":"")+'" data-f="'+esc(ch)+'" data-i="'+i+'">'+esc(ch)+'</span>'
+  ).join("") + '</span>';
+}
+
+document.getElementById("grid").innerHTML =
+  '<div class="hrow"><span>Project</span><span>Date · Client · Out</span></div>'
+  + BOARD.map(b => {
+      const d = new Date(b.date+"T12:00:00");
+      const o = out(b.date);
+      /* Day is zero-padded so AUG 24 and SEP 01 occupy the same width and the
+         meta column stays flush down the board. */
+      const day = String(d.getDate()).padStart(2,"0");
+      const t = o === 0 ? "TODAY" : o === 1 ? "T-1" : "T-" + o;
+      return '<a class="row '+(b.kind==="shoot"?"shoot":"")+'" href="'+peek(b.id)+'" target="_top">'
+        + cells(b.flap)
+        + '<span class="meta">'
+        +   '<span class="m-date">'+MON[d.getMonth()]+' '+day+'</span>'
+        +   '<span class="m-client">'+esc(b.client)+' · '+(b.kind==="shoot"?"Shoot":"Deliver")+'</span>'
+        +   '<span class="m-t">'+t+'</span>'
+        + '</span></a>';
+    }).join("");
+
+document.getElementById("dock").innerHTML = LINKS.map(l =>
+  '<a class="dk" href="'+l.u+'" target="_blank" rel="noopener">'+esc(l.n)+'</a>').join("");
+
+/* Riffle: cells cycle through the character set then settle, staggered by
+   column so the board resolves left to right the way a real one does. */
+function riffle(){
+  document.querySelectorAll(".fl").forEach(el => {
+    const fin = el.dataset.f;
+    if(fin === " ") return;
+    const delay = (+el.dataset.i) * 34 + Math.random()*70;
+    let n = 0;
+    setTimeout(() => {
+      const t = setInterval(() => {
+        el.textContent = CHARS[Math.floor(Math.random()*CHARS.length)];
+        if(++n > 6){ clearInterval(t); el.textContent = fin; }
+      }, 40);
+    }, delay);
+  });
+}
+riffle();
+/* Only re-riffle when the tab comes back into view — a board that reshuffles
+   on a timer while you're reading it is a toy, not an instrument. */
+document.addEventListener("visibilitychange", () => { if(!document.hidden) riffle(); });
+</script>
+</body></html>
