@@ -246,7 +246,7 @@ function render(D){
 let current = null;
 function open_(inv){
   current = inv;
-  if(!inv.pdfUrl){ if(inv.notionUrl) window.open(inv.notionUrl, "_blank"); return; }
+  if(!inv.pdfUrl){ openInNotion(inv.notionUrl); return; }
   document.getElementById("ovt").innerHTML =
     inv.client + " \u2014 " + inv.name.replace(inv.client + " - ","")
     + '<small>' + usd(inv.amount) + ' \u00b7 issued ' + fmtDate(inv.invoiceDate)
@@ -335,7 +335,7 @@ document.getElementById("ovX").addEventListener("click", close_);
 document.getElementById("ov").addEventListener("click", e => { if(e.target.id === "ov") close_(); });
 document.addEventListener("keydown", e => { if(e.key === "Escape") close_(); });
 document.getElementById("ovNew").addEventListener("click", () => current && window.open(current.pdfUrl, "_blank"));
-document.getElementById("ovNotion").addEventListener("click", () => current && window.open(current.notionUrl, "_blank"));
+document.getElementById("ovNotion").addEventListener("click", () => current && openInNotion(current.notionUrl));
 
 function load(){
   // Try the published feed first, fall back to a sibling finance-data.js
@@ -444,6 +444,17 @@ window.addEventListener("storage", e => {
    Deleting reuses the worker's void action, which archives the Notion row —
    recoverable from Notion's trash rather than destroyed. Connection details are
    the same ones entered once in the builder's gear. */
+/* Retarget the tab the widget already sits in rather than opening a second one.
+   Notion's embed sandbox includes allow-top-navigation-by-user-activation, so a
+   real click may do this. If that flag ever goes away the navigation is refused
+   silently — hence the timer, which only runs if the frame survived, i.e. if
+   the navigation never happened. */
+function openInNotion(url){
+  if(!url) return;
+  try { window.top.location.href = url; } catch(e){}
+  setTimeout(() => { try { window.open(url, "_blank", "noopener"); } catch(e){} }, 600);
+}
+
 const HANDOFF = "wcsInvoiceHandoff.v1";
 const CONN = "wcsWorkerConn.v1";
 const BUILDER_PAGE = "https://app.notion.com/p/3c2421efc76680a796b6ce25ac3768b8";
@@ -460,8 +471,8 @@ function editInBuilder(row){
     flash("This browser won't allow the handoff");
     return;
   }
-  const w = window.open(BUILDER_PAGE, "_blank");
-  flash(w ? "Opening in the builder…" : "Open the Invoice Builder page — it's loaded and waiting");
+  openInNotion(BUILDER_PAGE);
+  flash("Opening in the builder…");
 }
 
 async function removeInvoice(row, btn){
