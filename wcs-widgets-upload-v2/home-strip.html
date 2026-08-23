@@ -4,7 +4,7 @@
 :root{--bg:#fff;--line:#e9e9e7;--hair:#f2f2f0;--text:#191918;--muted:#5f5f5c;--faint:#8f8f8b;
  --accent:#d4551f;--track:rgba(212,85,31,.14);--over:#c2410c;--good:#15803d;
  --hover:rgba(0,0,0,.035)}
-@media (prefers-color-scheme:dark){:root{--bg:#0f0f0f;--line:#242424;--hair:#1c1c1c;--text:#f0f0f0;
+@media (prefers-color-scheme:dark){:root{--bg:#191919;--line:#2c2c2c;--hair:#242424;--text:#f0f0f0;
  --muted:#a3a39e;--faint:#7c7c78;--accent:#f97b47;--track:rgba(249,123,71,.16);--over:#ff8a6b;
  --good:#81b29a;--hover:rgba(255,255,255,.04)}}
 *{margin:0;box-sizing:border-box}
@@ -20,27 +20,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .panel{flex:1 1 0;min-width:196px;padding:16px clamp(15px,1.5vw,20px);
  border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center}
 .panel:last-child{border-right:none}
-.inner{width:100%;min-height:136px}
+.inner{width:100%;min-height:142px;display:flex;flex-direction:column}
+.body{flex:1;display:flex;flex-direction:column;justify-content:center}
 
 .k{font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--faint);font-weight:700}
-.big{font-size:clamp(28px,3vw,35px);font-weight:800;letter-spacing:-1.7px;line-height:1;margin-top:11px}
-.when{font-size:clamp(23px,2.5vw,28px);font-weight:800;letter-spacing:-1.2px;line-height:1;margin-top:11px}
+.big{font-size:clamp(30px,3.2vw,38px);font-weight:800;letter-spacing:-1.9px;line-height:1}
+.when{font-size:clamp(24px,2.7vw,31px);font-weight:800;letter-spacing:-1.3px;line-height:1}
 .sub{font-size:10.5px;color:var(--faint);margin-top:7px;line-height:1.45}
 .sub b{color:var(--muted);font-weight:700}
 .warn{color:var(--over);font-weight:800}
 
 /* Clock — tabular figures on purpose. This is the one number that rewrites
    itself every second, and proportional digits make the line twitch. */
-.clock{display:flex;align-items:baseline;gap:5px;margin-top:11px;font-variant-numeric:tabular-nums}
-.hhmm{font-size:clamp(32px,3.5vw,41px);font-weight:800;letter-spacing:-2.1px;line-height:1}
-.ss{font-size:clamp(12px,1.3vw,15px);font-weight:800;letter-spacing:-.5px;color:var(--accent)}
-.mer{font-size:9.5px;font-weight:800;letter-spacing:1px;color:var(--faint)}
+.clock{display:flex;align-items:baseline;gap:6px;font-variant-numeric:tabular-nums}
+.hhmm{font-size:clamp(36px,4.1vw,48px);font-weight:800;letter-spacing:-2.4px;line-height:1}
+.ss{font-size:clamp(13px,1.5vw,17px);font-weight:800;letter-spacing:-.6px;color:var(--accent)}
+.mer{font-size:10px;font-weight:800;letter-spacing:1px;color:var(--faint)}
 .date{font-size:11.5px;color:var(--muted);margin-top:9px;font-weight:600}
 
 .week{display:flex;gap:5px;margin-top:11px}
 .wd{flex:1;text-align:center;font-size:8.5px;font-weight:800;letter-spacing:.5px;color:var(--faint);
  padding:5px 0 6px;border-radius:5px;border:1px solid transparent}
 .wd.on{color:#fff;background:var(--accent);border-color:var(--accent)}
+.wd:not(.on){background:rgba(127,127,127,.07)}
 .wd.past{opacity:.42}
 
 /* Clickable rows — at rest they're just a hairline; the tint and the arrow
@@ -126,15 +128,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 
   <div class="panel"><div class="inner">
     <div class="k">WCStudios</div>
+    <div class="body">
     <div class="clock">
       <span class="hhmm" id="hhmm">--:--</span><span class="ss" id="ss">00</span><span class="mer" id="mer"></span>
     </div>
     <div class="date" id="date">—</div>
     <div class="week" id="week"></div>
+    </div>
   </div></div>
 
   <div class="panel"><div class="inner">
     <div class="k">Work in flight</div>
+    <div class="body">
     <div class="big" id="nOpen">—</div>
     <div class="sub" id="sOpen">—</div>
     <a class="row" id="overdue" target="_blank" rel="noopener">
@@ -143,20 +148,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
       <span class="chip hot unit" id="oDays"></span>
       <span class="arw">↗</span>
     </a>
+    </div>
   </div></div>
 
   <div class="panel"><div class="inner">
     <div class="k">Pings</div>
+    <div class="body">
     <div class="pings" id="pings"></div>
+    </div>
   </div></div>
 
   <div class="panel"><div class="inner">
     <div class="k">Next shoot</div>
+    <div class="body">
     <a class="shoot" id="shoot" target="_blank" rel="noopener">
       <span class="when" id="sWhen">—</span>
       <span class="line"><span class="chip" id="sAway">—</span><span class="arw">↗</span></span>
       <span class="what" id="sWhat">—</span>
     </a>
+    </div>
   </div></div>
 
 </div>
