@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Link probe</title>
+<style>
+:root{--bg:#191919;--panel:#1f1f1f;--line:#2c2c2c;--text:#f0f0f0;--muted:#a3a39e;
+ --faint:#7c7c78;--accent:#f97b47;--track:rgba(249,123,71,.16);--ok:#81b29a;--no:#d96a5a}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;width:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);
+ -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;overflow:hidden}
+.hd{flex:0 0 auto;padding:15px 16px 12px}
+.brand{font-size:9px;letter-spacing:2.4px;text-transform:uppercase;color:var(--faint);font-weight:800}
+.ttl{display:flex;align-items:center;gap:7px;margin-top:6px;font-size:13.5px;font-weight:800;letter-spacing:-.2px}
+.lamp{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:0 0 auto;
+ box-shadow:0 0 0 3px var(--track)}
+.body{flex:1;min-height:0;overflow-y:auto;padding:0 16px 16px}
+
+.kv{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 11px;margin-bottom:12px}
+.k{display:block;font-size:7.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);font-weight:800}
+.v{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;
+ color:var(--text);margin-top:5px;word-break:break-all;line-height:1.5}
+.verdict{display:block;margin-top:9px;font-size:11px;font-weight:800}
+.verdict.app{color:var(--ok)}
+.verdict.web{color:var(--muted)}
+
+.grp{font-size:7.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--faint);
+ font-weight:800;margin:0 0 8px}
+.t{display:block;text-decoration:none;color:inherit;background:var(--panel);
+ border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:7px;
+ transition:border-color .14s,background .14s;cursor:pointer;width:100%;text-align:left;font:inherit}
+.t:hover{border-color:rgba(249,123,71,.55);background:#232323}
+.tn{display:block;font-size:11px;font-weight:800;letter-spacing:-.1px}
+.td{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:8.5px;color:var(--faint);margin-top:4px;word-break:break-all}
+.hint{font-size:10px;color:var(--faint);line-height:1.55;margin-top:12px}
+
+:root{color-scheme:dark}
+*{scrollbar-width:thin;scrollbar-color:#3b3b3b transparent}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#3b3b3b;border-radius:8px;
+ border:3px solid transparent;background-clip:content-box}
+</style></head><body>
+
+<div class="hd">
+  <div class="brand">WCStudios</div>
+  <div class="ttl"><span class="lamp"></span>Link probe</div>
+</div>
+<div class="body">
+  <div class="kv">
+    <span class="k">User agent seen inside this embed</span>
+    <span class="v" id="ua">—</span>
+    <span class="verdict" id="verdict">—</span>
+  </div>
+  <div class="kv">
+    <span class="k">Frame</span>
+    <span class="v" id="frame">—</span>
+  </div>
+
+  <div class="grp">Tap each — which one lands on the Honda task?</div>
+  <div id="tests"></div>
+
+  <p class="hint">Each button tries a different way of asking Notion to open the same page.
+  Tell me which numbers work here and I'll wire that one into every widget.</p>
+</div>
+
+<script>
+const HOME = "86b6278818f54a438240f0422f3d4b07";
+const TASK = "3a5421efc766817d8024c961be3728db";
+const PATH = "www.notion.so/" + HOME + "?p=" + TASK + "&pm=s";
+const HTTPS = "https://" + PATH;
+const DEEP  = "notion://" + PATH;
+
+const ua = navigator.userAgent;
+document.getElementById("ua").textContent = ua;
+
+/* Notion's desktop shell is Electron and its mobile apps use a webview; both put
+   their own token in the UA. If none of these appear we are in a plain browser. */
+const inApp = /Notion|Electron/i.test(ua);
+const v = document.getElementById("verdict");
+v.textContent = inApp ? "Reads as: the Notion app" : "Reads as: a web browser";
+v.className = "verdict " + (inApp ? "app" : "web");
+
+/* Whether the embed can see its parent at all — top navigation depends on it. */
+let frame = "top === self: " + (window.top === window.self);
+try { frame += "  ·  top.location readable: " + (typeof window.top.location.href === "string"); }
+catch(e){ frame += "  ·  top.location readable: no (" + e.name + ")"; }
+document.getElementById("frame").textContent = frame;
+
+const TESTS = [
+  {n:"1 · https, target=_top",        d:HTTPS, go:() => { window.top.location.href = HTTPS; }},
+  {n:"2 · notion://, target=_top",    d:DEEP,  go:() => { window.top.location.href = DEEP;  }},
+  {n:"3 · notion://, this frame",     d:DEEP,  go:() => { window.location.href = DEEP;      }},
+  {n:"4 · notion://, new window",     d:DEEP,  go:() => { window.open(DEEP, "_blank");      }},
+  {n:"5 · https, new window",         d:HTTPS, go:() => { window.open(HTTPS, "_blank");     }}
+];
+
+document.getElementById("tests").innerHTML = TESTS.map((t,i) =>
+  '<button class="t" data-i="'+i+'"><span class="tn">'+t.n+'</span>'
+  + '<span class="td">'+t.d+'</span></button>').join("");
+
+document.querySelectorAll(".t").forEach(b =>
+  b.addEventListener("click", () => {
+    const t = TESTS[+b.dataset.i];
+    try { t.go(); }
+    catch(e){ b.querySelector(".td").textContent = "threw: " + e.name + " — " + e.message; }
+  }));
+</script>
+</body></html>
