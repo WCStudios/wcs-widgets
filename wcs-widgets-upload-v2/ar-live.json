@@ -1,15 +1,94 @@
 {
- "updated": "2026-08-25T21:08:18.290Z",
+ "updated": "2026-08-25T22:39:17.690Z",
  "source": "worker",
- "ar": [],
- "arAging": [],
- "arByClient": [],
+ "ar": [
+  {
+   "notionPageId": "3c7421ef-c766-819f-ac86-fcf7b4f71923",
+   "name": "Minnesota Wild - Invoice 0177",
+   "client": "Minnesota Wild",
+   "project": null,
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Monthly creative retainer — August 2026",
+     "detail": null,
+     "qty": 1,
+     "unit": "mo",
+     "rate": 0
+    },
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 0
+    },
+    {
+     "description": "Production day — half day",
+     "detail": null,
+     "qty": 1,
+     "unit": "day",
+     "rate": 0
+    },
+    {
+     "description": "Editing and post production",
+     "detail": null,
+     "qty": 1,
+     "unit": "hr",
+     "rate": 0
+    },
+    {
+     "description": "Mileage",
+     "detail": null,
+     "qty": 1,
+     "unit": "mi",
+     "rate": 0
+    },
+    {
+     "description": "Additional revision round",
+     "detail": "Beyond the two included in scope.",
+     "qty": 1,
+     "unit": null,
+     "rate": 0
+    },
+    {
+     "description": "Licensed music",
+     "detail": null,
+     "qty": 1,
+     "unit": null,
+     "rate": 0
+    }
+   ],
+   "threaded": false,
+   "amount": 0,
+   "status": "Draft",
+   "invoiceDate": "2026-08-25",
+   "dueDate": "2026-09-09",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3c7421efc766819fac86fcf7b4f71923",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  }
+ ],
+ "arAging": [
+  {
+   "bucket": "Not yet due",
+   "amount": 0
+  }
+ ],
+ "arByClient": [
+  {
+   "client": "Minnesota Wild",
+   "amount": 0
+  }
+ ],
  "summary": {
   "arTotal": 0,
   "arSent": 0,
   "arDraft": 0,
   "arOverdue": 0,
-  "arCount": 0,
-  "arDraftCount": 0
+  "arCount": 1,
+  "arDraftCount": 1
  }
 }
