@@ -421,11 +421,21 @@ function onInvoiceEvent(ev){
   const D = JSON.parse(JSON.stringify(shown));
   D.ar = D.ar || [];
   const inv = ev.invoice;
-  const match = r => (inv.notionPageId && r.notionPageId === inv.notionPageId)
-                  || (r.name && inv.name && r.name === inv.name);
+  /* Two rows can legitimately carry the same name — same client, same invoice
+     number, different Notion pages. Matching on name made deleting one of them
+     remove both from the view. The page id is the only safe key once a row has
+     one; the name is a fallback used solely to let a real row absorb the
+     optimistic placeholder that was drawn before any id existed. */
+  const sameId = r => !!(inv.notionPageId && r.notionPageId
+                         && r.notionPageId === inv.notionPageId);
+  const samePlaceholder = r => !r.notionPageId && r.pdfSource === "pending"
+                            && !!(r.name && inv.name && r.name === inv.name);
+  const match = r => sameId(r) || samePlaceholder(r);
 
   if(ev.kind === "deleted"){
-    D.ar = D.ar.filter(r => !match(r));
+    // A deletion has to be exact. Never let it take a namesake with it.
+    const doomed = inv.notionPageId ? sameId : (r => r.name === inv.name);
+    D.ar = D.ar.filter(r => !doomed(r));
     entomb(inv);
   } else {
     const row = {
@@ -479,7 +489,9 @@ function tombs(){
 function entomb(row){
   if(!row) return;
   const list = tombs();
-  list.push({id: row.notionPageId || null, name: row.name || null, at: Date.now()});
+  list.push({id: row.notionPageId || null,
+             name: row.notionPageId ? null : (row.name || null),
+             at: Date.now()});
   try { localStorage.setItem(TOMBS, JSON.stringify(list.slice(-50))); } catch(e){}
 }
 /* Anything the feed has already caught up on stops being filtered. */
@@ -492,8 +504,9 @@ function pruneTombs(feedUpdated){
 function withoutDeleted(feed){
   const live = pruneTombs(feed.updated);
   if(!live.length) return feed;
-  const gone = r => live.some(t =>
-    (t.id && r.notionPageId === t.id) || (t.name && r.name === t.name));
+  // Id first, and only fall back to the name for a tombstone that never had one.
+  const gone = r => live.some(t => t.id ? r.notionPageId === t.id
+                                        : !!(t.name && r.name === t.name));
   return {...feed, ar: (feed.ar || []).filter(r => !gone(r))};
 }
 function drainLog(){

@@ -277,9 +277,16 @@ function applyRows(live){
 
   for(const ev of timeline){
     const inv = ev.invoice; if(!inv) continue;
-    const hit = r => (inv.notionPageId && r.notionPageId === inv.notionPageId)
-                  || (r.name && inv.name && r.name === inv.name);
-    if(ev.kind === "deleted"){ rows = rows.filter(r => !hit(r)); continue; }
+    /* Same rule as the tracker: the id is the key once a row has one. Matching
+       on name let a delete of one row remove its namesake too. */
+    const sameId = r => !!(inv.notionPageId && r.notionPageId
+                           && r.notionPageId === inv.notionPageId);
+    const hit = r => sameId(r) || (!r.notionPageId && !!(r.name && inv.name && r.name === inv.name));
+    if(ev.kind === "deleted"){
+      const doomed = inv.notionPageId ? sameId : (r => r.name === inv.name);
+      rows = rows.filter(r => !doomed(r));
+      continue;
+    }
     const at = rows.findIndex(hit);
     const row = {notionPageId: inv.notionPageId || null, name: inv.name,
                  client: inv.client, amount: inv.amount || 0,
