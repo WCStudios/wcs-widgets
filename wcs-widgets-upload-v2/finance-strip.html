@@ -191,7 +191,18 @@ function load(){
     if(i >= srcs.length){ if(!rendered){ document.getElementById("cashSub").textContent = "data feed offline"; } return; }
     const sc = document.createElement("script");
     sc.src = srcs[i] + "?t=" + Date.now();
-    sc.onload = () => { sc.remove(); if(window.FINDATA){ D = window.FINDATA; render(); } else { tryLoad(srcs, i+1); } };
+    sc.onload = () => { sc.remove();
+      if(!window.FINDATA){ tryLoad(srcs, i+1); return; }
+      /* finance-data.js is the build-time snapshot. Assigning it wipes whatever
+         the live feed and the local event log had already put on screen — which
+         is why Outstanding kept snapping back to the baked figure on every
+         refresh and again every five minutes when this reloads. Re-apply both
+         immediately instead of waiting for the next poll. */
+      D = window.FINDATA;
+      render();
+      applyRows(null);        // local events first: instant, no network
+      applyLive();            // then reconcile against the published feed
+    };
     sc.onerror = () => { sc.remove(); tryLoad(srcs, i+1); };
     document.head.appendChild(sc);
   };

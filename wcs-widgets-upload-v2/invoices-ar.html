@@ -357,7 +357,17 @@ function load(){
     if(i >= srcs.length){ if(!rendered){ document.getElementById("sub").textContent = "data feed offline"; } return; }
     const sc = document.createElement("script");
     sc.src = srcs[i] + "?t=" + Date.now();
-    sc.onload = () => { sc.remove(); if(window.FINDATA) render(window.FINDATA); else tryLoad(srcs, i+1); };
+    sc.onload = () => { sc.remove();
+      if(!window.FINDATA){ tryLoad(srcs, i+1); return; }
+      /* Rendering the baked snapshot throws away whatever the live feed had
+         already applied. liveAt has to be cleared too, or applyLive sees the
+         same `updated` stamp it saw last time, decides nothing changed, and
+         leaves the stale snapshot on screen until the feed itself moves. */
+      render(window.FINDATA);
+      liveAt = null;
+      applyLive();
+      drainLog();
+    };
     sc.onerror = () => { sc.remove(); tryLoad(srcs, i+1); };
     document.head.appendChild(sc);
   };
