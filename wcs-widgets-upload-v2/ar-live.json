@@ -1,7 +1,54 @@
 {
- "updated": "2026-08-25T18:55:59.866Z",
+ "updated": "2026-08-25T18:56:38.429Z",
  "source": "worker",
  "ar": [
+  {
+   "notionPageId": "3c7421ef-c766-8138-ab7b-fbfc7cc38de5",
+   "name": "Minnesota Hockey - Invoice 0176",
+   "client": "Minnesota Hockey",
+   "project": null,
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Monthly creative retainer — August 2026",
+     "detail": null,
+     "qty": 1,
+     "unit": "mo",
+     "rate": 4000
+    },
+    {
+     "description": "Production day — half day",
+     "detail": null,
+     "qty": 1,
+     "unit": "day",
+     "rate": 0
+    },
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 0
+    },
+    {
+     "description": "Editing and post production",
+     "detail": null,
+     "qty": 1,
+     "unit": "hr",
+     "rate": 0
+    }
+   ],
+   "threaded": false,
+   "amount": 4000,
+   "status": "Draft",
+   "invoiceDate": "2026-08-25",
+   "dueDate": "2026-09-09",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3c7421efc7668138ab7bfbfc7cc38de5",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
   {
    "notionPageId": "3c7421ef-c766-8139-b610-f2709e1ce06a",
    "name": "Tradition Companies - Invoice 0175",
@@ -39,18 +86,22 @@
  "arAging": [
   {
    "bucket": "Not yet due",
-   "amount": 500
+   "amount": 4500
   }
  ],
  "arByClient": [
+  {
+   "client": "Minnesota Hockey",
+   "amount": 4000
+  },
   {
    "client": "Tradition Companies",
    "amount": 500
   }
  ],
  "summary": {
-  "arTotal": 500,
+  "arTotal": 4500,
   "arOverdue": 0,
-  "arCount": 1
+  "arCount": 2
  }
 }
