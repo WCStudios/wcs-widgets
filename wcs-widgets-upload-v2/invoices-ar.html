@@ -54,7 +54,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .del{flex:0 0 auto;width:20px;height:20px;padding:0;border-radius:6px;border:1px solid transparent;
  background:transparent;color:var(--faint);font-size:11px;line-height:1;cursor:pointer;
  opacity:0;transition:opacity .12s,color .12s,border-color .12s}
-.row:hover .del{opacity:1}
+.row:hover .del,.row:hover .edit{opacity:1}
+.edit{flex:0 0 auto;height:20px;padding:0 7px;border-radius:6px;border:1px solid var(--line);
+ background:transparent;color:var(--muted);font:inherit;font-size:9.5px;font-weight:800;
+ letter-spacing:.4px;text-transform:uppercase;cursor:pointer;opacity:0;transition:opacity .12s,
+ color .12s,border-color .12s}
+.edit:hover{color:var(--accent);border-color:var(--accent)}
 .del:hover{color:var(--down);border-color:var(--down)}
 .doc{font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--accent);
  opacity:.55;transition:opacity .12s;font-size:9px}
@@ -183,8 +188,9 @@ function render(D){
     const st = String(i.status || "");
     if(st === "Paid")  return {key:"paid",  label:"Paid",    cls:"c-paid"};
     if(st === "Draft") return {key:"draft", label:"Draft",   cls:"c-draft"};
+    // Overdue is checked before Sent so a late invoice reads as late, not sent.
     if((i.daysOverdue || 0) > 0) return {key:"over", label:"Overdue", cls:"c-over"};
-    return {key:"due", label:"Due", cls:"c-due"};
+    return {key:"due", label:"Sent", cls:"c-due"};
   };
 
   const marked  = ar.map(i => ({inv: i, st: state(i)}));
@@ -206,12 +212,13 @@ function render(D){
     const badge = i.pdfUrl ? ' \u00b7 <span class="doc">\u25A4 PDF</span>'
                 : (i.notionUrl ? ' \u00b7 <span class="doc none">\u2197 Notion</span>' : '');
     return '<div class="row is-' + m.st.key + '" data-i="' + x + '" title="'
-      + (i.pdfUrl ? "Open the invoice PDF" : "Open the Notion record") + ' \u00b7 double-click to edit">'
+      + (i.pdfUrl ? "Open the invoice PDF" : "Open the Notion record") + '">'
       + '<div class="r-id"><div class="r-cl">' + esc(i.client) + '</div>'
       +   '<div class="r-sub">' + esc(String(i.name || "").replace(i.client + " - ", ""))
       +     ' \u00b7 due ' + fmtDate(i.dueDate) + badge + '</div></div>'
       + '<div class="r-end"><div class="amt">' + usd(i.amount) + '</div>'
       +   '<span class="chip ' + m.st.cls + '">' + m.st.label + '</span></div>'
+      + '<button class="edit" data-edit="' + x + '" title="Open this invoice in the builder">Edit</button>'
       + '<button class="del" data-del="' + x + '" title="Delete this invoice">\u2715</button>'
       + '</div>';
   }).join("");
@@ -222,16 +229,22 @@ function render(D){
   rows.querySelectorAll(".row").forEach(el => {
     let timer = null;
     el.addEventListener("click", e => {
-      if(e.target.closest(".del")) return;          // delete handles itself
+      if(e.target.closest(".del") || e.target.closest(".edit")) return;
       clearTimeout(timer);
       timer = setTimeout(() => open_(ar[+el.dataset.i]), 260);
     });
     el.addEventListener("dblclick", e => {
-      if(e.target.closest(".del")) return;
+      if(e.target.closest(".del") || e.target.closest(".edit")) return;
       clearTimeout(timer);
       editInBuilder(ar[+el.dataset.i]);
     });
   });
+
+  rows.querySelectorAll("[data-edit]").forEach(btn =>
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      editInBuilder(ar[+btn.dataset.edit]);
+    }));
 
   rows.querySelectorAll("[data-del]").forEach(btn =>
     btn.addEventListener("click", e => {
@@ -451,6 +464,13 @@ window.addEventListener("storage", e => {
    it was supposed to prevent. */
 function openInNotion(url){
   if(!url) return;
+  // Inside the Notion app an https:// navigation from an embed is handed to the
+  // default browser, so hand the app its own scheme instead and stay put.
+  if(/Notion|Electron/i.test(navigator.userAgent)){
+    window.open(url.replace(/^https:\/\/app\.notion\.com/, "https://www.notion.so")
+                  .replace(/^https:\/\//, "notion://"), "_blank");
+    return;
+  }
   window.top.location.href = url;
 }
 
@@ -569,7 +589,7 @@ if(window.FINDATA){ render(window.FINDATA); rendered = true; }
 load();
 setInterval(load, 300000);
 setTimeout(applyLive, 400);
-setInterval(applyLive, 45000);
+setInterval(applyLive, 20000);
 // Coming back to the tab should feel current, not 45 seconds stale.
 document.addEventListener("visibilitychange", () => { if(!document.hidden) applyLive(); });
 </script></body></html>

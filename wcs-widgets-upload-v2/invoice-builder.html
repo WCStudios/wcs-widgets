@@ -1019,7 +1019,13 @@ $("bSend").addEventListener("click", async () => {
   const I = ready(true); if(!I) return;
   if(!I.payment.link) flag("Heads up: no pay-online link");
   $("bSend").disabled = true;
-  const ok = await fire("send", {...workerPayload(), notionPageId: editingPageId});
+  /* If this invoice has no row yet, create and send in a single worker call.
+     The widget POSTs no-cors and can never read a response, so it can never
+     learn the id "create" returns — sending separately used to arrive with a
+     null id, which is why the row stayed Draft and could not be reopened. */
+  const ok = editingPageId
+    ? await fire("send", {...workerPayload(), notionPageId: editingPageId})
+    : await fire("createAndSend", workerPayload());
   $("bSend").disabled = false;
   if(ok){
     if($("iStatus").value === "Draft"){ $("iStatus").value = "Sent"; paint(); }
