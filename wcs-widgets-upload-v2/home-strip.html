@@ -172,11 +172,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 </div>
 
 <script>
-/* Notion side peek: landing on the Home page with ?p=<task>&pm=s opens that
-   task in the right-hand peek. An embed can't drive Notion's own router across
-   origins, so these open a tab rather than peeking in place. */
-const HOME = "86b6278818f54a438240f0422f3d4b07";
-const peek = id => "https://www.notion.so/" + HOME + "?p=" + String(id).replace(/-/g,"") + "&pm=s";
+/* Opening a Notion page from inside an embed — measured, not assumed.
+   Two separate things were wrong before:
+
+   1. The URL. It pointed at the Home page id with ?p=<task>, so Notion loaded
+      Home *and then* peeked the task — that extra Home tab was ours, not
+      Notion's. Point straight at the task instead.
+   2. The scheme. Inside the desktop app (Electron) an https:// navigation
+      coming from an embed is treated as external and handed to the default
+      browser, which is why clicking a widget left Notion entirely. The app
+      answers to notion:// and stays put.
+
+   Not window.location.href / target="_self", whatever a recipe says: this
+   widget is an iframe, so those navigate the frame and blank the widget. */
+const IN_APP = /Notion|Electron/i.test(navigator.userAgent);
+const peek   = id => "https://www.notion.so/" + String(id).replace(/-/g,"") + "?pvs=25";
+const deep   = id => "notion://www.notion.so/" + String(id).replace(/-/g,"") + "?pvs=25";
+
+/* Anchors keep a real https href so hover, copy-link and the web app all still
+   behave; in the app the click is intercepted and re-sent as a deep link. */
+function bindPeek(a, id){
+  if(!id){ a.removeAttribute("href"); return; }
+  a.href = peek(id);
+  a.target = "_top";
+  a.onclick = IN_APP ? (e => { e.preventDefault(); window.open(deep(id), "_blank"); }) : null;
+}
+function bindAll(root){
+  (root || document).querySelectorAll("a[data-peek]").forEach(a => bindPeek(a, a.dataset.peek));
+}
 
 
 /* ── Baked snapshot ───────────────────────────────────────────
@@ -235,18 +258,19 @@ function paint(D){
   if(o.name){
     oName.textContent = o.name;
     oDays.textContent = o.days != null ? o.days + "d over" : "";
-    overdue.href = peek(o.id);
+    bindPeek(overdue, o.id);
     overdue.style.display = "";
   } else {
     overdue.style.display = "none";
   }
 
   document.getElementById("pings").innerHTML = (D.pings || []).map(p =>
-    '<a class="ping" href="'+peek(p.id)+'" target="_top">'
+    '<a class="ping" data-peek="'+esc(p.id)+'">'
     + '<span class="dot d-'+(p.kind === "del" ? "del" : "rev")+'"></span>'
     + '<span class="pt"><span class="pw">'+esc(p.who)+' '+esc(p.what)+'</span>'
     +   '<span class="pm">'+esc(p.task)+'</span></span>'
     + '<span class="pa">'+esc(p.ago)+'</span></a>').join("");
+  bindAll(document.getElementById("pings"));
 
   if(s.date){
     const iso = String(s.date).slice(0,10);
@@ -261,7 +285,7 @@ function paint(D){
     sAway.textContent = days < 0 ? "Past" : days === 0 ? "Today"
                       : days === 1 ? "Tomorrow" : "In " + days + " days";
     sWhat.textContent = s.name + (s.time ? " · " + s.time : "");
-    shoot.href = peek(s.id);
+    bindPeek(shoot, s.id);
   } else {
     sWhen.textContent = "None booked";
     sAway.style.display = "none";
