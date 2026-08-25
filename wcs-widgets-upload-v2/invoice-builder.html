@@ -909,13 +909,19 @@ function announce(kind){
       name: (I.client.name || "") + " - Invoice " + num + (project ? " - " + project : ""),
       client: I.client.name || "", project: project || null, terms: I.terms || null,
       items: I.items, amount: T.due,
-      status: $("iStatus").value === "Draft" ? "Draft" : "Outstanding",
+      status: $("iStatus").value === "Draft" ? "Draft" : "Sent",
       invoiceDate: I.date || null, dueDate: I.dueDate || null,
       threaded: editingThreaded
     }
   };
   try { new BroadcastChannel("wcs-invoices").postMessage(msg); } catch(e){}
   try { localStorage.setItem("wcsInvoiceEvent.v1", JSON.stringify(msg)); } catch(e){}
+  try {
+    const LOG = "wcsInvoiceLog.v1", cut = Date.now() - 30 * 60 * 1000;
+    const log = JSON.parse(localStorage.getItem(LOG) || "[]").filter(e => e && e.at > cut);
+    log.push(msg);
+    localStorage.setItem(LOG, JSON.stringify(log.slice(-25)));
+  } catch(e){}
 }
 
 async function fire(action, payload){
