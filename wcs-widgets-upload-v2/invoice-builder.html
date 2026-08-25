@@ -792,6 +792,7 @@ function monthName(iso){
   const d = iso ? new Date(iso + "T12:00:00") : new Date();
   return d.toLocaleDateString("en-US", {month: "long", year: "numeric"});
 }
+$("iNum").addEventListener("input", () => matchNumber());
 $("iDate").addEventListener("input", () => { syncDue(); paint(); persist(); });
 $("iTerms").addEventListener("change", () => { syncDue(); paint(); persist(); });
 $("iDue").addEventListener("input", () => { dueTouched = true; paint(); persist(); });
@@ -916,6 +917,11 @@ function announce(kind){
   };
   try { new BroadcastChannel("wcs-invoices").postMessage(msg); } catch(e){}
   try { localStorage.setItem("wcsInvoiceEvent.v1", JSON.stringify(msg)); } catch(e){}
+  /* The single key above only reaches a tracker that is already open — the
+     `storage` event fires in live documents, not in one that mounts later. The
+     builder is on its own Notion page, so by the time you look at the tracker
+     the event is long gone and the row only appears when the feed catches up.
+     Keep a short log the tracker can drain on mount instead. */
   try {
     const LOG = "wcsInvoiceLog.v1", cut = Date.now() - 30 * 60 * 1000;
     const log = JSON.parse(localStorage.getItem(LOG) || "[]").filter(e => e && e.at > cut);
@@ -950,11 +956,69 @@ const HANDOFF = "wcsInvoiceHandoff.v1";
 let editingPageId = null;
 let editingThreaded = false;
 
+let editingStatus = null;
+
 function setEditing(row){
   editingPageId = row ? (row.notionPageId || null) : null;
   editingThreaded = !!(row && row.threaded);
-  $("bCreate").textContent = editingPageId ? "Save changes" : "Create invoice";
+  editingStatus = row ? (row.status || null) : null;
+  // Say what the button will do to the row in front of you, not what it does
+  // in general — "Create invoice" on an invoice that already exists is a lie.
+  $("bCreate").textContent = !editingPageId ? "Create invoice"
+    : editingStatus === "Draft" ? "Update draft" : "Save changes";
   $("bSend").textContent = editingThreaded ? "Send update" : "Send invoice";
+  const tag = document.getElementById("editTag");
+  if(tag){
+    tag.textContent = editingPageId
+      ? (editingStatus === "Draft" ? "Editing draft " : "Editing ") + ($("iNum").value || "")
+      : "";
+    tag.style.display = editingPageId ? "" : "none";
+  }
+}
+
+/* Recognising an invoice that already exists. Editing used to be something the
+   builder only knew about when the tracker handed it a row. Type a number that
+   is already on the board and it happily offered to "Create invoice" again —
+   which is how a second row for the same number got made. The published
+   receivables feed lists every open invoice, so match against it. */
+const AR_FEED = [
+  "ar-live.json",
+  "https://raw.githubusercontent.com/wcstudios/wcs-widgets/main/wcs-widgets-upload-v2/ar-live.json"
+];
+let arRows = [];
+
+async function loadAr(){
+  const bust = "?t=" + Date.now();
+  const got = (await Promise.all(AR_FEED.map(u =>
+    fetch(u + bust, {cache:"no-store"}).then(r => r.ok ? r.json() : null).catch(() => null)
+  ))).filter(f => f && Array.isArray(f.ar));
+  if(!got.length) return;
+  const live = got.sort((a,b) => String(b.updated||"").localeCompare(String(a.updated||"")))[0];
+  arRows = live.ar;
+  matchNumber();
+}
+
+/* An edit the tracker set up deliberately is never disturbed. One adopted here
+   by number is re-evaluated on every keystroke, so typing a different number
+   releases it. */
+let editingAdopted = false;
+
+function matchNumber(){
+  if(editingPageId && !editingAdopted) return;
+  const num = ($("iNum").value || "").trim();
+  const hit = (num && arRows.length)
+    ? arRows.find(r => new RegExp("invoice\\s+#?0*" + num.replace(/^0+/, "") + "\\b", "i")
+                         .test(r.name || ""))
+    : null;
+  if(hit && hit.notionPageId){
+    if(hit.notionPageId === editingPageId) return;
+    setEditing(hit);
+    editingAdopted = true;
+    flag("Invoice " + num + " already exists \u00b7 editing it", "saved");
+  } else if(editingAdopted){
+    setEditing(null);
+    editingAdopted = false;
+  }
 }
 
 function loadHandoff(){
@@ -970,6 +1034,7 @@ function loadHandoff(){
   if(!h || !h.invoice || Date.now() - (h.at || 0) > 120000) return;
   const inv = h.invoice;
 
+  editingAdopted = false;      // the tracker asked for this one by name
   const num = (/invoice\s+#?(\d+)/i.exec(inv.name || "") || [])[1];
   if(num) $("iNum").value = num;
   $("cName").value = inv.client || "";
@@ -1063,6 +1128,8 @@ function init(reset){
   // too — init() is the one path every entry point goes through.
   setTimeout(paintConn, 0);
   if(!reset) setTimeout(loadHandoff, 40);
+  // Pull the open receivables so a number already on the board is recognised.
+  setTimeout(loadAr, 120);
   const D = window.FINDATA || {};
   const inv = D.invoicing || {};
   clients = inv.clients || (D.retainers || []).map(r => ({name:r.client, retainer:r.monthly}));
