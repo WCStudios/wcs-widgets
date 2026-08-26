@@ -60,7 +60,11 @@ button.ok{background:var(--up);border-color:var(--up);color:#fff}
 .grp>.lbl .chev{flex:0 0 auto;font-size:13px;line-height:1;transform:rotate(90deg);transition:transform .15s;opacity:.6}
 .grp.closed>.lbl{margin-bottom:0}
 .grp.closed>.lbl .chev{transform:rotate(0deg)}
-.grp.closed>.gb{display:none}
+/* Animating to a measured pixel height rather than toggling display, so the
+   section actually slides. height:auto cannot be transitioned. */
+.grp>.gb{overflow:hidden;transition:height .26s cubic-bezier(.4,0,.2,1),opacity .18s ease}
+.grp.closed>.gb{height:0 !important;opacity:0}
+@media (prefers-reduced-motion:reduce){ .grp>.gb{transition:none} }
 .grp.flash>.lbl{border-bottom-color:var(--accent);box-shadow:0 1px 0 var(--accent)}
 .f{margin-bottom:9px}
 .f label{display:block;font-size:9.5px;color:var(--muted);margin-bottom:3px;letter-spacing:.2px}
@@ -186,6 +190,23 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .connn{font-size:11px;color:var(--muted)}
 .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-left:6px;vertical-align:middle}
 .dot.on{background:#0ca30c}.dot.off{background:var(--muted)}
+
+/* ── Touch (iPad) ─────────────────────────────────────────────────────────
+   Applies only to coarse pointers, so the desktop layout is untouched. The
+   targets below measured 20–34px; 44px is the smallest reliably hittable size
+   with a fingertip. */
+@media (pointer: coarse){
+  button, select, input[type="text"], input[type="date"], input[type="number"], input:not([type]){
+    min-height:44px;
+  }
+  .grp>.lbl{min-height:44px}
+  /* Little inline controls get their size from padding so the row keeps its
+     proportions instead of turning into a stack of tall boxes. */
+  button.unset, .it button, .presets button{min-height:44px;padding:0 14px}
+  #items input{min-height:44px;font-size:16px}   /* 16px stops iOS zooming on focus */
+  input, select, textarea{font-size:16px;min-height:44px}
+  .bar button{min-height:48px;padding:0 18px}
+}
 </style></head><body>
 
 <div class="bar">
@@ -477,11 +498,41 @@ let openState = {};
 
 function grp(name){ return document.querySelector('.grp[data-g="' + name + '"]'); }
 
+/* Accordion: opening one section closes the rest. The form is tall enough on an
+   iPad that two open sections push the buttons off screen. */
+let ACCORDION = true;
+
+function slide(g, isOpen){
+  const b = g.querySelector(".gb");
+  if(!b) return;
+  const from = b.getBoundingClientRect().height;
+  g.classList.toggle("closed", !isOpen);
+  // Measure the natural height with the class already applied, then animate
+  // between the two — a transition needs both ends to be real numbers.
+  b.style.height = "auto";
+  const to = isOpen ? b.scrollHeight : 0;
+  b.style.height = from + "px";
+  void b.offsetHeight;                       // force the start frame to stick
+  b.style.height = to + "px";
+  clearTimeout(b._t);
+  // Release the fixed height so the section can still grow when a line is added.
+  b._t = setTimeout(() => { if(isOpen) b.style.height = "auto"; }, 280);
+}
+
 function setOpen(name, isOpen, flash){
-  openState[name] = isOpen;
   const g = grp(name);
   if(!g) return;
-  g.classList.toggle("closed", !isOpen);
+  if(isOpen && ACCORDION){
+    GROUPS.forEach(o => {
+      if(o === name || !openState[o]) return;
+      openState[o] = false;
+      const og = grp(o);
+      if(og) slide(og, false);
+    });
+  }
+  const changed = openState[name] !== isOpen;
+  openState[name] = isOpen;
+  if(changed) slide(g, isOpen); else g.classList.toggle("closed", !isOpen);
   if(flash && isOpen){ g.classList.add("flash"); setTimeout(() => g.classList.remove("flash"), 1200); }
 }
 
@@ -976,11 +1027,12 @@ function setEditing(row){
   }
 }
 
-/* Recognising an invoice that already exists. Editing used to be something the
-   builder only knew about when the tracker handed it a row. Type a number that
-   is already on the board and it happily offered to "Create invoice" again —
-   which is how a second row for the same number got made. The published
-   receivables feed lists every open invoice, so match against it. */
+/* ── Recognising an invoice that already exists ───────────────────────────
+   Editing used to be something the builder only knew about when the tracker
+   handed it a row. Type a number that is already on the board and it happily
+   offered to "Create invoice" again — which is how a second row for the same
+   number got made. The published receivables feed already lists every open
+   invoice, so match against it and slip into edit mode. */
 const AR_FEED = [
   "ar-live.json",
   "https://raw.githubusercontent.com/wcstudios/wcs-widgets/main/wcs-widgets-upload-v2/ar-live.json"
@@ -998,9 +1050,10 @@ async function loadAr(){
   matchNumber();
 }
 
-/* An edit the tracker set up deliberately is never disturbed. One adopted here
-   by number is re-evaluated on every keystroke, so typing a different number
-   releases it. */
+/* An edit the tracker set up deliberately is never disturbed. One this function
+   adopted by number is re-evaluated on every keystroke, so typing a different
+   number releases it — otherwise the button would keep offering to update a row
+   you had already navigated away from. */
 let editingAdopted = false;
 
 function matchNumber(){
@@ -1010,6 +1063,7 @@ function matchNumber(){
     ? arRows.find(r => new RegExp("invoice\\s+#?0*" + num.replace(/^0+/, "") + "\\b", "i")
                          .test(r.name || ""))
     : null;
+
   if(hit && hit.notionPageId){
     if(hit.notionPageId === editingPageId) return;
     setEditing(hit);
@@ -1058,7 +1112,8 @@ function loadHandoff(){
 
   setEditing(inv);
   drawItems(); syncDue(); paint(); persist();
-  ["client", "invoice", "items"].forEach(g => setOpen(g, true));
+  // A fresh invoice starts on Bill to; the accordion keeps the rest folded.
+  setOpen("client", true);
   flag("Editing invoice " + (num || "") + (inv.threaded ? " \u00b7 already sent" : ""), "saved");
 }
 
@@ -1152,7 +1207,12 @@ function init(reset){
   // unless there's no client yet, in which case start with Bill to.
   const saved = (!reset && store.draft && store.draft.open) || null;
   const named = !reset && store.draft && (store.draft.cName || "").trim();
-  GROUPS.forEach(g => setOpen(g, saved ? !!saved[g] : (g === "items" || (g === "client" && !named))));
+  // Restore one section only — whichever was open last, else the obvious one.
+  const want = saved ? (GROUPS.find(g => saved[g]) || "items") : (named ? "items" : "client");
+  ACCORDION = false;
+  GROUPS.forEach(g => { openState[g] = false; const el = grp(g); if(el) el.classList.add("closed"); });
+  ACCORDION = true;
+  setOpen(want, true);
 
   const d0 = store.draft;
   const hasWork = d0 && ((d0.cName || "").trim()

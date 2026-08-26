@@ -111,6 +111,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
   ::-webkit-scrollbar-thumb{background:#3b3b3b;background-clip:content-box}
   ::-webkit-scrollbar-thumb:hover{background:#525252;background-clip:content-box}
 }
+
+/* ── Touch (iPad) ─────────────────────────────────────────────────────────
+   Edit and delete were revealed on hover, which does not exist on a
+   touchscreen — on an iPad they were invisible and unreachable. Show them
+   always, at a finger-sized target, and only when the pointer is coarse. */
+@media (pointer: coarse){
+  .edit, .del{opacity:1}
+  .edit{min-height:44px;padding:0 14px}
+  .del{width:44px;height:44px;font-size:15px}
+  .row{padding-top:14px;padding-bottom:14px}
+  .chip{padding:5px 9px}
+}
 </style></head><body>
 
 <div class="hd">

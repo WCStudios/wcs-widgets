@@ -122,6 +122,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
   ::-webkit-scrollbar-thumb{background:#3b3b3b;background-clip:content-box}
   ::-webkit-scrollbar-thumb:hover{background:#525252;background-clip:content-box}
 }
+
+/* ── Touch (iPad) ─────────────────────────────────────────────────────────
+   The ping rows and the two clickable panels were 39px — close, but a miss is
+   worse here than a slightly taller row. */
+@media (pointer: coarse){
+  .ping, .row, .shoot{min-height:44px}
+  .ping{padding-top:9px;padding-bottom:9px}
+}
 </style></head><body>
 
 <div class="strip">
