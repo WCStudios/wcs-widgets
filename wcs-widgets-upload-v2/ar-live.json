@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-26T20:17:16.079Z",
+ "updated": "2026-08-26T21:32:16.784Z",
  "source": "worker",
  "ar": [
   {
@@ -40,8 +40,8 @@
   },
   {
    "notionPageId": "3c8421ef-c766-814d-b950-dc6ec2be9deb",
-   "name": "Pulltab Sports (unconfirmed) - Invoice 0180",
-   "client": "Pulltab Sports (unconfirmed)",
+   "name": "Pulltab Sports - Invoice 0180",
+   "client": "Pulltab Sports",
    "project": null,
    "terms": "Due on receipt",
    "items": [],
@@ -93,6 +93,176 @@
    "pdfSource": "live"
   }
  ],
+ "burn": {
+  "total": 7714.97,
+  "categories": [
+   {
+    "category": "Contractors",
+    "amount": 4500,
+    "items": [
+     {
+      "name": "Preston Leignher",
+      "category": "Contractors",
+      "amount": 2000,
+      "detail": "Production Artist"
+     },
+     {
+      "name": "Connor Pohl",
+      "category": "Contractors",
+      "amount": 2000,
+      "detail": "Editor"
+     },
+     {
+      "name": "Bethany Bishop",
+      "category": "Contractors",
+      "amount": 500,
+      "detail": "Social Manager"
+     }
+    ]
+   },
+   {
+    "category": "Utilities",
+    "amount": 2822.61,
+    "items": [
+     {
+      "name": "CenterSpace LP",
+      "category": "Utilities",
+      "amount": 2481.73,
+      "detail": "Rent/property management"
+     },
+     {
+      "name": "Geico Auto",
+      "category": "Utilities",
+      "amount": 213.99,
+      "detail": "Auto insurance"
+     },
+     {
+      "name": "Quantum Fiber",
+      "category": "Utilities",
+      "amount": 80,
+      "detail": "Internet service"
+     },
+     {
+      "name": "Mister Car Wash",
+      "category": "Utilities",
+      "amount": 28.21,
+      "detail": "Car wash membership"
+     },
+     {
+      "name": "CenterPoint Energy",
+      "category": "Utilities",
+      "amount": 18.68,
+      "detail": "Electric/gas utility"
+     }
+    ]
+   },
+   {
+    "category": "Software/Apps",
+    "amount": 311.99,
+    "items": [
+     {
+      "name": "Musicbed",
+      "category": "Software/Apps",
+      "amount": 109.99,
+      "detail": "Music licensing platform"
+     },
+     {
+      "name": "Notion",
+      "category": "Software/Apps",
+      "amount": 72,
+      "detail": "Productivity and database platform"
+     },
+     {
+      "name": "Squarespace",
+      "category": "Software/Apps",
+      "amount": 36,
+      "detail": "Website hosting and builder"
+     },
+     {
+      "name": "Apple Services",
+      "category": "Software/Apps",
+      "amount": 35,
+      "detail": "Multiple Apple subscriptions (iCloud, App Store, etc.)"
+     },
+     {
+      "name": "Blackmagic Cloud",
+      "category": "Software/Apps",
+      "amount": 30,
+      "detail": "Video editing cloud services"
+     },
+     {
+      "name": "Adobe LR & PS",
+      "category": "Software/Apps",
+      "amount": 20,
+      "detail": "Creative software suite (multiple Adobe charges)"
+     },
+     {
+      "name": "2Sync.com",
+      "category": "Software/Apps",
+      "amount": 9,
+      "detail": "File sync service"
+     }
+    ]
+   },
+   {
+    "category": "Streaming/Entertainment",
+    "amount": 80.37,
+    "items": [
+     {
+      "name": "Prime Video Channels",
+      "category": "Streaming/Entertainment",
+      "amount": 25.87,
+      "detail": "Additional Prime Video channel subscriptions"
+     },
+     {
+      "name": "Netflix",
+      "category": "Streaming/Entertainment",
+      "amount": 19.52,
+      "detail": "Video streaming service"
+     },
+     {
+      "name": "Amazon Prime",
+      "category": "Streaming/Entertainment",
+      "amount": 19.51,
+      "detail": "Prime membership (multiple charges combined)"
+     },
+     {
+      "name": "Kindle Services",
+      "category": "Streaming/Entertainment",
+      "amount": 15.47,
+      "detail": "Kindle book subscriptions/purchases"
+     }
+    ]
+   }
+  ]
+ },
+ "retainers": [
+  {
+   "client": "Pulltab Sports",
+   "monthly": 7500,
+   "active": true
+  },
+  {
+   "client": "Minnesota Hockey",
+   "monthly": 4000,
+   "active": true
+  },
+  {
+   "client": "Tripine Creative",
+   "monthly": 3750,
+   "active": true
+  },
+  {
+   "client": "The Local Farmer",
+   "monthly": 1750,
+   "active": true
+  },
+  {
+   "client": "Niccum Docks",
+   "monthly": 1500,
+   "active": true
+  }
+ ],
  "arAging": [
   {
    "bucket": "31-60 days",
@@ -106,11 +276,7 @@
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 11000
-  },
-  {
-   "client": "Pulltab Sports (unconfirmed)",
-   "amount": 2500
+   "amount": 13500
   }
  ],
  "summary": {
@@ -119,6 +285,9 @@
   "arDraft": 0,
   "arOverdue": 13500,
   "arCount": 5,
-  "arDraftCount": 0
+  "arDraftCount": 0,
+  "monthlyBurn": 7714.97,
+  "mrr": 18500,
+  "monthlyNet": 10785.03
  }
 }
