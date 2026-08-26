@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-26T21:32:16.784Z",
+ "updated": "2026-08-26T21:32:18.360Z",
  "source": "worker",
  "ar": [
   {
@@ -94,11 +94,11 @@
   }
  ],
  "burn": {
-  "total": 7714.97,
+  "total": 7214.97,
   "categories": [
    {
     "category": "Contractors",
-    "amount": 4500,
+    "amount": 4000,
     "items": [
      {
       "name": "Preston Leignher",
@@ -111,12 +111,6 @@
       "category": "Contractors",
       "amount": 2000,
       "detail": "Editor"
-     },
-     {
-      "name": "Bethany Bishop",
-      "category": "Contractors",
-      "amount": 500,
-      "detail": "Social Manager"
      }
     ]
    },
@@ -286,8 +280,8 @@
   "arOverdue": 13500,
   "arCount": 5,
   "arDraftCount": 0,
-  "monthlyBurn": 7714.97,
+  "monthlyBurn": 7214.97,
   "mrr": 18500,
-  "monthlyNet": 10785.03
+  "monthlyNet": 11285.03
  }
 }
