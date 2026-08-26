@@ -1,15 +1,146 @@
 {
- "updated": "2026-08-26T00:59:39.523Z",
+ "updated": "2026-08-26T20:07:47.612Z",
  "source": "worker",
- "ar": [],
- "arAging": [],
- "arByClient": [],
+ "ar": [
+  {
+   "notionPageId": "3c8421ef-c766-8113-9ef2-c2cddfc2c72c",
+   "name": "Pulltab Sports - Invoice 0170",
+   "client": "Pulltab Sports",
+   "project": null,
+   "terms": "Due on receipt",
+   "items": [],
+   "threaded": false,
+   "amount": 4000,
+   "status": "Sent",
+   "invoiceDate": "2026-05-28",
+   "dueDate": "2026-05-28",
+   "daysOverdue": 90,
+   "bucket": "61-90 days",
+   "notionUrl": "https://app.notion.com/3c8421efc76681139ef2c2cddfc2c72c",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3c8421ef-c766-81e8-b216-f89e755b15da",
+   "name": "Pulltab Sports - Invoice 0153",
+   "client": "Pulltab Sports",
+   "project": null,
+   "terms": null,
+   "items": [],
+   "threaded": false,
+   "amount": 4000,
+   "status": "Sent",
+   "invoiceDate": "2025-11-07",
+   "dueDate": "2026-02-15",
+   "daysOverdue": 192,
+   "bucket": "90+ days",
+   "notionUrl": "https://app.notion.com/3c8421efc76681e8b216f89e755b15da",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3c8421ef-c766-810c-8fd8-fc45918138bf",
+   "name": "Pulltab Sports - Invoice 0171",
+   "client": "Pulltab Sports",
+   "project": null,
+   "terms": "Due on receipt",
+   "items": [],
+   "threaded": false,
+   "amount": 2500,
+   "status": "Sent",
+   "invoiceDate": "2026-05-28",
+   "dueDate": "2026-05-28",
+   "daysOverdue": 90,
+   "bucket": "61-90 days",
+   "notionUrl": "https://app.notion.com/3c8421efc766810c8fd8fc45918138bf",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3c8421ef-c766-814d-b950-dc6ec2be9deb",
+   "name": "Pulltab Sports (unconfirmed) - Invoice 0180",
+   "client": "Pulltab Sports (unconfirmed)",
+   "project": null,
+   "terms": "Due on receipt",
+   "items": [],
+   "threaded": false,
+   "amount": 2500,
+   "status": "Sent",
+   "invoiceDate": "2026-07-28",
+   "dueDate": "2026-07-07",
+   "daysOverdue": 50,
+   "bucket": "31-60 days",
+   "notionUrl": "https://app.notion.com/3c8421efc766814db950dc6ec2be9deb",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3c8421ef-c766-815d-97ac-cfddda330446",
+   "name": "Pulltab Sports - Invoice 0176",
+   "client": "Pulltab Sports",
+   "project": null,
+   "terms": "Due on receipt",
+   "items": [],
+   "threaded": false,
+   "amount": 2500,
+   "status": "Sent",
+   "invoiceDate": "2026-07-07",
+   "dueDate": "2026-07-07",
+   "daysOverdue": 50,
+   "bucket": "31-60 days",
+   "notionUrl": "https://app.notion.com/3c8421efc766815d97accfddda330446",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3c8421ef-c766-8100-858e-e648ca204b3d",
+   "name": "Pulltab Sports - Invoice 0175",
+   "client": "Pulltab Sports",
+   "project": null,
+   "terms": "Due on receipt",
+   "items": [],
+   "threaded": false,
+   "amount": 2000,
+   "status": "Sent",
+   "invoiceDate": "2026-07-07",
+   "dueDate": "2026-07-07",
+   "daysOverdue": 50,
+   "bucket": "31-60 days",
+   "notionUrl": "https://app.notion.com/3c8421efc7668100858ee648ca204b3d",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  }
+ ],
+ "arAging": [
+  {
+   "bucket": "31-60 days",
+   "amount": 7000
+  },
+  {
+   "bucket": "61-90 days",
+   "amount": 6500
+  },
+  {
+   "bucket": "90+ days",
+   "amount": 4000
+  }
+ ],
+ "arByClient": [
+  {
+   "client": "Pulltab Sports",
+   "amount": 15000
+  },
+  {
+   "client": "Pulltab Sports (unconfirmed)",
+   "amount": 2500
+  }
+ ],
  "summary": {
-  "arTotal": 0,
-  "arSent": 0,
+  "arTotal": 17500,
+  "arSent": 17500,
   "arDraft": 0,
-  "arOverdue": 0,
-  "arCount": 0,
+  "arOverdue": 17500,
+  "arCount": 6,
   "arDraftCount": 0
  }
 }
