@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-28T01:11:48.850Z",
+ "updated": "2026-08-28T01:13:12.976Z",
  "source": "worker",
  "ar": [
   {
@@ -22,11 +22,19 @@
   },
   {
    "notionPageId": "9e725ac4-8e5d-4d03-98ff-956b5bd0c508",
-   "name": "DripDrop - Whats In Your Bottle Commercial (Part 1)",
+   "name": "Pulltab Sports - Invoice 0181 - DripDrop - Whats In Your Bottle Commercial (Part 1)",
    "client": "Pulltab Sports",
    "project": "DripDrop - Whats In Your Bottle Commercial (Part 1)",
    "terms": "Due on receipt",
-   "items": [],
+   "items": [
+    {
+     "description": "DripDrop - Whats In Your Bottle Commercial (Part 1)",
+     "detail": "",
+     "qty": 1,
+     "unit": "",
+     "rate": 4000
+    }
+   ],
    "threaded": false,
    "amount": 4000,
    "status": "Draft",
