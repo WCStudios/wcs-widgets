@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-28T01:09:10.539Z",
+ "updated": "2026-08-28T01:10:05.618Z",
  "source": "worker",
  "ar": [
   {
@@ -65,7 +65,7 @@
    "items": [],
    "threaded": false,
    "amount": 4000,
-   "status": "Sent",
+   "status": "Overdue",
    "invoiceDate": "2026-05-28",
    "dueDate": "2026-05-28",
    "daysOverdue": 92,
