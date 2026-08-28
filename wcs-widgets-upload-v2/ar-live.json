@@ -1,7 +1,61 @@
 {
- "updated": "2026-08-26T21:32:18.360Z",
+ "updated": "2026-08-28T01:09:10.539Z",
  "source": "worker",
  "ar": [
+  {
+   "notionPageId": "9d3da83e-6885-4163-bdf4-19c719246125",
+   "name": "DripDrop - Whats In Your Bottle Commercial (Part 3)",
+   "client": "Pulltab Sports",
+   "project": "DripDrop - Whats In Your Bottle Commercial (Part 3)",
+   "terms": "Due on receipt",
+   "items": [],
+   "threaded": false,
+   "amount": 4000,
+   "status": "Draft",
+   "invoiceDate": "2026-08-27",
+   "dueDate": "2026-08-27",
+   "daysOverdue": 0,
+   "bucket": "1-30 days",
+   "notionUrl": "https://app.notion.com/9d3da83e68854163bdf419c719246125",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "9e725ac4-8e5d-4d03-98ff-956b5bd0c508",
+   "name": "DripDrop - Whats In Your Bottle Commercial (Part 1)",
+   "client": "Pulltab Sports",
+   "project": "DripDrop - Whats In Your Bottle Commercial (Part 1)",
+   "terms": "Due on receipt",
+   "items": [],
+   "threaded": false,
+   "amount": 4000,
+   "status": "Draft",
+   "invoiceDate": "2026-08-27",
+   "dueDate": "2026-08-27",
+   "daysOverdue": 0,
+   "bucket": "1-30 days",
+   "notionUrl": "https://app.notion.com/9e725ac48e5d4d0398ff956b5bd0c508",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "1df9db98-8bd8-4148-a8b9-b05d3f89ef52",
+   "name": "DripDrop - Whats In Your Bottle Commercial (Part 2)",
+   "client": "Pulltab Sports",
+   "project": "DripDrop - Whats In Your Bottle Commercial (Part 2)",
+   "terms": "Due on receipt",
+   "items": [],
+   "threaded": false,
+   "amount": 4000,
+   "status": "Draft",
+   "invoiceDate": "2026-08-27",
+   "dueDate": "2026-08-27",
+   "daysOverdue": 0,
+   "bucket": "1-30 days",
+   "notionUrl": "https://app.notion.com/1df9db988bd84148a8b9b05d3f89ef52",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
   {
    "notionPageId": "3c8421ef-c766-8113-9ef2-c2cddfc2c72c",
    "name": "Pulltab Sports - Invoice 0170",
@@ -14,8 +68,8 @@
    "status": "Sent",
    "invoiceDate": "2026-05-28",
    "dueDate": "2026-05-28",
-   "daysOverdue": 90,
-   "bucket": "61-90 days",
+   "daysOverdue": 92,
+   "bucket": "90+ days",
    "notionUrl": "https://app.notion.com/3c8421efc76681139ef2c2cddfc2c72c",
    "pdfUrl": null,
    "pdfSource": "live"
@@ -32,8 +86,8 @@
    "status": "Sent",
    "invoiceDate": "2026-05-28",
    "dueDate": "2026-05-28",
-   "daysOverdue": 90,
-   "bucket": "61-90 days",
+   "daysOverdue": 92,
+   "bucket": "90+ days",
    "notionUrl": "https://app.notion.com/3c8421efc766810c8fd8fc45918138bf",
    "pdfUrl": null,
    "pdfSource": "live"
@@ -50,7 +104,7 @@
    "status": "Sent",
    "invoiceDate": "2026-07-28",
    "dueDate": "2026-07-07",
-   "daysOverdue": 50,
+   "daysOverdue": 52,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/3c8421efc766814db950dc6ec2be9deb",
    "pdfUrl": null,
@@ -68,7 +122,7 @@
    "status": "Sent",
    "invoiceDate": "2026-07-07",
    "dueDate": "2026-07-07",
-   "daysOverdue": 50,
+   "daysOverdue": 52,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/3c8421efc766815d97accfddda330446",
    "pdfUrl": null,
@@ -86,7 +140,7 @@
    "status": "Sent",
    "invoiceDate": "2026-07-07",
    "dueDate": "2026-07-07",
-   "daysOverdue": 50,
+   "daysOverdue": 52,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/3c8421efc7668100858ee648ca204b3d",
    "pdfUrl": null,
@@ -259,27 +313,31 @@
  ],
  "arAging": [
   {
+   "bucket": "1-30 days",
+   "amount": 12000
+  },
+  {
    "bucket": "31-60 days",
    "amount": 7000
   },
   {
-   "bucket": "61-90 days",
+   "bucket": "90+ days",
    "amount": 6500
   }
  ],
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 13500
+   "amount": 25500
   }
  ],
  "summary": {
-  "arTotal": 13500,
+  "arTotal": 25500,
   "arSent": 13500,
-  "arDraft": 0,
+  "arDraft": 12000,
   "arOverdue": 13500,
-  "arCount": 5,
-  "arDraftCount": 0,
+  "arCount": 8,
+  "arDraftCount": 3,
   "monthlyBurn": 7214.97,
   "mrr": 18500,
   "monthlyNet": 11285.03
