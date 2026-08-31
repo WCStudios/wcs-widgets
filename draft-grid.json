@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-08-31T21:03:28.614Z",
+ "updatedAt": "2026-08-31T22:03:25.228Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -48,7 +48,7 @@
    "title": "MN Wild - 25 Years Spot",
    "account": "wcstudios.co",
    "order": 4,
-   "status": "Failed",
+   "status": "Draft",
    "scheduleDate": null,
    "kind": "grid",
    "tiles": [
