@@ -73,6 +73,13 @@ input,select,textarea{width:100%;font:inherit;font-size:12px;color:var(--text);b
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
 textarea{resize:vertical;min-height:56px;line-height:1.5}
 [data-g="notes"] textarea{min-height:132px}
+.paybtns{display:flex;gap:6px}
+.paybtns button{flex:1;min-width:0;font:inherit;font-size:10px;font-weight:600;
+ cursor:pointer;padding:8px 3px;border-radius:7px;line-height:1.3;text-align:center;
+ border:1px solid var(--fieldline);background:var(--field);color:var(--muted);
+ transition:background .12s,color .12s,border-color .12s}
+.paybtns button:hover{border-color:var(--muted);color:var(--text)}
+.paybtns button.on{color:#fff;border-color:transparent}
 .r2{display:flex;gap:8px}.r2>*{flex:1;min-width:0}
 .r3{display:flex;gap:8px}.r3>*{flex:1;min-width:0}
 
@@ -302,7 +309,14 @@ button:disabled{opacity:.4;cursor:not-allowed}
         <div class="f"><label>ACH line</label><input id="pAch" placeholder="Routing and account details sent separately on request."></div>
         <div class="f"><label>Checks payable to</label><input id="pCheck" value="WCStudios"></div>
         <div class="f"><label>Payment note</label><textarea id="pNote" placeholder="Use {number} for the invoice number"></textarea></div>
-        <div class="f"><label>Pay with</label><select id="pMethod"><option value="paypal">PayPal</option><option value="venmo">Venmo</option><option value="cashapp">Cash App</option></select></div>
+        <div class="f"><label>Pay with</label>
+          <div class="paybtns" id="pBtns">
+            <button type="button" data-pm="paypal">Generate a<br>PayPal Button</button>
+            <button type="button" data-pm="venmo">Generate a<br>Venmo Button</button>
+            <button type="button" data-pm="cashapp">Generate a<br>Cash App Button</button>
+          </div>
+          <input type="hidden" id="pMethod" value="paypal">
+        </div>
         <div class="f"><label>Pay-online link or handle</label><input id="pLink" placeholder="Full URL, or @handle for Venmo / $cashtag for Cash App"></div>
       </div>
     </div>
@@ -745,6 +759,33 @@ const PAY_STYLES = {
   cashapp: {color:"#00d632", label:a => "Pay " + a + " with Cash App"}
 };
 
+/* Three buttons rather than a dropdown. Picking the wallet IS the action here,
+   and the live one wears its own brand colour so the control matches the button
+   that will land on the invoice. The choice still lives in a hidden field, so
+   every sticky/snapshot/restore path keeps working unchanged. */
+const PAY_HINTS = {
+  paypal:  "Full PayPal.me or invoice URL",
+  venmo:   "@handle, or a full Venmo URL",
+  cashapp: "$cashtag, or a full Cash App URL"
+};
+function paintPayBtns(){
+  const cur = $("pMethod").value || "paypal";
+  document.querySelectorAll("#pBtns button").forEach(b => {
+    const on = b.dataset.pm === cur;
+    b.classList.toggle("on", on);
+    b.style.background = on ? ((PAY_STYLES[b.dataset.pm] || {}).color || "") : "";
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+  });
+  $("pLink").placeholder = PAY_HINTS[cur] || "Full URL, or @handle";
+}
+document.querySelectorAll("#pBtns button").forEach(b => {
+  b.addEventListener("click", () => {
+    if($("pMethod").value === b.dataset.pm) return;
+    $("pMethod").value = b.dataset.pm;
+    paint(); persist();
+  });
+});
+
 /* A full URL is used as typed. A bare handle is expanded per wallet, so you can
    type @wcstudios rather than remembering the link shape. Cash App is the only
    one that reliably carries the amount in the path; Venmo's deep links have
@@ -756,6 +797,10 @@ function payUrl(method, raw, amount){
   const handle = v.replace(/^[@$]/, "");
   if(method === "venmo")   return "https://venmo.com/u/" + encodeURIComponent(handle);
   if(method === "cashapp") return "https://cash.app/$" + encodeURIComponent(handle)
+                                  + (amount ? "/" + (Math.round(amount * 100) / 100) : "");
+  /* PayPal normally carries a full invoice URL, but a bare handle used to fall
+     through and render as a dead href. Treat it as a PayPal.me name instead. */
+  if(method === "paypal")  return "https://paypal.me/" + encodeURIComponent(handle)
                                   + (amount ? "/" + (Math.round(amount * 100) / 100) : "");
   return v;
 }
@@ -797,6 +842,8 @@ function paint(){
     t += '<div class="trow grand"><span>Balance due</span><span>' + usd(T.due) + '</span></div>';
   }
   $("pTotals").innerHTML = t;
+
+  paintPayBtns();
 
   const p = I.payment;
   let ph = "";
