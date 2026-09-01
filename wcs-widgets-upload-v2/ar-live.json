@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-01T17:53:57.451Z",
+ "updated": "2026-09-01T17:54:39.751Z",
  "source": "worker",
  "ar": [
   {
@@ -95,6 +95,39 @@
    "daysOverdue": 96,
    "bucket": "90+ days",
    "notionUrl": "https://app.notion.com/3c8421efc76681139ef2c2cddfc2c72c",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3ce421ef-c766-81c6-9684-c9ce032fbe17",
+   "name": "Tradition Capital Bank - Invoice 184 - TCB Brand Films",
+   "client": "Tradition Capital Bank",
+   "project": "TCB Brand Films",
+   "terms": "Net 7",
+   "items": [
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1500
+    },
+    {
+     "description": "Editing and post production",
+     "detail": "Post production of 2 brand films",
+     "qty": 10,
+     "unit": "hr",
+     "rate": 125
+    }
+   ],
+   "threaded": true,
+   "amount": 2750,
+   "status": "Sent",
+   "invoiceDate": "2026-08-31",
+   "dueDate": "2026-09-07",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3ce421efc76681c69684c9ce032fbe17",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -584,7 +617,7 @@
   },
   {
    "bucket": "Not yet due",
-   "amount": 2375
+   "amount": 5125
   }
  ],
  "arByClient": [
@@ -593,16 +626,20 @@
    "amount": 25500
   },
   {
+   "client": "Tradition Capital Bank",
+   "amount": 2750
+  },
+  {
    "client": "Tripine Creative",
    "amount": 2375
   }
  ],
  "summary": {
-  "arTotal": 27875,
-  "arSent": 15875,
+  "arTotal": 30625,
+  "arSent": 18625,
   "arDraft": 12000,
   "arOverdue": 13500,
-  "arCount": 9,
+  "arCount": 10,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
