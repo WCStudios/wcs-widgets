@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-01T16:36:11.889Z",
+ "updated": "2026-09-01T16:42:18.312Z",
  "source": "worker",
  "ar": [
   {
@@ -186,6 +186,32 @@
    "pdfSource": "live"
   },
   {
+   "notionPageId": "3ce421ef-c766-8178-a0ed-f57a64cbf21b",
+   "name": "Tripine Creative - Invoice 0185 - Monthly creative retainer — September 2026 (1st)",
+   "client": "Tripine Creative",
+   "project": "Monthly creative retainer — September 2026 (1st)",
+   "terms": "Due on receipt",
+   "items": [
+    {
+     "description": "Monthly creative retainer",
+     "detail": "September 2026 — first half",
+     "qty": 1,
+     "unit": "mo",
+     "rate": 2375
+    }
+   ],
+   "threaded": true,
+   "amount": 2375,
+   "status": "Sent",
+   "invoiceDate": "2026-09-01",
+   "dueDate": "2026-09-01",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3ce421efc7668178a0edf57a64cbf21b",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
    "notionPageId": "3c8421ef-c766-8100-858e-e648ca204b3d",
    "name": "Pulltab Sports - Invoice 0175",
    "client": "Pulltab Sports",
@@ -343,8 +369,8 @@
  },
  "retainers": [
   {
-   "client": "Pulltab Sports",
-   "monthly": 7500,
+   "client": "Pulltab Sports (Project work — conservative $5,000/mo floor, not a contracted retainer)",
+   "monthly": 5000,
    "active": true
   },
   {
@@ -453,7 +479,7 @@
    "email": "king@pulltabsports.com",
    "type": "Retainer",
    "website": "",
-   "retainer": 7500
+   "retainer": null
   },
   {
    "name": "RBC Wealth",
@@ -591,7 +617,7 @@
   },
   {
    "bucket": "Not yet due",
-   "amount": 2750
+   "amount": 5125
   }
  ],
  "arByClient": [
@@ -602,17 +628,21 @@
   {
    "client": "Tradition Capital Bank",
    "amount": 2750
+  },
+  {
+   "client": "Tripine Creative",
+   "amount": 2375
   }
  ],
  "summary": {
-  "arTotal": 28250,
-  "arSent": 16250,
+  "arTotal": 30625,
+  "arSent": 18625,
   "arDraft": 12000,
   "arOverdue": 13500,
-  "arCount": 9,
+  "arCount": 10,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
-  "mrr": 16000,
-  "monthlyNet": 8785.03
+  "mrr": 13500,
+  "monthlyNet": 6285.03
  }
 }
