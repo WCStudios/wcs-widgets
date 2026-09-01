@@ -72,6 +72,7 @@ input,select,textarea{width:100%;font:inherit;font-size:12px;color:var(--text);b
  border:1px solid var(--fieldline);border-radius:7px;padding:7px 9px}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
 textarea{resize:vertical;min-height:56px;line-height:1.5}
+[data-g="notes"] textarea{min-height:132px}
 .r2{display:flex;gap:8px}.r2>*{flex:1;min-width:0}
 .r3{display:flex;gap:8px}.r3>*{flex:1;min-width:0}
 
@@ -300,7 +301,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
         <div class="f"><label>Notes to client</label><textarea id="nNotes"></textarea></div>
         <div class="f"><label>ACH line</label><input id="pAch" placeholder="Routing and account details sent separately on request."></div>
         <div class="f"><label>Checks payable to</label><input id="pCheck" value="WCStudios"></div>
-        <div class="f"><label>Payment note</label><input id="pNote" placeholder="Sentence shown before the invoice-number line"></div>
+        <div class="f"><label>Payment note</label><textarea id="pNote" placeholder="Use {number} for the invoice number"></textarea></div>
         <div class="f"><label>Pay-online link</label><input id="pLink" placeholder="https://www.paypal.com/invoice/..."></div>
       </div>
     </div>
@@ -397,7 +398,7 @@ const STICKY_DEFAULTS = {
   nNotes: "Thank you for the opportunity to collaborate, we truly appreciate your business. We're proud to be part of your project and look forward to continuing to create great work together.",
   pAch: "Routing and account details sent separately on request.",
   pCheck: "WCStudios",
-  pNote: "Payment is due prior to the shoot date."
+  pNote: "Payment is due prior to the shoot date. Please include invoice number {number} with your payment."
 };
 function snapshotSticky(){
   const o = {};
@@ -412,7 +413,7 @@ const STICKY_LEGACY = {
   nNotes: ["Thank you \u2014 deliverables are posted to the shared project folder.",
            "Thank you - deliverables are posted to the shared project folder.",
            "Payment is due prior to the shoot date.\n\nThank you for the opportunity to collaborate, we truly appreciate your business. We're proud to be part of your project and look forward to continuing to create great work together."],
-  pAch: [], pCheck: [], pNote: []
+  pAch: [], pCheck: [], pNote: ["Payment is due prior to the shoot date."]
 };
 function applySticky(saved){
   const v = saved || {};
@@ -657,8 +658,8 @@ function spec(){
     amountPaid: parseFloat($("aPaid").value || 0),
     notes: $("nNotes").value,
     payment: {ach:$("pAch").value, check:$("pCheck").value, link:$("pLink").value,
-              noteLead:$("pNote").value,
-              note:"Please include invoice number " + $("iNum").value + " with your payment."}
+              note:($("pNote").value || "Please include invoice number {number} with your payment.")
+                     .replace(/\{number\}/g, $("iNum").value)}
   };
 }
 
@@ -774,7 +775,7 @@ function paint(){
   let ph = "";
   if(p.ach)   ph += '<b>ACH / bank transfer</b><br>' + esc(p.ach) + '<br><br>';
   if(p.check) ph += '<b>Check</b><br>Payable to ' + esc(p.check) + '<br>' + esc(FROM.address) + '<br>' + esc(FROM.cityStateZip) + '<br><br>';
-  ph += (p.noteLead ? esc(p.noteLead) + " " : "") + esc(p.note);
+  ph += esc(p.note);
   if(p.link)  ph += '<br><a class="paylink" href="' + esc(p.link) + '">Pay online →</a>';
   $("pPay").innerHTML = ph;
 
@@ -957,7 +958,7 @@ function workerPayload(){
     payLink: I.payment.link || null,
     ach: I.payment.ach || null,
     checkPayee: I.payment.check || null,
-    paymentNote: I.payment.noteLead || null,
+    paymentNote: I.payment.note || null,
     items: I.items.map(it => ({
       description: it.description, detail: it.detail || null,
       qty: it.qty == null ? 1 : it.qty, unit: it.unit || null, rate: it.rate || 0
@@ -1058,6 +1059,16 @@ const AR_FEED = [
 ];
 let arRows = [];
 
+/* Rebuilt whenever the client list changes: the baked snapshot at start-up,
+   then again when the live feed lands. */
+function fillClients(){
+  const ret = clients.filter(c => c.retainer), rest = clients.filter(c => !c.retainer);
+  const opt = c => '<option>' + esc(c.name) + '</option>';
+  $("cPick").innerHTML = '<option value="">\u2014 new client \u2014</option>'
+    + (ret.length ? '<optgroup label="Retainer">' + ret.map(opt).join("") + '</optgroup>' : "")
+    + (rest.length ? '<optgroup label="Other clients">' + rest.map(opt).join("") + '</optgroup>' : "");
+}
+
 async function loadAr(){
   const bust = "?t=" + Date.now();
   const got = (await Promise.all(AR_FEED.map(u =>
@@ -1066,6 +1077,15 @@ async function loadAr(){
   if(!got.length) return;
   const live = got.sort((a,b) => String(b.updated||"").localeCompare(String(a.updated||"")))[0];
   arRows = live.ar;
+  /* The client directory rides along on the same feed, straight from the Clients
+     database. Bill To used to come from the baked snapshot, so a client added on
+     one machine never reached another. */
+  if(Array.isArray(live.clients) && live.clients.length){
+    const keep = $("cPick").value;
+    clients = live.clients;
+    fillClients();
+    if(keep) $("cPick").value = keep;
+  }
   matchNumber();
 }
 
@@ -1207,13 +1227,7 @@ function init(reset){
   const D = window.FINDATA || {};
   const inv = D.invoicing || {};
   clients = inv.clients || (D.retainers || []).map(r => ({name:r.client, retainer:r.monthly}));
-
-  // Retainer clients first — they're the ones invoiced every month.
-  const ret = clients.filter(c => c.retainer), rest = clients.filter(c => !c.retainer);
-  const opt = c => '<option>' + esc(c.name) + '</option>';
-  $("cPick").innerHTML = '<option value="">— new client —</option>'
-    + (ret.length ? '<optgroup label="Retainer">' + ret.map(opt).join("") + '</optgroup>' : "")
-    + (rest.length ? '<optgroup label="Other clients">' + rest.map(opt).join("") + '</optgroup>' : "");
+  fillClients();
 
   const store = readStore();
   mem  = store.mem  || {};
