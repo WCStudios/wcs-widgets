@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-01T01:04:02.112Z",
+ "updatedAt": "2026-09-01T02:04:09.047Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -34,7 +34,7 @@
    "title": "DripDrip - Brother Battles Spot",
    "account": "wcstudios.co",
    "order": 3,
-   "status": "Draft",
+   "status": "Ready",
    "scheduleDate": null,
    "kind": "grid",
    "tiles": [
