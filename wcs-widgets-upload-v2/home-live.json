@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-01T17:24:47.262Z",
+ "updated": "2026-09-01T17:45:19.404Z",
  "source": "worker",
  "tasks": {
   "open": 23,
@@ -7,8 +7,8 @@
   "overdue": 11
  },
  "mostOverdue": {
-  "name": "MN Wild - SIF Pilot Program Spotlights (Langford Park)",
-  "id": "329421efc7668006b7bad4e77448cda6",
+  "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
+  "id": "329421efc766803f9c95fa146f213c8b",
   "days": 109
  },
  "pings": [
