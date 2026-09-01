@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-01T03:11:48.691Z",
+ "updated": "2026-09-01T16:36:00.976Z",
  "source": "worker",
  "ar": [
   {
@@ -348,24 +348,237 @@
    "active": true
   },
   {
-   "client": "Minnesota Hockey",
-   "monthly": 4000,
-   "active": true
-  },
-  {
    "client": "Tripine Creative",
-   "monthly": 3750,
+   "monthly": 4750,
    "active": true
   },
   {
-   "client": "The Local Farmer",
-   "monthly": 1750,
+   "client": "Minnesota Hockey (Retainer — $45,000/yr in two $22,500 sums, Dec and May)",
+   "monthly": 3750,
    "active": true
   },
   {
    "client": "Niccum Docks",
    "monthly": 1500,
    "active": true
+  }
+ ],
+ "clients": [
+  {
+   "name": "Andar Goods",
+   "contact": "Russ Tuehler",
+   "email": "jack@andar.com",
+   "type": "Retainer",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Booe Bags",
+   "contact": "Stephen Krause",
+   "email": "stephen@xtrudex.com",
+   "type": "One-Off",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Cascade CBX Sport",
+   "contact": "Matt Hussey",
+   "email": "Matt.Hussey@wild.com, Chris.barriere@wild.com",
+   "type": "Retainer",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "DripDrop",
+   "contact": "Matt Hussey",
+   "email": "Matt.Hussey@wild.com, Chris.barriere@wild.com",
+   "type": "Retainer",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Gateway Fiber",
+   "contact": "David Workman",
+   "email": "david.workman@gatewayfiber.com",
+   "type": "One-Off",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "McDonald Construction",
+   "contact": "Erika Dahl",
+   "email": "erikad@mcdonaldconstruction.com",
+   "type": "One-Off",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Minnesota Hockey",
+   "contact": "Jacob LeVasseur",
+   "email": "jacobl@minnesotahockey.org",
+   "type": "Retainer",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Minnesota Wild",
+   "contact": "Matt Hussey",
+   "email": "Matt.Hussey@wild.com, Chris.barriere@wild.com",
+   "type": "Retainer",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Nautique Boats",
+   "contact": "Andy Weigman",
+   "email": "andyweigman@gmail.com",
+   "type": "One-Off",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Niccum Docks",
+   "contact": "Matt Lemke",
+   "email": "info@niccumdocks.com",
+   "type": "One-Off",
+   "website": "",
+   "retainer": 1500
+  },
+  {
+   "name": "PIKKL",
+   "contact": "Stephen Krause",
+   "email": "stephen@pikkl.com",
+   "type": "One-Off",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Pulltab Sports",
+   "contact": "John King",
+   "email": "king@pulltabsports.com",
+   "type": "Retainer",
+   "website": "",
+   "retainer": 7500
+  },
+  {
+   "name": "RBC Wealth",
+   "contact": "John King",
+   "email": "",
+   "type": "Retainer",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "River Valley Marine",
+   "contact": "Coral Anderson",
+   "email": "Coral@rivervalleymarine.com",
+   "type": "Retainer",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Robert Thomas Homes",
+   "contact": "Mike Greenlay, Casey Poehling, Jon DuToit, Nina Lemke",
+   "email": "nina.lemke@tradtion.com, mikegreenlay@tradition.com, casey.poehling@traditioncompanies.com, Jon.DuToit@tradition.bank, nina.lemke@traditioncompanies.com",
+   "type": "One-Off",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Spirit Of The Lakes Festival",
+   "contact": "Austin Harbor",
+   "email": "andyweigman@gmail.com",
+   "type": "One-Off",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "The Local Farmer",
+   "contact": "Ross Mann",
+   "email": "erikad@mcdonaldconstruction.com",
+   "type": "One-Off",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Tradition Capital Bank",
+   "contact": "Brianna Bruzer",
+   "email": "Brianna.Bruzer@tradition.bank",
+   "type": "One-Off",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Tradition Companies",
+   "contact": "Mike Greenlay, Casey Poehling, Jon DuToit, Nina Lemke",
+   "email": "nina.lemke@tradtion.com, mikegreenlay@tradition.com, casey.poehling@traditioncompanies.com, Jon.DuToit@tradition.bank, nina.lemke@traditioncompanies.com",
+   "type": "Retainer",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "TRIA Orthopedics",
+   "contact": "Matt Hussey",
+   "email": "Matt.Hussey@wild.com, Chris.barriere@wild.com",
+   "type": "Retainer",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Tripine Creative",
+   "contact": "Jay Witta",
+   "email": "jay@tripinecreative.com",
+   "type": "Retainer",
+   "website": "",
+   "retainer": 4750
+  },
+  {
+   "name": "United Heroes League",
+   "contact": "",
+   "email": "Mike@traditioncompanies.com",
+   "type": "One-Off",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "USHL",
+   "contact": "Matthew Mcgreevy",
+   "email": "mcgreevy@ushl.com",
+   "type": "One-Off",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Walser Automotive",
+   "contact": "",
+   "email": "nicolemeier@walser.com, daynakleve@walser.com",
+   "type": "Retainer",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Waterfront Restoration",
+   "contact": "",
+   "email": "benmaki@waterfrontrestoration.com",
+   "type": "One-Off",
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "WCStudios",
+   "contact": "Bennett Witta",
+   "email": "bennett@wcstudios.com",
+   "type": null,
+   "website": "",
+   "retainer": null
+  },
+  {
+   "name": "Wiggle Your Toes",
+   "contact": "Aaron Holm",
+   "email": "aaron@wiggleyourtoes.org",
+   "type": "One-Off",
+   "website": "",
+   "retainer": null
   }
  ],
  "arAging": [
@@ -404,7 +617,7 @@
   "arCount": 9,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
-  "mrr": 18500,
-  "monthlyNet": 11285.03
+  "mrr": 17500,
+  "monthlyNet": 10285.03
  }
 }
