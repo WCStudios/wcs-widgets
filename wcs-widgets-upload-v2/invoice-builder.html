@@ -300,6 +300,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
         <div class="f"><label>Notes to client</label><textarea id="nNotes"></textarea></div>
         <div class="f"><label>ACH line</label><input id="pAch" placeholder="Routing and account details sent separately on request."></div>
         <div class="f"><label>Checks payable to</label><input id="pCheck" value="WCStudios"></div>
+        <div class="f"><label>Payment note</label><input id="pNote" placeholder="Sentence shown before the invoice-number line"></div>
         <div class="f"><label>Pay-online link</label><input id="pLink" placeholder="https://www.paypal.com/invoice/..."></div>
       </div>
     </div>
@@ -386,16 +387,17 @@ function writeStore(o){
   catch(e){ storageOK = false; }
 }
 const FIELDS = ["cName","cCompany","cEmail","cAddress","cCity","iNum","iProject","iStatus","iDate","iTerms","iDue",
-                "aDisc","aShip","aTax","aPaid","nNotes","pAch","pCheck","pLink"];
+                "aDisc","aShip","aTax","aPaid","nNotes","pAch","pCheck","pNote","pLink"];
 
 /* Notes and the payment lines behave like an email signature: they carry to
    the next invoice and survive a reset, until you actually change them.
    Everything else in FIELDS is per-invoice and gets cleared. */
-const STICKY = ["nNotes", "pAch", "pCheck"];
+const STICKY = ["nNotes", "pAch", "pCheck", "pNote"];
 const STICKY_DEFAULTS = {
-  nNotes: "Thank you \u2014 deliverables are posted to the shared project folder.",
+  nNotes: "Payment is due prior to the shoot date.\n\nThank you for the opportunity to collaborate, we truly appreciate your business. We're proud to be part of your project and look forward to continuing to create great work together.",
   pAch: "Routing and account details sent separately on request.",
-  pCheck: "WCStudios"
+  pCheck: "WCStudios",
+  pNote: ""
 };
 function snapshotSticky(){
   const o = {};
@@ -642,6 +644,7 @@ function spec(){
     amountPaid: parseFloat($("aPaid").value || 0),
     notes: $("nNotes").value,
     payment: {ach:$("pAch").value, check:$("pCheck").value, link:$("pLink").value,
+              noteLead:$("pNote").value,
               note:"Please include invoice number " + $("iNum").value + " with your payment."}
   };
 }
@@ -758,7 +761,7 @@ function paint(){
   let ph = "";
   if(p.ach)   ph += '<b>ACH / bank transfer</b><br>' + esc(p.ach) + '<br><br>';
   if(p.check) ph += '<b>Check</b><br>Payable to ' + esc(p.check) + '<br>' + esc(FROM.address) + '<br>' + esc(FROM.cityStateZip) + '<br><br>';
-  ph += esc(p.note);
+  ph += (p.noteLead ? esc(p.noteLead) + " " : "") + esc(p.note);
   if(p.link)  ph += '<br><a class="paylink" href="' + esc(p.link) + '">Pay online →</a>';
   $("pPay").innerHTML = ph;
 
@@ -939,6 +942,9 @@ function workerPayload(){
     taxRate: I.taxRate || null,
     notes: I.notes || null,
     payLink: I.payment.link || null,
+    ach: I.payment.ach || null,
+    checkPayee: I.payment.check || null,
+    paymentNote: I.payment.noteLead || null,
     items: I.items.map(it => ({
       description: it.description, detail: it.detail || null,
       qty: it.qty == null ? 1 : it.qty, unit: it.unit || null, rate: it.rate || 0
