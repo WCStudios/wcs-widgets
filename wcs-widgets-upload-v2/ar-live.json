@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-01T17:54:39.751Z",
+ "updated": "2026-09-01T18:27:10.365Z",
  "source": "worker",
  "ar": [
   {
@@ -182,32 +182,6 @@
    "daysOverdue": 56,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/3c8421efc766815d97accfddda330446",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
-   "notionPageId": "3ce421ef-c766-8178-a0ed-f57a64cbf21b",
-   "name": "Tripine Creative - Invoice 0185 - Monthly creative retainer — September 2026 (1st)",
-   "client": "Tripine Creative",
-   "project": "Monthly creative retainer — September 2026 (1st)",
-   "terms": "Due on receipt",
-   "items": [
-    {
-     "description": "Monthly creative retainer",
-     "detail": "September 2026 — first half",
-     "qty": 1,
-     "unit": "mo",
-     "rate": 2375
-    }
-   ],
-   "threaded": true,
-   "amount": 2375,
-   "status": "Sent",
-   "invoiceDate": "2026-09-01",
-   "dueDate": "2026-09-01",
-   "daysOverdue": 0,
-   "bucket": "Not yet due",
-   "notionUrl": "https://app.notion.com/3ce421efc7668178a0edf57a64cbf21b",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -617,7 +591,7 @@
   },
   {
    "bucket": "Not yet due",
-   "amount": 5125
+   "amount": 2750
   }
  ],
  "arByClient": [
@@ -628,18 +602,14 @@
   {
    "client": "Tradition Capital Bank",
    "amount": 2750
-  },
-  {
-   "client": "Tripine Creative",
-   "amount": 2375
   }
  ],
  "summary": {
-  "arTotal": 30625,
-  "arSent": 18625,
+  "arTotal": 28250,
+  "arSent": 16250,
   "arDraft": 12000,
   "arOverdue": 13500,
-  "arCount": 10,
+  "arCount": 9,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
