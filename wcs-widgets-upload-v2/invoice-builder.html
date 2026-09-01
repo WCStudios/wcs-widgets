@@ -302,7 +302,8 @@ button:disabled{opacity:.4;cursor:not-allowed}
         <div class="f"><label>ACH line</label><input id="pAch" placeholder="Routing and account details sent separately on request."></div>
         <div class="f"><label>Checks payable to</label><input id="pCheck" value="WCStudios"></div>
         <div class="f"><label>Payment note</label><textarea id="pNote" placeholder="Use {number} for the invoice number"></textarea></div>
-        <div class="f"><label>Pay-online link</label><input id="pLink" placeholder="https://www.paypal.com/invoice/..."></div>
+        <div class="f"><label>Pay with</label><select id="pMethod"><option value="paypal">PayPal</option><option value="venmo">Venmo</option><option value="cashapp">Cash App</option></select></div>
+        <div class="f"><label>Pay-online link or handle</label><input id="pLink" placeholder="Full URL, or @handle for Venmo / $cashtag for Cash App"></div>
       </div>
     </div>
 
@@ -388,16 +389,17 @@ function writeStore(o){
   catch(e){ storageOK = false; }
 }
 const FIELDS = ["cName","cCompany","cEmail","cAddress","cCity","iNum","iProject","iStatus","iDate","iTerms","iDue",
-                "aDisc","aShip","aTax","aPaid","nNotes","pAch","pCheck","pNote","pLink"];
+                "aDisc","aShip","aTax","aPaid","nNotes","pAch","pCheck","pNote","pMethod","pLink"];
 
 /* Notes and the payment lines behave like an email signature: they carry to
    the next invoice and survive a reset, until you actually change them.
    Everything else in FIELDS is per-invoice and gets cleared. */
-const STICKY = ["nNotes", "pAch", "pCheck", "pNote"];
+const STICKY = ["nNotes", "pAch", "pCheck", "pNote", "pMethod"];
 const STICKY_DEFAULTS = {
   nNotes: "Thank you for the opportunity to collaborate, we truly appreciate your business. We're proud to be part of your project and look forward to continuing to create great work together.",
   pAch: "Routing and account details sent separately on request.",
   pCheck: "WCStudios",
+  pMethod: "paypal",
   pNote: "Payment is due prior to the shoot date. Please include invoice number {number} with your payment."
 };
 function snapshotSticky(){
@@ -413,7 +415,7 @@ const STICKY_LEGACY = {
   nNotes: ["Thank you \u2014 deliverables are posted to the shared project folder.",
            "Thank you - deliverables are posted to the shared project folder.",
            "Payment is due prior to the shoot date.\n\nThank you for the opportunity to collaborate, we truly appreciate your business. We're proud to be part of your project and look forward to continuing to create great work together."],
-  pAch: [], pCheck: [], pNote: ["Payment is due prior to the shoot date."]
+  pAch: [], pCheck: [], pMethod: [], pNote: ["Payment is due prior to the shoot date."]
 };
 function applySticky(saved){
   const v = saved || {};
@@ -658,6 +660,7 @@ function spec(){
     amountPaid: parseFloat($("aPaid").value || 0),
     notes: $("nNotes").value,
     payment: {ach:$("pAch").value, check:$("pCheck").value, link:$("pLink").value,
+              method:$("pMethod").value,
               note:($("pNote").value || "Please include invoice number {number} with your payment.")
                      .replace(/\{number\}/g, $("iNum").value)}
   };
@@ -733,6 +736,30 @@ function totals(I){
   return {sub, tax, total, due};
 }
 
+/* Each wallet gets its own button colour and wording. Venmo and Cash App are
+   their real brand colours; PayPal keeps the house accent, which is what these
+   invoices have always shown. */
+const PAY_STYLES = {
+  paypal:  {color:"#e8622c", label:a => "Pay " + a + " online"},
+  venmo:   {color:"#3d95ce", label:a => "Pay " + a + " with Venmo"},
+  cashapp: {color:"#00d632", label:a => "Pay " + a + " with Cash App"}
+};
+
+/* A full URL is used as typed. A bare handle is expanded per wallet, so you can
+   type @wcstudios rather than remembering the link shape. Cash App is the only
+   one that reliably carries the amount in the path; Venmo's deep links have
+   broken before, so it gets the plain profile URL. */
+function payUrl(method, raw, amount){
+  const v = String(raw || "").trim();
+  if(!v) return "";
+  if(/^https?:\/\//i.test(v)) return v;
+  const handle = v.replace(/^[@$]/, "");
+  if(method === "venmo")   return "https://venmo.com/u/" + encodeURIComponent(handle);
+  if(method === "cashapp") return "https://cash.app/$" + encodeURIComponent(handle)
+                                  + (amount ? "/" + (Math.round(amount * 100) / 100) : "");
+  return v;
+}
+
 function paint(){
   const I = spec(), T = totals(I);
 
@@ -776,7 +803,11 @@ function paint(){
   if(p.ach)   ph += '<b>ACH / bank transfer</b><br>' + esc(p.ach) + '<br><br>';
   if(p.check) ph += '<b>Check</b><br>Payable to ' + esc(p.check) + '<br>' + esc(FROM.address) + '<br>' + esc(FROM.cityStateZip) + '<br><br>';
   ph += esc(p.note);
-  if(p.link)  ph += '<br><a class="paylink" href="' + esc(p.link) + '">Pay online →</a>';
+  if(p.link){
+    const st = PAY_STYLES[p.method] || PAY_STYLES.paypal;
+    ph += '<br><a class="paylink" style="background:' + st.color + '" href="'
+        + esc(payUrl(p.method, p.link, T.due)) + '">' + esc(st.label(usd(T.due))) + ' →</a>';
+  }
   $("pPay").innerHTML = ph;
 
   $("pNotes").textContent = I.notes || "Thank you for your business.";
@@ -955,7 +986,8 @@ function workerPayload(){
     shipping: I.shipping || null,
     taxRate: I.taxRate || null,
     notes: I.notes || null,
-    payLink: I.payment.link || null,
+    payLink: payUrl(I.payment.method, I.payment.link, totals(I).due) || null,
+    payMethod: I.payment.method || null,
     ach: I.payment.ach || null,
     checkPayee: I.payment.check || null,
     paymentNote: I.payment.note || null,
