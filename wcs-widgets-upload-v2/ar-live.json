@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-01T16:36:00.976Z",
+ "updated": "2026-09-01T16:36:11.889Z",
  "source": "worker",
  "ar": [
   {
@@ -356,11 +356,6 @@
    "client": "Minnesota Hockey (Retainer — $45,000/yr in two $22,500 sums, Dec and May)",
    "monthly": 3750,
    "active": true
-  },
-  {
-   "client": "Niccum Docks",
-   "monthly": 1500,
-   "active": true
   }
  ],
  "clients": [
@@ -442,7 +437,7 @@
    "email": "info@niccumdocks.com",
    "type": "One-Off",
    "website": "",
-   "retainer": 1500
+   "retainer": null
   },
   {
    "name": "PIKKL",
@@ -617,7 +612,7 @@
   "arCount": 9,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
-  "mrr": 17500,
-  "monthlyNet": 10285.03
+  "mrr": 16000,
+  "monthlyNet": 8785.03
  }
 }
