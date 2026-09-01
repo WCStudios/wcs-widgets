@@ -54,7 +54,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .del{flex:0 0 auto;width:20px;height:20px;padding:0;border-radius:6px;border:1px solid transparent;
  background:transparent;color:var(--faint);font-size:11px;line-height:1;cursor:pointer;
  opacity:0;transition:opacity .12s,color .12s,border-color .12s}
-.row:hover .del,.row:hover .edit{opacity:1}
+.row:hover .del,.row:hover .edit,.row:hover .mark{opacity:1}
+/* Mark paid. Venmo, ACH and cheques never tell the worker anything, so the
+   only honest way for those to settle is by hand, from here. */
+.mark{flex:0 0 auto;height:20px;padding:0 7px;border-radius:6px;border:1px solid var(--line);
+ background:transparent;color:var(--muted);font:inherit;font-size:9.5px;font-weight:800;
+ letter-spacing:.4px;text-transform:uppercase;cursor:pointer;opacity:0;transition:opacity .12s,
+ color .12s,border-color .12s}
+.mark:hover{color:var(--paid);border-color:var(--paid)}
+.row.is-paid .mark:hover{color:var(--muted);border-color:var(--muted)}
 .edit{flex:0 0 auto;height:20px;padding:0 7px;border-radius:6px;border:1px solid var(--line);
  background:transparent;color:var(--muted);font:inherit;font-size:9.5px;font-weight:800;
  letter-spacing:.4px;text-transform:uppercase;cursor:pointer;opacity:0;transition:opacity .12s,
@@ -117,8 +125,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
    touchscreen — on an iPad they were invisible and unreachable. Show them
    always, at a finger-sized target, and only when the pointer is coarse. */
 @media (pointer: coarse){
-  .edit, .del{opacity:1}
-  .edit{min-height:44px;padding:0 14px}
+  .edit, .del, .mark{opacity:1}
+  .edit, .mark{min-height:44px;padding:0 14px}
   .del{width:44px;height:44px;font-size:15px}
   .row{padding-top:14px;padding-bottom:14px}
   .chip{padding:5px 9px}
@@ -230,6 +238,9 @@ function render(D){
       +     ' \u00b7 due ' + fmtDate(i.dueDate) + badge + '</div></div>'
       + '<div class="r-end"><div class="amt">' + usd(i.amount) + '</div>'
       +   '<span class="chip ' + m.st.cls + '">' + m.st.label + '</span></div>'
+      + '<button class="mark" data-mark="' + x + '" title="'
+      +   (m.st.key === "paid" ? "Put this back to Sent" : "Mark this invoice paid")
+      +   '">' + (m.st.key === "paid" ? "Undo" : "Paid") + '</button>'
       + '<button class="edit" data-edit="' + x + '" title="Open this invoice in the builder">Edit</button>'
       + '<button class="del" data-del="' + x + '" title="Delete this invoice">\u2715</button>'
       + '</div>';
@@ -241,12 +252,12 @@ function render(D){
   rows.querySelectorAll(".row").forEach(el => {
     let timer = null;
     el.addEventListener("click", e => {
-      if(e.target.closest(".del") || e.target.closest(".edit")) return;
+      if(e.target.closest(".del") || e.target.closest(".edit") || e.target.closest(".mark")) return;
       clearTimeout(timer);
       timer = setTimeout(() => open_(ar[+el.dataset.i]), 260);
     });
     el.addEventListener("dblclick", e => {
-      if(e.target.closest(".del") || e.target.closest(".edit")) return;
+      if(e.target.closest(".del") || e.target.closest(".edit") || e.target.closest(".mark")) return;
       clearTimeout(timer);
       editInBuilder(ar[+el.dataset.i]);
     });
@@ -256,6 +267,13 @@ function render(D){
     btn.addEventListener("click", e => {
       e.stopPropagation();
       editInBuilder(ar[+btn.dataset.edit]);
+    }));
+
+  rows.querySelectorAll("[data-mark]").forEach(btn =>
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      const row = ar[+btn.dataset.mark];
+      markStatus(row, String(row && row.status) === "Paid" ? "Sent" : "Paid", btn);
     }));
 
   rows.querySelectorAll("[data-del]").forEach(btn =>
@@ -410,7 +428,11 @@ function bucketFor(dueDate){
 /* Recompute the derived numbers locally so the totals move with the table
    rather than lagging a poll behind it. */
 function recompute(D){
-  const ar = D.ar || [];
+  /* Money owed must not count what has just been settled. The published feed
+     drops Paid rows outright, so this only ever bites in the window between a
+     row being marked paid here and the feed catching up \u2014 during which the
+     row is still on screen, wearing a Paid chip, and must stop counting. */
+  const ar = (D.ar || []).filter(x => String(x.status || "") !== "Paid");
   const round = n => Math.round(n * 100) / 100;
   const by = key => {
     const m = new Map();
@@ -444,7 +466,13 @@ function onInvoiceEvent(ev){
                             && !!(r.name && inv.name && r.name === inv.name);
   const match = r => sameId(r) || samePlaceholder(r);
 
-  if(ev.kind === "deleted"){
+  if(ev.kind === "status"){
+    // Only the status moved. Rebuilding the row from the event would blank the
+    // pdfUrl and the rest of what the feed knows about it.
+    const at = D.ar.findIndex(match);
+    if(at >= 0) D.ar[at] = {...D.ar[at], status: inv.status,
+                            daysOverdue: inv.status === "Paid" ? 0 : D.ar[at].daysOverdue};
+  } else if(ev.kind === "deleted"){
     // A deletion has to be exact. Never let it take a namesake with it.
     const doomed = inv.notionPageId ? sameId : (r => r.name === inv.name);
     D.ar = D.ar.filter(r => !doomed(r));
@@ -513,6 +541,39 @@ function pruneTombs(feedUpdated){
   try { localStorage.setItem(TOMBS, JSON.stringify(keep)); } catch(e){}
   return keep;
 }
+/* The same watermark trick tombstones use, for status rather than removal.
+   no-cors means the POST tells us nothing, and the feed has been known to sit
+   still, so a click has to hold its own answer until a feed built after it
+   arrives \u2014 at which point the feed is authoritative and the mark is dropped. */
+const MARKS = "wcsInvoiceMarks.v1";
+function marks(){
+  try { return JSON.parse(localStorage.getItem(MARKS) || "[]").filter(Boolean); }
+  catch(e){ return []; }
+}
+function remark(row, status){
+  if(!row || !row.notionPageId) return;
+  const list = marks().filter(m => m.id !== row.notionPageId);
+  list.push({id: row.notionPageId, status: status, at: Date.now()});
+  try { localStorage.setItem(MARKS, JSON.stringify(list.slice(-50))); } catch(e){}
+}
+function pruneMarks(feedUpdated){
+  const mark = Date.parse(feedUpdated || "") || 0;
+  const keep = marks().filter(m => m.at > mark);
+  try { localStorage.setItem(MARKS, JSON.stringify(keep)); } catch(e){}
+  return keep;
+}
+function withMarks(feed){
+  const live = pruneMarks(feed.updated);
+  if(!live.length) return feed;
+  const by = {};
+  live.forEach(m => by[m.id] = m.status);
+  return {...feed, ar: (feed.ar || []).map(r => {
+    const st = r.notionPageId ? by[r.notionPageId] : null;
+    // Paid rows must also stop reading as late; Overdue is derived, not stored.
+    return st ? {...r, status: st, daysOverdue: st === "Paid" ? 0 : r.daysOverdue} : r;
+  })};
+}
+
 function withoutDeleted(feed){
   const live = pruneTombs(feed.updated);
   if(!live.length) return feed;
@@ -605,6 +666,36 @@ async function removeInvoice(row, btn){
   }
 }
 
+/* Paid by Venmo, ACH or cheque leaves no trace the worker can see, so those
+   only ever settle by hand. Same worker action Notion's own board would use,
+   and the same optimistic overlay the delete path uses \u2014 the row reads Paid
+   here the instant it is clicked, and the published feed corrects it later. */
+async function markStatus(row, status, btn){
+  if(!row || !row.notionPageId){ flash("Waiting on the live feed \u2014 try again in a moment"); return; }
+  const c = conn();
+  if(!c.url || !c.key){ flash("Connect the worker in the builder first"); return; }
+
+  if(btn) btn.disabled = true;
+  try {
+    await fetch(c.url, {
+      method: "POST",
+      mode: "no-cors",                           // the endpoint sends no CORS headers
+      headers: {"Content-Type": "text/plain"},   // safelisted, so no preflight
+      body: JSON.stringify({
+        key: c.key, action: "setStatus",
+        payload: { notionPageId: row.notionPageId, status: status }
+      })
+    });
+    remark(row, status);
+    announce("status", {...row, status: status});
+    flash(status === "Paid" ? "Marked paid" : "Back to sent");
+    chaseFeed();
+  } catch(e){
+    if(btn) btn.disabled = false;
+    flash("Couldn't reach the worker");
+  }
+}
+
 /* Tell every other widget on this origin what just happened. */
 function announce(kind, invoice){
   const msg = {kind, invoice, at: Date.now()};
@@ -656,7 +747,7 @@ function applyLive(){
       if(!live) return;
       if(live.updated === liveAt) return;   // nothing new since last poll
       liveAt = live.updated;
-      const clean = withoutDeleted(live);
+      const clean = withoutDeleted(withMarks(live));
       const dropped = (live.ar || []).length - (clean.ar || []).length;
       const view = {
         ...baked,
@@ -668,7 +759,8 @@ function applyLive(){
         summary: {...baked.summary, ...live.summary}
       };
       // Totals must follow the rows on screen, or a filtered row still counts.
-      render(dropped ? recompute(view) : view);
+      // A hand-marked row changes the open set without changing the row count.
+      render((dropped || marks().length) ? recompute(view) : view);
       drainLog();
       // live.updated is a full ISO timestamp; fmtDate wants a plain date.
       document.getElementById("sub").textContent =
