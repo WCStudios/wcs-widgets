@@ -394,10 +394,10 @@ const FIELDS = ["cName","cCompany","cEmail","cAddress","cCity","iNum","iProject"
    Everything else in FIELDS is per-invoice and gets cleared. */
 const STICKY = ["nNotes", "pAch", "pCheck", "pNote"];
 const STICKY_DEFAULTS = {
-  nNotes: "Payment is due prior to the shoot date.\n\nThank you for the opportunity to collaborate, we truly appreciate your business. We're proud to be part of your project and look forward to continuing to create great work together.",
+  nNotes: "Thank you for the opportunity to collaborate, we truly appreciate your business. We're proud to be part of your project and look forward to continuing to create great work together.",
   pAch: "Routing and account details sent separately on request.",
   pCheck: "WCStudios",
-  pNote: ""
+  pNote: "Payment is due prior to the shoot date."
 };
 function snapshotSticky(){
   const o = {};
@@ -410,7 +410,8 @@ function snapshotSticky(){
    Without this, changing a default only ever affected brand new machines. */
 const STICKY_LEGACY = {
   nNotes: ["Thank you \u2014 deliverables are posted to the shared project folder.",
-           "Thank you - deliverables are posted to the shared project folder."],
+           "Thank you - deliverables are posted to the shared project folder.",
+           "Payment is due prior to the shoot date.\n\nThank you for the opportunity to collaborate, we truly appreciate your business. We're proud to be part of your project and look forward to continuing to create great work together."],
   pAch: [], pCheck: [], pNote: []
 };
 function applySticky(saved){
