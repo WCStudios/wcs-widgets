@@ -246,6 +246,26 @@ async function applyLive(){
   if(!live.summary) return;
 
   lastFeedAt = live.updated || lastFeedAt;
+
+  /* Burn and retainers ride along on the same feed now. When the worker can
+     reach those tables they replace the bake outright — never a blend, because
+     a half-live burn total is worse than an honestly stale one. If the worker
+     could not read them the keys are simply absent and the bake stands. */
+  if(live.burn && Array.isArray(live.burn.categories) && live.burn.categories.length){
+    D.burn = live.burn;
+    D.summary = Object.assign({}, D.summary, {
+      monthlyBurn: typeof live.summary.monthlyBurn === "number"
+        ? live.summary.monthlyBurn : live.burn.total
+    });
+  }
+  if(Array.isArray(live.retainers) && live.retainers.length){
+    D.retainers = live.retainers;
+    if(typeof live.summary.mrr === "number")
+      D.summary = Object.assign({}, D.summary, {mrr: live.summary.mrr});
+  }
+  if(typeof live.summary.monthlyNet === "number")
+    D.summary = Object.assign({}, D.summary, {monthlyNet: live.summary.monthlyNet});
+
   applyRows(live);
 }
 

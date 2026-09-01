@@ -87,6 +87,7 @@ const SERIES = ["--s1","--s2","--s3","--s4"];
 let expanded = {};
 
 function render(D){
+  CURRENT = D;
   const s = D.summary, cats = D.burn.categories || [], tot = D.burn.total || 1;
   total.textContent = usd(tot);
   sub.textContent = cats.reduce((a,c)=>a+c.items.length,0) + " fixed line items across " + cats.length + " categories";
@@ -138,6 +139,39 @@ function cats2(D, cats, tot){
     + (s.cashOnHand == null ? "Runway needs a live cash balance — connect an account to fill it in." : "");
 }
 
+/* ── Live burn ────────────────────────────────────────────────────────────
+   finance-data.js is a bake and goes stale the moment a Notion table changes —
+   it is what left a departed contractor on this panel for months. The worker
+   now publishes burn and retainers on ar-live.json, rebuilt on every invoice
+   action. Pages sits beside this widget and purges on commit; raw has a ~5
+   minute edge cache, so ask both and keep whichever reports the newer stamp. */
+const AR_SRCS = [
+  "ar-live.json",
+  "https://raw.githubusercontent.com/wcstudios/wcs-widgets/main/wcs-widgets-upload-v2/ar-live.json"
+];
+let CURRENT = null;
+
+async function applyLive(){
+  if(!CURRENT) return;
+  const bust = "?t=" + Date.now();
+  const got = (await Promise.all(AR_SRCS.map(u =>
+    fetch(u + bust, {cache: "no-store"}).then(r => r.ok ? r.json() : null).catch(() => null)
+  ))).filter(Boolean);
+  if(!got.length) return;
+  const live = got.sort((a, b) =>
+    String(b.updated || "").localeCompare(String(a.updated || "")))[0];
+  if(!live.burn || !Array.isArray(live.burn.categories) || !live.burn.categories.length) return;
+
+  const ls = live.summary || {};
+  CURRENT.burn = live.burn;
+  CURRENT.summary = Object.assign({}, CURRENT.summary, {
+    monthlyBurn: typeof ls.monthlyBurn === "number" ? ls.monthlyBurn : live.burn.total,
+    mrr:         typeof ls.mrr === "number" ? ls.mrr : CURRENT.summary.mrr,
+    monthlyNet:  typeof ls.monthlyNet === "number" ? ls.monthlyNet : CURRENT.summary.monthlyNet
+  });
+  render(CURRENT);
+}
+
 function load(){
   // Try the published feed first, fall back to a sibling finance-data.js
   // (lets the same file preview locally before it's pushed to Pages).
@@ -145,7 +179,8 @@ function load(){
     if(i >= srcs.length){ if(!rendered){ document.getElementById("sub").textContent = "data feed offline"; } return; }
     const sc = document.createElement("script");
     sc.src = srcs[i] + "?t=" + Date.now();
-    sc.onload = () => { sc.remove(); if(window.FINDATA) render(window.FINDATA); else tryLoad(srcs, i+1); };
+    sc.onload = () => { sc.remove();
+      if(window.FINDATA){ render(window.FINDATA); applyLive(); } else tryLoad(srcs, i+1); };
     sc.onerror = () => { sc.remove(); tryLoad(srcs, i+1); };
     document.head.appendChild(sc);
   };
@@ -155,4 +190,9 @@ function load(){
 let rendered = false;
 if(window.FINDATA){ render(window.FINDATA); rendered = true; }
 load(); setInterval(load, 300000);
+applyLive(); setInterval(applyLive, 30000);
+document.addEventListener("visibilitychange", () => { if(!document.hidden) applyLive(); });
+try { new BroadcastChannel("wcs-invoices").onmessage = () =>
+  [2000, 8000, 20000].forEach(ms => setTimeout(applyLive, ms));
+} catch(e){}
 </script></body></html>
