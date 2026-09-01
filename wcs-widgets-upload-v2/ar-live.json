@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-01T02:00:13.746Z",
+ "updated": "2026-09-01T02:03:34.218Z",
  "source": "worker",
  "ar": [
   {
@@ -100,10 +100,10 @@
   },
   {
    "notionPageId": "3ce421ef-c766-81c6-9684-c9ce032fbe17",
-   "name": "Tradition Companies - Invoice 184 - TCB Brand Films",
-   "client": "Tradition Companies",
+   "name": "Tradition Capital Bank - Invoice 184 - TCB Brand Films",
+   "client": "Tradition Capital Bank",
    "project": "TCB Brand Films",
-   "terms": "Due on receipt",
+   "terms": "Net 7",
    "items": [
     {
      "description": "Production day — full day",
@@ -124,9 +124,9 @@
    "amount": 2750,
    "status": "Sent",
    "invoiceDate": "2026-08-31",
-   "dueDate": "2026-08-31",
-   "daysOverdue": 1,
-   "bucket": "1-30 days",
+   "dueDate": "2026-09-07",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
    "notionUrl": "https://app.notion.com/3ce421efc76681c69684c9ce032fbe17",
    "pdfUrl": null,
    "pdfSource": "live"
@@ -371,7 +371,7 @@
  "arAging": [
   {
    "bucket": "1-30 days",
-   "amount": 14750
+   "amount": 12000
   },
   {
    "bucket": "31-60 days",
@@ -380,6 +380,10 @@
   {
    "bucket": "90+ days",
    "amount": 6500
+  },
+  {
+   "bucket": "Not yet due",
+   "amount": 2750
   }
  ],
  "arByClient": [
@@ -388,7 +392,7 @@
    "amount": 25500
   },
   {
-   "client": "Tradition Companies",
+   "client": "Tradition Capital Bank",
    "amount": 2750
   }
  ],
@@ -396,7 +400,7 @@
   "arTotal": 28250,
   "arSent": 16250,
   "arDraft": 12000,
-  "arOverdue": 16250,
+  "arOverdue": 13500,
   "arCount": 9,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
