@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-01T02:32:09.808Z",
+ "updated": "2026-09-01T03:11:48.691Z",
  "source": "worker",
  "ar": [
   {
@@ -120,7 +120,7 @@
      "rate": 125
     }
    ],
-   "threaded": false,
+   "threaded": true,
    "amount": 2750,
    "status": "Sent",
    "invoiceDate": "2026-08-31",
