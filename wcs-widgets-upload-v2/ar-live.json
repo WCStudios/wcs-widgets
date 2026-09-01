@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-01T18:28:11.181Z",
+ "updated": "2026-09-01T18:34:56.983Z",
  "source": "worker",
  "ar": [
   {
@@ -95,6 +95,46 @@
    "daysOverdue": 96,
    "bucket": "90+ days",
    "notionUrl": "https://app.notion.com/3c8421efc76681139ef2c2cddfc2c72c",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3ce421ef-c766-81d3-8ef0-c4d66e9861b8",
+   "name": "WCStudios - Invoice 0186 - Test project",
+   "client": "WCStudios",
+   "project": "Test project",
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1500
+    },
+    {
+     "description": "Editing and post production",
+     "detail": "Post production of 2 brand films",
+     "qty": 10,
+     "unit": "hr",
+     "rate": 125
+    },
+    {
+     "description": "Production day — half day",
+     "detail": null,
+     "qty": 100,
+     "unit": "Miles",
+     "rate": 0.65
+    }
+   ],
+   "threaded": true,
+   "amount": 2815,
+   "status": "Sent",
+   "invoiceDate": "2026-09-01",
+   "dueDate": "2026-09-16",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3ce421efc76681d38ef0c4d66e9861b8",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -591,7 +631,7 @@
   },
   {
    "bucket": "Not yet due",
-   "amount": 2750
+   "amount": 5565
   }
  ],
  "arByClient": [
@@ -600,16 +640,20 @@
    "amount": 25500
   },
   {
+   "client": "WCStudios",
+   "amount": 2815
+  },
+  {
    "client": "Tradition Capital Bank",
    "amount": 2750
   }
  ],
  "summary": {
-  "arTotal": 28250,
-  "arSent": 16250,
+  "arTotal": 31065,
+  "arSent": 19065,
   "arDraft": 12000,
   "arOverdue": 13500,
-  "arCount": 9,
+  "arCount": 10,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
