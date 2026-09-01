@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-01T00:03:43.741Z",
+ "updatedAt": "2026-09-01T01:04:02.112Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -20,13 +20,13 @@
    "title": "RBC Heritage Recap",
    "account": "wcstudios.co",
    "order": 2,
-   "status": "Draft",
+   "status": "Ready",
    "scheduleDate": null,
    "kind": "grid",
    "tiles": [
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/17zmf57.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/18eelws.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1l0f3r5.jpg"
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/160yrsf.jpg",
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/15fru1j.jpg",
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1sa3g6r.jpg"
    ]
   },
   {
@@ -48,7 +48,7 @@
    "title": "MN Wild - 25 Years Spot",
    "account": "wcstudios.co",
    "order": 4,
-   "status": "Draft",
+   "status": "Ready",
    "scheduleDate": null,
    "kind": "grid",
    "tiles": [
@@ -94,9 +94,9 @@
    "scheduleDate": null,
    "kind": "grid",
    "tiles": [
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/l8b8nn.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1x4nx59.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/jilqw.jpg"
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1tfa3vs.jpg",
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/ymtpzb.jpg",
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/8iwgr8.jpg"
    ]
   },
   {
