@@ -404,10 +404,22 @@ function snapshotSticky(){
   STICKY.forEach(id => o[id] = $(id).value);
   return o;
 }
+/* A saved value only wins while it is genuinely yours. If it still matches a
+   default this widget once shipped, nobody ever edited it — so a change to
+   STICKY_DEFAULTS should reach browsers that already have the old text saved.
+   Without this, changing a default only ever affected brand new machines. */
+const STICKY_LEGACY = {
+  nNotes: ["Thank you \u2014 deliverables are posted to the shared project folder.",
+           "Thank you - deliverables are posted to the shared project folder."],
+  pAch: [], pCheck: [], pNote: []
+};
 function applySticky(saved){
   const v = saved || {};
   STICKY.forEach(id => {
-    $(id).value = (v[id] != null && v[id] !== "") ? v[id] : STICKY_DEFAULTS[id];
+    const own = v[id];
+    const untouched = own == null || own === ""
+      || (STICKY_LEGACY[id] || []).some(old => old === own);
+    $(id).value = untouched ? (STICKY_DEFAULTS[id] || "") : own;
   });
 }
 
