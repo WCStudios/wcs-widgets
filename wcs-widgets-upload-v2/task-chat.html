@@ -217,6 +217,15 @@ function setWho(name){
 
 /* ── Worker connection (gear) ─────────────────────────────── */
 const CONN = "wcsTaskChatConn.v1";
+/* The embed URL can carry the worker connection (wu=webhook url, wk=key) —
+   it lives only inside the Notion page, so every teammate's widget arrives
+   configured with zero setup. Stored per browser; the gear can override. */
+(function(){
+  const wu = qs.get("wu"), wk = qs.get("wk");
+  if(wu && wk && /\/taskChatAction$/.test(wu)){
+    try{ localStorage.setItem(CONN, JSON.stringify({url: wu, key: wk})); }catch(e){}
+  }
+})();
 function conn(){ try{ return JSON.parse(localStorage.getItem(CONN) || "{}"); }catch(e){ return {}; } }
 function connected(){ const c = conn(); return !!(c.url && c.key); }
 function paintConn(){
