@@ -1,0 +1,424 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>WCS Task Chat</title>
+<style>
+:root{--bg:#fff;--line:#ececec;--text:#111;--muted:#8a8a8a;--accent:#e8622c;--soft:#f2f2f2;
+ --up:#0ca30c;--down:#d03b3b;--warn:#fab219;--accent-soft:rgba(232,98,44,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#171717;--line:#2a2a2a;--text:#f4f4f4;--muted:#8a8a8a;
+ --soft:#262626;--accent-soft:rgba(232,98,44,.14)}}
+*{margin:0;box-sizing:border-box}html,body{height:100%;width:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);
+ display:flex;flex-direction:column}
+
+.k{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.panel{border:1px solid var(--line);border-radius:8px}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+
+/* ── Header ─────────────────────────────────────────────── */
+.hdr{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);flex:0 0 auto}
+.hdr .title{font-size:15px;font-weight:800;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr .k{margin-top:2px}
+.hdr .grow{flex:1 1 auto;min-width:0}
+.faces{display:flex;align-items:center}
+.face{width:24px;height:24px;border-radius:50%;background:var(--soft);border:2px solid var(--bg);
+ display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;margin-left:-6px;position:relative}
+.face:first-child{margin-left:0}
+.face .on{position:absolute;right:-1px;bottom:-1px;width:7px;height:7px;border-radius:50%;
+ background:var(--up);border:2px solid var(--bg)}
+.gear{font-size:14px;color:var(--muted);padding:4px 6px;position:relative}
+.gear .dot{position:absolute;right:1px;top:3px;width:6px;height:6px;border-radius:50%}
+.gear .dot.on{background:var(--up)}.gear .dot.off{background:var(--muted)}
+.chip{font-size:9px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);
+ opacity:0;transition:opacity .25s;white-space:nowrap}
+.chip.on{opacity:1}.chip.saved{color:var(--up)}.chip.err{color:var(--down)}
+
+/* ── Feed ───────────────────────────────────────────────── */
+.feed{flex:1 1 auto;overflow-y:auto;padding:14px 16px 6px;scroll-behavior:smooth}
+.day{display:flex;align-items:center;gap:10px;margin:14px 0 10px}
+.day:first-child{margin-top:0}
+.day .l{flex:1;height:1px;background:var(--line)}
+.day .t{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.msg{display:flex;gap:10px;padding:5px 8px;border-radius:8px;position:relative}
+.msg:hover{background:var(--soft)}
+.msg.sel{background:var(--accent-soft);outline:1px solid var(--accent)}
+.msg .av{width:26px;height:26px;border-radius:50%;background:var(--soft);flex:0 0 auto;
+ display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;margin-top:2px}
+.msg .body{min-width:0;flex:1}
+.msg .who{font-size:11.5px;font-weight:800;display:inline}
+.msg .when{font-size:9.5px;color:var(--muted);margin-left:7px}
+.msg .text{font-size:13px;line-height:1.45;margin-top:1px;white-space:pre-wrap;word-wrap:break-word}
+.msg .tag{display:inline-block;font-size:8.5px;letter-spacing:.4px;text-transform:uppercase;font-weight:700;
+ padding:1px 6px;border-radius:9px;margin-left:7px;vertical-align:1px}
+.tag.dec{background:var(--accent-soft);color:var(--accent)}
+.tag.done{background:var(--soft);color:var(--muted)}
+.msg .acts{position:absolute;right:8px;top:4px;display:none;gap:2px;background:var(--bg);
+ border:1px solid var(--line);border-radius:7px;padding:1px 3px}
+.msg:hover .acts{display:flex}
+.msg .acts button{font-size:9px;letter-spacing:.3px;text-transform:uppercase;font-weight:700;
+ color:var(--muted);padding:3px 6px;border-radius:5px}
+.msg .acts button:hover{color:var(--accent);background:var(--accent-soft)}
+.sys{text-align:center;font-size:10px;color:var(--muted);padding:4px 0}
+.emptyfeed{color:var(--muted);font-size:12px;text-align:center;padding:30px 10px;line-height:1.6}
+
+/* ── Composer ───────────────────────────────────────────── */
+.comp{flex:0 0 auto;padding:10px 16px 6px}
+.compbox{display:flex;align-items:flex-end;gap:8px;border:1px solid var(--line);border-radius:8px;padding:8px 8px 8px 12px}
+.compbox:focus-within{border-color:var(--accent)}
+.compbox textarea{flex:1;border:none;outline:none;background:none;resize:none;font:inherit;
+ font-size:13px;line-height:1.4;color:var(--text);max-height:110px;min-height:20px}
+.send{background:var(--accent);color:#fff;font-size:11px;font-weight:800;letter-spacing:.3px;
+ padding:7px 16px;border-radius:6px}
+.send:disabled{opacity:.35;cursor:default}
+.comphint{font-size:9px;color:var(--muted);margin:5px 2px 0}
+
+/* ── Overlays (identity + worker conn) ──────────────────── */
+.veil{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:40}
+.veil[hidden]{display:none}
+.vcard{width:min(340px,88vw);border:1px solid var(--line);border-radius:10px;padding:22px}
+.vcard .big{font-size:19px;font-weight:800;letter-spacing:-.4px}
+.vcard .sub{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.5}
+.vcard label{display:block;font-size:10px;letter-spacing:.6px;text-transform:uppercase;
+ color:var(--muted);margin:14px 0 5px}
+.vcard input{width:100%;font:inherit;font-size:13px;color:var(--text);background:none;
+ border:1px solid var(--line);border-radius:7px;padding:8px 10px;outline:none}
+.vcard input:focus{border-color:var(--accent)}
+.vcard .go{width:100%;margin-top:16px;background:var(--accent);color:#fff;font-size:12px;
+ font-weight:800;padding:9px 0;border-radius:7px}
+.vcard .alt{width:100%;margin-top:8px;font-size:10.5px;color:var(--muted)}
+.pick{display:flex;gap:7px;margin-top:6px;flex-wrap:wrap}
+.pick button{border:1px solid var(--line);border-radius:16px;font-size:11.5px;font-weight:700;padding:6px 13px}
+.pick button:hover{border-color:var(--accent);color:var(--accent)}
+
+.banner{flex:0 0 auto;font-size:10.5px;line-height:1.45;color:var(--warn);
+ border-top:1px solid var(--line);padding:8px 16px}
+.banner[hidden]{display:none}
+
+@media (max-width:560px){
+ .low{grid-template-columns:1fr}
+ .hdr{padding:10px 12px}.feed{padding:10px 12px 4px}.comp{padding:8px 12px 4px}.low{padding:6px 12px 12px}
+}
+</style></head><body>
+
+<div class="hdr">
+  <div class="grow">
+    <div class="k">Task chat</div>
+    <div class="title" id="hTitle">—</div>
+  </div>
+  <div class="chip" id="chip"></div>
+  <div class="faces" id="hFaces"></div>
+  <button class="gear" id="bConn" title="Worker connection">&#9881;<span class="dot off" id="connDot"></span></button>
+</div>
+
+<div class="feed" id="feed"><div class="emptyfeed">Loading&hellip;</div></div>
+
+<div class="comp">
+  <div class="compbox">
+    <textarea id="box" rows="1" placeholder="Message the team&hellip;"></textarea>
+    <button class="send" id="bSend" disabled>Send</button>
+  </div>
+  <div class="comphint">Enter to send &middot; Shift+Enter for a new line &middot; hover a message to send it to the brief, shot list or client notes</div>
+</div>
+
+<div class="banner" id="banner" hidden></div>
+
+<!-- identity -->
+<div class="veil" id="whoVeil" hidden>
+  <div class="vcard">
+    <div class="big">Who&rsquo;s this?</div>
+    <div class="sub">Pick your name once &mdash; this browser remembers it, and the team sees it on your messages.</div>
+    <div class="pick" id="whoPick"></div>
+    <label>Or type a name</label>
+    <input id="whoName" placeholder="" spellcheck="false" autocomplete="off">
+    <button class="go" id="whoGo">Start chatting</button>
+  </div>
+</div>
+
+<!-- worker connection -->
+<div class="veil" id="connVeil" hidden>
+  <div class="vcard">
+    <div class="big">Worker connection</div>
+    <div class="sub">Needed only for the Notion sync buttons &mdash; chat works without it. Paste the
+      <b>taskChatAction</b> webhook URL and key. Stored in this browser only.</div>
+    <label>Webhook URL</label>
+    <input id="connUrl" placeholder="https://app.notion.com/webhooks/worker/&hellip;/taskChatAction" spellcheck="false">
+    <label>Widget key</label>
+    <input id="connKey" type="password" spellcheck="false">
+    <button class="go" id="connSave">Save</button>
+    <button class="alt" id="connClear">Forget stored connection</button>
+    <button class="alt" id="connClose">Close</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════════
+   WCS Task Chat — one feed per task page.
+
+   The embed URL carries ?task=<notion page id>; every message row
+   in Supabase is keyed by it, so each task gets a clean feed and
+   this file stays identical for all of them.
+
+   Supabase anon key: public by design (RLS limits it to reading
+   and writing chat messages). The Notion worker webhook, which can
+   MUTATE the task page, is NOT baked in — gear button, localStorage,
+   same convention as the invoice builder.
+   ══════════════════════════════════════════════════════════════ */
+
+const SB_URL  = "https://vqqzjeasjjesmnxohoby.supabase.co";
+const SB_ANON = "sb_publishable_ygrsYKB9GHrRI2eN7ISD7Q_eXGnrX0n";  // publishable by design; RLS limits it to chat rows
+
+const qs   = new URLSearchParams(location.search);
+const TASK = (qs.get("task") || "").replace(/-/g, "");
+const TASKNAME = qs.get("name") || "";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const initials = n => n.trim().split(/\s+/).map(w => w[0]).slice(0,2).join("").toUpperCase() || "?";
+
+/* Per-author color from the validated categorical palette. */
+const HUES_L = ["#eb6834","#2a78d6","#1baf7a","#4a3aa7","#eda100"];
+const HUES_D = ["#e8622c","#3987e5","#199e70","#9085e9","#c98500"];
+const dark = matchMedia("(prefers-color-scheme:dark)");
+function hue(name){
+  let h = 0; for(const c of name) h = (h*31 + c.charCodeAt(0)) >>> 0;
+  return (dark.matches ? HUES_D : HUES_L)[h % 5];
+}
+
+function flag(text, cls){
+  const c = $("chip");
+  c.textContent = text; c.className = "chip on " + (cls || "");
+  clearTimeout(flag.t); flag.t = setTimeout(() => c.className = "chip", 2400);
+}
+
+/* ── Identity ─────────────────────────────────────────────── */
+const WHO = "wcsTaskChat.who.v1";
+const TEAM = ["Bennett Witta", "Connor Pohl"];
+let me = null;
+try{ me = JSON.parse(localStorage.getItem(WHO) || "null"); }catch(e){}
+
+function askWho(){
+  $("whoPick").innerHTML = TEAM.map(n => `<button data-n="${esc(n)}">${esc(n)}</button>`).join("");
+  $("whoPick").querySelectorAll("button").forEach(b =>
+    b.addEventListener("click", () => setWho(b.dataset.n)));
+  $("whoGo").addEventListener("click", () => {
+    const n = $("whoName").value.trim();
+    if(n) setWho(n);
+  });
+  $("whoName").addEventListener("keydown", e => {
+    if(e.key === "Enter"){ const n = $("whoName").value.trim(); if(n) setWho(n); }
+  });
+  $("whoVeil").hidden = false;
+}
+function setWho(name){
+  me = {name};
+  try{ localStorage.setItem(WHO, JSON.stringify(me)); }catch(e){}
+  $("whoVeil").hidden = true;
+  boot();
+}
+
+/* ── Worker connection (gear) ─────────────────────────────── */
+const CONN = "wcsTaskChatConn.v1";
+function conn(){ try{ return JSON.parse(localStorage.getItem(CONN) || "{}"); }catch(e){ return {}; } }
+function connected(){ const c = conn(); return !!(c.url && c.key); }
+function paintConn(){
+  $("connDot").className = "dot " + (connected() ? "on" : "off");
+  $("bConn").title = connected() ? "Worker connected" : "Worker not connected — click to set up";
+}
+$("bConn").addEventListener("click", () => {
+  const c = conn();
+  $("connUrl").value = c.url || ""; $("connKey").value = c.key || "";
+  $("connVeil").hidden = false;
+});
+$("connSave").addEventListener("click", () => {
+  const url = $("connUrl").value.trim(), key = $("connKey").value.trim();
+  if(!/^https:\/\/[^\s]+\/taskChatAction$/.test(url)){ flag("That doesn't look like the taskChatAction URL","err"); return; }
+  if(!key){ flag("Key is required","err"); return; }
+  try{ localStorage.setItem(CONN, JSON.stringify({url, key})); }catch(e){ flag("This browser won't store it","err"); return; }
+  $("connVeil").hidden = true; paintConn(); flag("Worker connected ✓","saved");
+});
+$("connClear").addEventListener("click", () => {
+  try{ localStorage.removeItem(CONN); }catch(e){}
+  $("connVeil").hidden = true; paintConn(); flag("Forgotten");
+});
+$("connClose").addEventListener("click", () => { $("connVeil").hidden = true; });
+
+/* Fire-and-forget POST to the worker — CORS-simple, no preflight,
+   same convention as the invoice builder. */
+function worker(action, payload){
+  const c = conn();
+  if(!c.url || !c.key) return false;
+  fetch(c.url, {method:"POST", mode:"no-cors",
+    headers:{"Content-Type":"text/plain"},
+    body: JSON.stringify({key:c.key, action, payload})});
+  return true;
+}
+
+/* ── Supabase ─────────────────────────────────────────────── */
+let sb = null, channel = null, live = false;
+const msgs = new Map();      // id → row
+const present = new Map();   // name → true
+
+function boot(){
+  $("hTitle").textContent = TASKNAME || "Task chat";
+  document.title = "WCS Task Chat" + (TASKNAME ? " — " + TASKNAME : "");
+  paintConn(); paintParts();
+
+  if(!TASK){
+    $("feed").innerHTML = '<div class="emptyfeed">This embed is missing its <b>?task=</b> id, so there is no feed to join.<br>Re-embed it from the task template.</div>';
+    return;
+  }
+  if(!SB_URL || !SB_ANON || !window.supabase){
+    $("feed").innerHTML = '<div class="emptyfeed">Chat backend not configured in this build.</div>';
+    $("banner").textContent = "This copy was published without its Supabase connection — messages cannot be sent.";
+    $("banner").hidden = false;
+    return;
+  }
+  sb = window.supabase.createClient(SB_URL, SB_ANON);
+  load();
+  join();
+}
+
+async function load(){
+  const { data, error } = await sb.from("messages")
+    .select("*").eq("task_id", TASK)
+    .order("created_at", {ascending:true}).limit(500);
+  if(error){
+    $("feed").innerHTML = '<div class="emptyfeed">Could not load the feed — ' + esc(error.message) + '</div>';
+    return;
+  }
+  msgs.clear();
+  for(const r of data) msgs.set(r.id, r);
+  drawFeed(true);
+}
+
+function join(){
+  channel = sb.channel("task:" + TASK, {config:{presence:{key: me.name}}});
+  channel
+    .on("postgres_changes",
+      {event:"*", schema:"public", table:"messages", filter:"task_id=eq." + TASK},
+      p => {
+        const r = p.new && p.new.id ? p.new : null;
+        if(p.eventType === "DELETE" && p.old && p.old.id){ msgs.delete(p.old.id); drawFeed(false); return; }
+        if(r){ const had = msgs.has(r.id); msgs.set(r.id, r); drawFeed(!had); }
+      })
+    .on("presence", {event:"sync"}, () => {
+      present.clear();
+      const st = channel.presenceState();
+      Object.keys(st).forEach(k => present.set(k, true));
+      paintParts();
+    })
+    .subscribe(async st => {
+      if(st === "SUBSCRIBED"){
+        live = true; $("bSend").disabled = false;
+        await channel.track({at: Date.now()});
+      } else if(st === "CHANNEL_ERROR" || st === "TIMED_OUT"){
+        live = false; $("bSend").disabled = true;
+        flag("Reconnecting…","err");
+      }
+    });
+}
+
+/* ── Sending ──────────────────────────────────────────────── */
+async function send(){
+  const t = $("box").value.trim();
+  if(!t || !live) return;
+  $("box").value = ""; sized();
+  const { error } = await sb.from("messages")
+    .insert({task_id:TASK, author:me.name, body:t, kind:"chat"});
+  if(error){ $("box").value = t; flag("Send failed","err"); }
+}
+$("bSend").addEventListener("click", send);
+$("box").addEventListener("keydown", e => {
+  if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); send(); }
+});
+function sized(){
+  const b = $("box");
+  b.style.height = "auto"; b.style.height = Math.min(b.scrollHeight, 110) + "px";
+}
+$("box").addEventListener("input", sized);
+
+/* ── Feed rendering ───────────────────────────────────────── */
+const fmtDay = iso => new Date(iso).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+const fmtTime = iso => new Date(iso).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+
+function drawFeed(scroll){
+  const feed = $("feed");
+  const rows = [...msgs.values()].sort((a,b) => a.created_at < b.created_at ? -1 : 1);
+  if(!rows.length){
+    feed.innerHTML = '<div class="emptyfeed">No messages yet — say something and the whole team sees it here, on this task, from any device.</div>';
+    paintSync(); return;
+  }
+  let html = "", day = "";
+  for(const r of rows){
+    const d = fmtDay(r.created_at);
+    if(d !== day){ day = d; html += `<div class="day"><div class="l"></div><div class="t">${d}</div><div class="l"></div></div>`; }
+    if(r.kind === "system"){ html += `<div class="sys">${esc(r.body)}</div>`; continue; }
+    const tag = TAGS[r.kind];
+    html += `<div class="msg" data-id="${r.id}">
+      <div class="av" style="color:${hue(r.author)}">${initials(r.author)}</div>
+      <div class="body">
+        <span class="who" style="color:${hue(r.author)}">${esc(r.author)}</span><span class="when">${fmtTime(r.created_at)}</span>${
+          tag ? `<span class="tag ${tag[1]}">${tag[0]}</span>` : ""}
+        <div class="text">${esc(r.body)}</div>
+      </div>
+      <div class="acts">${tag ? "" :
+        `<button data-act="brief" data-id="${r.id}">Brief</button>
+         <button data-act="shot" data-id="${r.id}">Shot</button>
+         <button data-act="note" data-id="${r.id}">Note</button>`}
+      </div>
+    </div>`;
+  }
+  feed.innerHTML = html;
+  feed.querySelectorAll("[data-act]").forEach(b =>
+    b.addEventListener("click", () => act(b.dataset.act, b.dataset.id)));
+  if(scroll) feed.scrollTop = feed.scrollHeight;
+  paintParts();
+}
+
+async function mark(id, kind){
+  const { error } = await sb.from("messages").update({kind}).eq("id", id);
+  if(error) flag("Couldn't update","err");
+}
+
+/* ── Notion actions — hover a message, one click, done ────── */
+const TAGS = {
+  "synced-brief": ["In brief","dec"],
+  "synced-shot":  ["Shot list","done"],
+  "synced-note":  ["Client note","done"],
+  "decision":        ["In brief","dec"],   // legacy kinds, still render
+  "decision-synced": ["In brief","dec"],
+};
+const ACT = {
+  brief: {action:"updateEditBrief",      kind:"synced-brief", label:"edit brief"},
+  shot:  {action:"createProductionTask", kind:"synced-shot",  label:"shot list"},
+  note:  {action:"addClientNote",        kind:"synced-note",  label:"client notes"},
+};
+async function act(which, id){
+  const q = ACT[which], r = msgs.get(id);
+  if(!q || !r) return;
+  if(!connected()){ $("connVeil").hidden = false; return; }
+  worker(q.action, {taskId: TASK, text: r.body, author: r.author, at: r.created_at});
+  await mark(id, q.kind);
+  post("✓ " + r.author.split(" ")[0] + "’s message sent to the " + q.label);
+  flag("Sent to Notion ✓","saved");
+}
+
+/* System line in the feed so the whole team sees what was synced. */
+async function post(text){
+  await sb.from("messages").insert({task_id:TASK, author:"Task Chat", body:text, kind:"system"});
+}
+
+/* ── Participants — just the faces in the header ──────────── */
+function paintParts(){
+  const names = new Set(TEAM);
+  if(me) names.add(me.name);
+  for(const r of msgs.values()) if(r.kind !== "system") names.add(r.author);
+  for(const n of present.keys()) names.add(n);
+
+  $("hFaces").innerHTML = [...names].slice(0,6).map(n => `
+    <div class="face" title="${esc(n)}${present.has(n) ? " — online" : ""}" style="color:${hue(n)}">${initials(n)}${present.has(n) ? '<span class="on"></span>' : ""}</div>`).join("");
+}
+
+/* ── Go ───────────────────────────────────────────────────── */
+if(me && me.name) boot(); else askWho();
+</script>
+</body></html>
