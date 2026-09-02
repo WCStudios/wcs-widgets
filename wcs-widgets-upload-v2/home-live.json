@@ -1,8 +1,8 @@
 {
- "updated": "2026-09-02T00:57:45.702Z",
+ "updated": "2026-09-02T01:02:47.627Z",
  "source": "worker",
  "tasks": {
-  "open": 25,
+  "open": 24,
   "inPost": 10,
   "overdue": 11
  },
@@ -38,9 +38,9 @@
   }
  ],
  "nextShoot": {
-  "name": "test",
-  "id": "3cf421efc7668047a9bfd2638c525719",
+  "name": "TC - 2026 Tradition Development Project Spotlight",
+  "id": "3b8421efc766813a8f62d2609d4502e1",
   "date": "2026-09-02",
-  "time": null
+  "time": "10:00 AM"
  }
 }
