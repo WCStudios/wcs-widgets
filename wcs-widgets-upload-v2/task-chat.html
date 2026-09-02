@@ -57,6 +57,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
  color:var(--muted);padding:3px 6px;border-radius:5px}
 .msg .acts button:hover{color:var(--accent);background:var(--accent-soft)}
 .sys{text-align:center;font-size:10px;color:var(--muted);padding:4px 0}
+.mn{color:var(--accent);font-weight:700}
 .emptyfeed{color:var(--muted);font-size:12px;text-align:center;padding:30px 10px;line-height:1.6}
 
 /* ── Composer ───────────────────────────────────────────── */
@@ -115,7 +116,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
     <textarea id="box" rows="1" placeholder="Message the team&hellip;"></textarea>
     <button class="send" id="bSend" disabled>Send</button>
   </div>
-  <div class="comphint">Enter to send &middot; Shift+Enter for a new line &middot; hover a message to send it to the brief, shot list or client notes</div>
+  <div class="comphint">Enter to send &middot; Shift+Enter for a new line &middot; @bennett / @connor / @preston notifies them in Notion &middot; hover a message to send it to the brief, shot list or client notes</div>
 </div>
 
 <div class="banner" id="banner" hidden></div>
@@ -191,7 +192,9 @@ function flag(text, cls){
 
 /* ── Identity ─────────────────────────────────────────────── */
 const WHO = "wcsTaskChat.who.v1";
-const TEAM = ["Bennett Witta", "Connor Pohl"];
+const TEAM = ["Bennett Witta", "Connor Pohl", "Preston Leininger"];
+/* @handle → notifies that person through a Notion page comment (via the worker). */
+const MENTION_RE = /@(bennett|connor|preston)\b/gi;
 let me = null;
 try{ me = JSON.parse(localStorage.getItem(WHO) || "null"); }catch(e){}
 
@@ -272,7 +275,8 @@ function boot(){
   paintConn(); paintParts();
 
   if(!TASK){
-    $("feed").innerHTML = '<div class="emptyfeed">This embed is missing its <b>?task=</b> id, so there is no feed to join.<br>Re-embed it from the task template.</div>';
+    $("feed").innerHTML = '<div class="emptyfeed">This chat is still being linked to its task &mdash; that happens automatically a few seconds after the task is created.<br>If this is the database template itself, this is exactly how it should look.</div>';
+    $("bSend").disabled = true;
     return;
   }
   if(!SB_URL || !SB_ANON || !window.supabase){
@@ -333,7 +337,16 @@ async function send(){
   $("box").value = ""; sized();
   const { error } = await sb.from("messages")
     .insert({task_id:TASK, author:me.name, body:t, kind:"chat"});
-  if(error){ $("box").value = t; flag("Send failed","err"); }
+  if(error){ $("box").value = t; flag("Send failed","err"); return; }
+
+  /* @mentions → Notion page comment → real notification in their inbox. */
+  const handles = [...new Set([...t.matchAll(MENTION_RE)].map(m => m[1].toLowerCase()))];
+  if(handles.length){
+    if(worker("notifyMention", {taskId:TASK, text:t, author:me.name, mentions:handles}))
+      flag("Notifying " + handles.join(", ") + " ✓","saved");
+    else
+      flag("Mention sent, but can't notify — worker not connected","err");
+  }
 }
 $("bSend").addEventListener("click", send);
 $("box").addEventListener("keydown", e => {
@@ -367,7 +380,7 @@ function drawFeed(scroll){
       <div class="body">
         <span class="who" style="color:${hue(r.author)}">${esc(r.author)}</span><span class="when">${fmtTime(r.created_at)}</span>${
           tag ? `<span class="tag ${tag[1]}">${tag[0]}</span>` : ""}
-        <div class="text">${esc(r.body)}</div>
+        <div class="text">${esc(r.body).replace(MENTION_RE, '<span class="mn">$&</span>')}</div>
       </div>
       <div class="acts">${tag ? "" :
         `<button data-act="brief" data-id="${r.id}">Brief</button>
