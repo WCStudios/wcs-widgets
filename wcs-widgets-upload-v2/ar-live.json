@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-01T18:35:51.540Z",
+ "updated": "2026-09-02T18:59:41.225Z",
  "source": "worker",
  "ar": [
   {
@@ -81,24 +81,6 @@
    "pdfSource": "live"
   },
   {
-   "notionPageId": "3c8421ef-c766-8113-9ef2-c2cddfc2c72c",
-   "name": "Pulltab Sports - Invoice 0170",
-   "client": "Pulltab Sports",
-   "project": null,
-   "terms": "Due on receipt",
-   "items": [],
-   "threaded": false,
-   "amount": 4000,
-   "status": "Sent",
-   "invoiceDate": "2026-05-28",
-   "dueDate": "2026-05-28",
-   "daysOverdue": 96,
-   "bucket": "90+ days",
-   "notionUrl": "https://app.notion.com/3c8421efc76681139ef2c2cddfc2c72c",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
    "notionPageId": "3ce421ef-c766-81c6-9684-c9ce032fbe17",
    "name": "Tradition Capital Bank - Invoice 184 - TCB Brand Films",
    "client": "Tradition Capital Bank",
@@ -143,7 +125,7 @@
    "status": "Sent",
    "invoiceDate": "2026-05-28",
    "dueDate": "2026-05-28",
-   "daysOverdue": 96,
+   "daysOverdue": 97,
    "bucket": "90+ days",
    "notionUrl": "https://app.notion.com/3c8421efc766810c8fd8fc45918138bf",
    "pdfUrl": null,
@@ -161,7 +143,7 @@
    "status": "Sent",
    "invoiceDate": "2026-07-28",
    "dueDate": "2026-07-07",
-   "daysOverdue": 56,
+   "daysOverdue": 57,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/3c8421efc766814db950dc6ec2be9deb",
    "pdfUrl": null,
@@ -179,7 +161,7 @@
    "status": "Sent",
    "invoiceDate": "2026-07-07",
    "dueDate": "2026-07-07",
-   "daysOverdue": 56,
+   "daysOverdue": 57,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/3c8421efc766815d97accfddda330446",
    "pdfUrl": null,
@@ -197,7 +179,7 @@
    "status": "Sent",
    "invoiceDate": "2026-07-07",
    "dueDate": "2026-07-07",
-   "daysOverdue": 56,
+   "daysOverdue": 57,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/3c8421efc7668100858ee648ca204b3d",
    "pdfUrl": null,
@@ -586,18 +568,18 @@
    "amount": 7000
   },
   {
-   "bucket": "90+ days",
-   "amount": 6500
-  },
-  {
    "bucket": "Not yet due",
    "amount": 2750
+  },
+  {
+   "bucket": "90+ days",
+   "amount": 2500
   }
  ],
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 25500
+   "amount": 21500
   },
   {
    "client": "Tradition Capital Bank",
@@ -605,11 +587,11 @@
   }
  ],
  "summary": {
-  "arTotal": 28250,
-  "arSent": 16250,
+  "arTotal": 24250,
+  "arSent": 12250,
   "arDraft": 12000,
-  "arOverdue": 13500,
-  "arCount": 9,
+  "arOverdue": 9500,
+  "arCount": 8,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
