@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-02T18:59:41.225Z",
+ "updated": "2026-09-02T19:07:16.507Z",
  "source": "worker",
  "ar": [
   {
@@ -110,24 +110,6 @@
    "daysOverdue": 0,
    "bucket": "Not yet due",
    "notionUrl": "https://app.notion.com/3ce421efc76681c69684c9ce032fbe17",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
-   "notionPageId": "3c8421ef-c766-810c-8fd8-fc45918138bf",
-   "name": "Pulltab Sports - Invoice 0171",
-   "client": "Pulltab Sports",
-   "project": null,
-   "terms": "Due on receipt",
-   "items": [],
-   "threaded": false,
-   "amount": 2500,
-   "status": "Sent",
-   "invoiceDate": "2026-05-28",
-   "dueDate": "2026-05-28",
-   "daysOverdue": 97,
-   "bucket": "90+ days",
-   "notionUrl": "https://app.notion.com/3c8421efc766810c8fd8fc45918138bf",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -570,16 +552,12 @@
   {
    "bucket": "Not yet due",
    "amount": 2750
-  },
-  {
-   "bucket": "90+ days",
-   "amount": 2500
   }
  ],
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 21500
+   "amount": 19000
   },
   {
    "client": "Tradition Capital Bank",
@@ -587,11 +565,11 @@
   }
  ],
  "summary": {
-  "arTotal": 24250,
-  "arSent": 12250,
+  "arTotal": 21750,
+  "arSent": 9750,
   "arDraft": 12000,
-  "arOverdue": 9500,
-  "arCount": 8,
+  "arOverdue": 7000,
+  "arCount": 7,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
