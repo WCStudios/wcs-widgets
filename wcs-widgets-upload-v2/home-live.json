@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-03T04:56:39.267Z",
+ "updated": "2026-09-03T05:01:39.176Z",
  "source": "worker",
  "tasks": {
   "open": 27,
@@ -9,7 +9,7 @@
  "mostOverdue": {
   "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
   "id": "329421efc766803f9c95fa146f213c8b",
-  "days": 110
+  "days": 111
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "left revisions",
    "task": "Walser - 2026 Honda OTT + CM Spots",
    "id": "3a5421efc766817d8024c961be3728db",
-   "ago": "2d"
+   "ago": "3d"
   },
   {
    "kind": "del",
@@ -26,7 +26,7 @@
    "what": "delivered",
    "task": "PS - 2026 HF Golf Tourney Recap",
    "id": "3c2421efc766805b8bb8f3c926d22b34",
-   "ago": "5d"
+   "ago": "6d"
   },
   {
    "kind": "del",
@@ -34,13 +34,13 @@
    "what": "delivered",
    "task": "RBC - 2026 The Great Northern Advisor Shoot",
    "id": "3a6421efc766815baf3dd4bb20a726ac",
-   "ago": "13d"
+   "ago": "14d"
   }
  ],
  "nextShoot": {
-  "name": "TC - 2026 Tradition Development Project Spotlight",
-  "id": "3b8421efc766813a8f62d2609d4502e1",
-  "date": "2026-09-02",
-  "time": "10:00 AM"
+  "name": "TC - 2026 Fall Parade of Homes (RTH Wesley Model)",
+  "id": "3b8421efc76681378e88d42418a26c21",
+  "date": "2026-09-03",
+  "time": "11:00 AM"
  }
 }
