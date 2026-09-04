@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-04T04:59:49.286Z",
+ "updated": "2026-09-04T05:04:49.419Z",
  "source": "worker",
  "tasks": {
   "open": 27,
@@ -9,7 +9,7 @@
  "mostOverdue": {
   "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
   "id": "329421efc766803f9c95fa146f213c8b",
-  "days": 111
+  "days": 112
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "left revisions",
    "task": "Walser - 2026 Honda OTT + CM Spots",
    "id": "3a5421efc766817d8024c961be3728db",
-   "ago": "3d"
+   "ago": "4d"
   },
   {
    "kind": "del",
@@ -26,7 +26,7 @@
    "what": "delivered",
    "task": "PS - 2026 HF Golf Tourney Recap",
    "id": "3c2421efc766805b8bb8f3c926d22b34",
-   "ago": "6d"
+   "ago": "7d"
   },
   {
    "kind": "del",
@@ -34,13 +34,13 @@
    "what": "delivered",
    "task": "RBC - 2026 The Great Northern Advisor Shoot",
    "id": "3a6421efc766815baf3dd4bb20a726ac",
-   "ago": "14d"
+   "ago": "15d"
   }
  ],
  "nextShoot": {
-  "name": "TC - 2026 Fall Parade of Homes (RTH Wesley Model)",
-  "id": "3b8421efc76681378e88d42418a26c21",
-  "date": "2026-09-03",
-  "time": "11:00 AM"
+  "name": "TC - 2026 Hazeltine Bank Event",
+  "id": "37c421efc766815fb90af86cfd418199",
+  "date": "2026-09-09",
+  "time": "6:00 AM"
  }
 }
