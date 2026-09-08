@@ -1,7 +1,47 @@
 {
- "updated": "2026-09-02T19:07:16.507Z",
+ "updated": "2026-09-08T17:17:24.535Z",
  "source": "worker",
  "ar": [
+  {
+   "notionPageId": "3ce421ef-c766-81c6-9684-c9ce032fbe17",
+   "name": "Tradition Capital Bank - Invoice 184 - TCB Brand Films",
+   "client": "Tradition Capital Bank",
+   "project": "TCB Brand Films",
+   "terms": "Net 7",
+   "items": [
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package. (Interviews utilize full day rates due to equipment being prepped, set up and torn down.)",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1500
+    },
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package. (Interviews utilize full day rates due to equipment being prepped, set up and torn down.)",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1500
+    },
+    {
+     "description": "Editing and post production",
+     "detail": "Post production of 3 brand films (Social versions included)",
+     "qty": 12,
+     "unit": "hr",
+     "rate": 125
+    }
+   ],
+   "threaded": true,
+   "amount": 4500,
+   "status": "Sent",
+   "invoiceDate": "2026-08-31",
+   "dueDate": "2026-09-07",
+   "daysOverdue": 1,
+   "bucket": "1-30 days",
+   "notionUrl": "https://app.notion.com/3ce421efc76681c69684c9ce032fbe17",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
   {
    "notionPageId": "9d3da83e-6885-4163-bdf4-19c719246125",
    "name": "Pulltab Sports - Invoice 0183 - DripDrop - Whats In Your Bottle Commercial (Part 3)",
@@ -81,39 +121,6 @@
    "pdfSource": "live"
   },
   {
-   "notionPageId": "3ce421ef-c766-81c6-9684-c9ce032fbe17",
-   "name": "Tradition Capital Bank - Invoice 184 - TCB Brand Films",
-   "client": "Tradition Capital Bank",
-   "project": "TCB Brand Films",
-   "terms": "Net 7",
-   "items": [
-    {
-     "description": "Production day — full day",
-     "detail": "On-site capture, crew and camera package.",
-     "qty": 1,
-     "unit": "day",
-     "rate": 1500
-    },
-    {
-     "description": "Editing and post production",
-     "detail": "Post production of 2 brand films",
-     "qty": 10,
-     "unit": "hr",
-     "rate": 125
-    }
-   ],
-   "threaded": true,
-   "amount": 2750,
-   "status": "Sent",
-   "invoiceDate": "2026-08-31",
-   "dueDate": "2026-09-07",
-   "daysOverdue": 0,
-   "bucket": "Not yet due",
-   "notionUrl": "https://app.notion.com/3ce421efc76681c69684c9ce032fbe17",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
    "notionPageId": "3c8421ef-c766-814d-b950-dc6ec2be9deb",
    "name": "Pulltab Sports - Invoice 0180",
    "client": "Pulltab Sports",
@@ -125,8 +132,8 @@
    "status": "Sent",
    "invoiceDate": "2026-07-28",
    "dueDate": "2026-07-07",
-   "daysOverdue": 57,
-   "bucket": "31-60 days",
+   "daysOverdue": 63,
+   "bucket": "61-90 days",
    "notionUrl": "https://app.notion.com/3c8421efc766814db950dc6ec2be9deb",
    "pdfUrl": null,
    "pdfSource": "live"
@@ -143,8 +150,8 @@
    "status": "Sent",
    "invoiceDate": "2026-07-07",
    "dueDate": "2026-07-07",
-   "daysOverdue": 57,
-   "bucket": "31-60 days",
+   "daysOverdue": 63,
+   "bucket": "61-90 days",
    "notionUrl": "https://app.notion.com/3c8421efc766815d97accfddda330446",
    "pdfUrl": null,
    "pdfSource": "live"
@@ -161,8 +168,8 @@
    "status": "Sent",
    "invoiceDate": "2026-07-07",
    "dueDate": "2026-07-07",
-   "daysOverdue": 57,
-   "bucket": "31-60 days",
+   "daysOverdue": 63,
+   "bucket": "61-90 days",
    "notionUrl": "https://app.notion.com/3c8421efc7668100858ee648ca204b3d",
    "pdfUrl": null,
    "pdfSource": "live"
@@ -543,15 +550,11 @@
  "arAging": [
   {
    "bucket": "1-30 days",
-   "amount": 12000
+   "amount": 16500
   },
   {
-   "bucket": "31-60 days",
+   "bucket": "61-90 days",
    "amount": 7000
-  },
-  {
-   "bucket": "Not yet due",
-   "amount": 2750
   }
  ],
  "arByClient": [
@@ -561,14 +564,14 @@
   },
   {
    "client": "Tradition Capital Bank",
-   "amount": 2750
+   "amount": 4500
   }
  ],
  "summary": {
-  "arTotal": 21750,
-  "arSent": 9750,
+  "arTotal": 23500,
+  "arSent": 11500,
   "arDraft": 12000,
-  "arOverdue": 7000,
+  "arOverdue": 11500,
   "arCount": 7,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
