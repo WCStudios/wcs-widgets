@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-08T17:17:24.535Z",
+ "updated": "2026-09-08T17:25:04.630Z",
  "source": "worker",
  "ar": [
   {
@@ -32,7 +32,7 @@
     }
    ],
    "threaded": true,
-   "amount": 4500,
+   "amount": 4630.5,
    "status": "Sent",
    "invoiceDate": "2026-08-31",
    "dueDate": "2026-09-07",
@@ -550,7 +550,7 @@
  "arAging": [
   {
    "bucket": "1-30 days",
-   "amount": 16500
+   "amount": 16630.5
   },
   {
    "bucket": "61-90 days",
@@ -564,14 +564,14 @@
   },
   {
    "client": "Tradition Capital Bank",
-   "amount": 4500
+   "amount": 4630.5
   }
  ],
  "summary": {
-  "arTotal": 23500,
-  "arSent": 11500,
+  "arTotal": 23630.5,
+  "arSent": 11630.5,
   "arDraft": 12000,
-  "arOverdue": 11500,
+  "arOverdue": 11630.5,
   "arCount": 7,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
