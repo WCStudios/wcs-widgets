@@ -1,8 +1,8 @@
 {
- "updated": "2026-09-08T17:04:22.291Z",
+ "updated": "2026-09-08T17:09:21.242Z",
  "source": "worker",
  "tasks": {
-  "open": 27,
+  "open": 28,
   "inPost": 12,
   "overdue": 11
  },
@@ -13,9 +13,9 @@
  },
  "pings": [
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Walser Automotive",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "Walser - 2026 Honda OTT + CM Spots",
    "id": "3a5421efc766817d8024c961be3728db",
    "ago": "8d"
