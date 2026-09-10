@@ -1,47 +1,7 @@
 {
- "updated": "2026-09-08T17:25:04.630Z",
+ "updated": "2026-09-10T03:08:54.512Z",
  "source": "worker",
  "ar": [
-  {
-   "notionPageId": "3ce421ef-c766-81c6-9684-c9ce032fbe17",
-   "name": "Tradition Capital Bank - Invoice 184 - TCB Brand Films",
-   "client": "Tradition Capital Bank",
-   "project": "TCB Brand Films",
-   "terms": "Net 7",
-   "items": [
-    {
-     "description": "Production day — full day",
-     "detail": "On-site capture, crew and camera package. (Interviews utilize full day rates due to equipment being prepped, set up and torn down.)",
-     "qty": 1,
-     "unit": "day",
-     "rate": 1500
-    },
-    {
-     "description": "Production day — full day",
-     "detail": "On-site capture, crew and camera package. (Interviews utilize full day rates due to equipment being prepped, set up and torn down.)",
-     "qty": 1,
-     "unit": "day",
-     "rate": 1500
-    },
-    {
-     "description": "Editing and post production",
-     "detail": "Post production of 3 brand films (Social versions included)",
-     "qty": 12,
-     "unit": "hr",
-     "rate": 125
-    }
-   ],
-   "threaded": true,
-   "amount": 4630.5,
-   "status": "Sent",
-   "invoiceDate": "2026-08-31",
-   "dueDate": "2026-09-07",
-   "daysOverdue": 1,
-   "bucket": "1-30 days",
-   "notionUrl": "https://app.notion.com/3ce421efc76681c69684c9ce032fbe17",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
   {
    "notionPageId": "9d3da83e-6885-4163-bdf4-19c719246125",
    "name": "Pulltab Sports - Invoice 0183 - DripDrop - Whats In Your Bottle Commercial (Part 3)",
@@ -132,7 +92,7 @@
    "status": "Sent",
    "invoiceDate": "2026-07-28",
    "dueDate": "2026-07-07",
-   "daysOverdue": 63,
+   "daysOverdue": 65,
    "bucket": "61-90 days",
    "notionUrl": "https://app.notion.com/3c8421efc766814db950dc6ec2be9deb",
    "pdfUrl": null,
@@ -150,7 +110,7 @@
    "status": "Sent",
    "invoiceDate": "2026-07-07",
    "dueDate": "2026-07-07",
-   "daysOverdue": 63,
+   "daysOverdue": 65,
    "bucket": "61-90 days",
    "notionUrl": "https://app.notion.com/3c8421efc766815d97accfddda330446",
    "pdfUrl": null,
@@ -168,7 +128,7 @@
    "status": "Sent",
    "invoiceDate": "2026-07-07",
    "dueDate": "2026-07-07",
-   "daysOverdue": 63,
+   "daysOverdue": 65,
    "bucket": "61-90 days",
    "notionUrl": "https://app.notion.com/3c8421efc7668100858ee648ca204b3d",
    "pdfUrl": null,
@@ -550,7 +510,7 @@
  "arAging": [
   {
    "bucket": "1-30 days",
-   "amount": 16630.5
+   "amount": 12000
   },
   {
    "bucket": "61-90 days",
@@ -561,18 +521,14 @@
   {
    "client": "Pulltab Sports",
    "amount": 19000
-  },
-  {
-   "client": "Tradition Capital Bank",
-   "amount": 4630.5
   }
  ],
  "summary": {
-  "arTotal": 23630.5,
-  "arSent": 11630.5,
+  "arTotal": 19000,
+  "arSent": 7000,
   "arDraft": 12000,
-  "arOverdue": 11630.5,
-  "arCount": 7,
+  "arOverdue": 7000,
+  "arCount": 6,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
