@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-10T22:06:20.208Z",
+ "updatedAt": "2026-09-10T23:01:40.042Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -20,8 +20,8 @@
    "title": "RBC Heritage Recap",
    "account": "wcstudios.co",
    "order": 2,
-   "status": "Ready",
-   "scheduleDate": null,
+   "status": "Scheduled",
+   "scheduleDate": "2026-09-11T19:00:00.000-05:00",
    "kind": "grid",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/160yrsf.jpg",
