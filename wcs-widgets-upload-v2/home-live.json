@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-10T22:37:11.485Z",
+ "updated": "2026-09-10T22:42:15.228Z",
  "source": "worker",
  "tasks": {
   "open": 29,
@@ -29,12 +29,12 @@
    "ago": "13d"
   },
   {
-   "kind": "del",
-   "who": "RBC Wealth",
-   "what": "delivered",
-   "task": "RBC - 2026 The Great Northern Advisor Shoot",
-   "id": "3a6421efc766815baf3dd4bb20a726ac",
-   "ago": "21d"
+   "kind": "rev",
+   "who": "Cascade CBX Sport",
+   "what": "left revisions",
+   "task": "Cascade CBX - 2026 Henderson Resort Spot",
+   "id": "3aa421efc76680eeafded8c0400e7a25",
+   "ago": "20d"
   }
  ],
  "nextShoot": {
