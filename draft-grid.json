@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-11T17:57:46.312Z",
+ "updatedAt": "2026-09-11T18:22:57.350Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -123,6 +123,20 @@
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0o0hnra.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0i7p7lj.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/1bo2z6g.jpg"
+   ]
+  },
+  {
+   "pageId": "3d8421ef-c766-8084-8b83-d1a63e859af3",
+   "title": "Cascade X The Henderson - Spa Spotlight",
+   "account": "wcstudios.co",
+   "order": 11,
+   "status": "Draft",
+   "scheduleDate": null,
+   "kind": "grid",
+   "tiles": [
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/0vgcfh6.jpg",
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/0kzaf8q.jpg",
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1e9u9vl.jpg"
    ]
   },
   {
