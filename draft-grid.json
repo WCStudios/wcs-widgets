@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-11T20:03:10.865Z",
+ "updatedAt": "2026-09-11T20:08:08.875Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -95,18 +95,6 @@
    "kind": "single",
    "tiles": [
     ""
-   ]
-  },
-  {
-   "pageId": "3d8421ef-c766-801a-a44a-da972b85b598",
-   "title": "DD BTS Post",
-   "account": "lifeofbennyy",
-   "order": 10,
-   "status": "Draft",
-   "scheduleDate": null,
-   "kind": "single",
-   "tiles": [
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1yb2twz.jpg"
    ]
   },
   {
