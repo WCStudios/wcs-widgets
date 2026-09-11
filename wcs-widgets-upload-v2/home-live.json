@@ -1,15 +1,15 @@
 {
- "updated": "2026-09-11T04:58:09.108Z",
+ "updated": "2026-09-11T05:03:14.610Z",
  "source": "worker",
  "tasks": {
   "open": 29,
   "inPost": 12,
-  "overdue": 10
+  "overdue": 11
  },
  "mostOverdue": {
   "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
   "id": "329421efc766803f9c95fa146f213c8b",
-  "days": 118
+  "days": 119
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "left revisions",
    "task": "Walser - 2026 Honda OTT + CM Spots",
    "id": "3a5421efc766817d8024c961be3728db",
-   "ago": "10d"
+   "ago": "11d"
   },
   {
    "kind": "del",
@@ -26,7 +26,7 @@
    "what": "delivered",
    "task": "PS - 2026 HF Golf Tourney Recap",
    "id": "3c2421efc766805b8bb8f3c926d22b34",
-   "ago": "13d"
+   "ago": "14d"
   },
   {
    "kind": "rev",
@@ -34,7 +34,7 @@
    "what": "left revisions",
    "task": "Cascade CBX - 2026 Henderson Resort Spot",
    "id": "3aa421efc76680eeafded8c0400e7a25",
-   "ago": "20d"
+   "ago": "21d"
   }
  ],
  "nextShoot": {
