@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-11T18:22:57.350Z",
+ "updatedAt": "2026-09-11T19:03:42.021Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -41,20 +41,6 @@
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0waxzy5.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0kvn61q.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/1uu7224.jpg"
-   ]
-  },
-  {
-   "pageId": "3d8421ef-c766-8086-a4a5-ce64a95effe8",
-   "title": "MN Wild - 25 Years Spot",
-   "account": "wcstudios.co",
-   "order": 4,
-   "status": "Scheduled",
-   "scheduleDate": "2026-09-11T14:00:00.000-05:00",
-   "kind": "grid",
-   "tiles": [
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/0uz9vio.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/0eshocp.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/0eomjtn.jpg"
    ]
   },
   {
