@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-12T20:50:15.017Z",
+ "updatedAt": "2026-09-12T20:55:20.232Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -41,20 +41,6 @@
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0waxzy5.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0kvn61q.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/1uu7224.jpg"
-   ]
-  },
-  {
-   "pageId": "39a421ef-c766-8074-8189-ee893cca376c",
-   "title": "Cascade CBX - Athlete Spotlights",
-   "account": "wcstudios.co",
-   "order": 5,
-   "status": "Draft",
-   "scheduleDate": null,
-   "kind": "grid",
-   "tiles": [
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/066vxct.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1e2j3ts.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/0nfiq9e.jpg"
    ]
   },
   {
