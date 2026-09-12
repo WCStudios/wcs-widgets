@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-12T19:27:20.604Z",
+ "updatedAt": "2026-09-12T19:51:14.924Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -13,20 +13,6 @@
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0i695cs.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0sy0acz.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0c38gwb.jpg"
-   ]
-  },
-  {
-   "pageId": "39a421ef-c766-803a-b4aa-c2f10d49b73e",
-   "title": "RBC Heritage Recap",
-   "account": "wcstudios.co",
-   "order": 2,
-   "status": "Scheduled",
-   "scheduleDate": "2026-09-12T14:45:00.000-05:00",
-   "kind": "grid",
-   "tiles": [
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/0os8d1w.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1szj6gz.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1q9wc6r.jpg"
    ]
   },
   {
