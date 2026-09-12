@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-12T23:18:59.885Z",
+ "updated": "2026-09-12T23:23:58.690Z",
  "source": "worker",
  "tasks": {
   "open": 29,
@@ -30,11 +30,11 @@
   },
   {
    "kind": "rev",
-   "who": "Robert Thomas Homes",
+   "who": "Cascade CBX Sport",
    "what": "left revisions",
-   "task": "RTH - 2026 Neighborhood Drone Shoots",
-   "id": "4bd2b506ce2c4cd3b1c4c1efaa817029",
-   "ago": "33d"
+   "task": "Cascade CBX - 2026 Henderson Resort Spot",
+   "id": "3aa421efc76680eeafded8c0400e7a25",
+   "ago": "22d"
   }
  ],
  "nextShoot": {
