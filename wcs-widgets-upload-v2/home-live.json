@@ -1,15 +1,15 @@
 {
- "updated": "2026-09-12T04:56:24.337Z",
+ "updated": "2026-09-12T05:01:27.644Z",
  "source": "worker",
  "tasks": {
   "open": 29,
   "inPost": 12,
-  "overdue": 11
+  "overdue": 14
  },
  "mostOverdue": {
   "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
   "id": "329421efc766803f9c95fa146f213c8b",
-  "days": 119
+  "days": 120
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "left revisions",
    "task": "Walser - 2026 Honda OTT + CM Spots",
    "id": "3a5421efc766817d8024c961be3728db",
-   "ago": "11d"
+   "ago": "12d"
   },
   {
    "kind": "del",
@@ -26,7 +26,7 @@
    "what": "delivered",
    "task": "PS - 2026 HF Golf Tourney Recap",
    "id": "3c2421efc766805b8bb8f3c926d22b34",
-   "ago": "14d"
+   "ago": "15d"
   },
   {
    "kind": "rev",
@@ -34,13 +34,13 @@
    "what": "left revisions",
    "task": "RTH - 2026 Neighborhood Drone Shoots",
    "id": "4bd2b506ce2c4cd3b1c4c1efaa817029",
-   "ago": "32d"
+   "ago": "33d"
   }
  ],
  "nextShoot": {
-  "name": "TC - 2026 Tradition Development Project Spotlight",
-  "id": "3b8421efc766813a8f62d2609d4502e1",
-  "date": "2026-09-11",
-  "time": "12:00 PM"
+  "name": "Walser - 2026 Honda Culture Video + Rolling OTT",
+  "id": "3c9421efc76681f7a307cbe27367c80e",
+  "date": "2026-09-16",
+  "time": "10:00 AM"
  }
 }
