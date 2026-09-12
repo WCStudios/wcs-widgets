@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-12T15:35:43.752Z",
+ "updatedAt": "2026-09-12T19:01:24.958Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -21,7 +21,7 @@
    "account": "wcstudios.co",
    "order": 2,
    "status": "Scheduled",
-   "scheduleDate": "2026-09-13T14:00:00.000-05:00",
+   "scheduleDate": "2026-09-13T14:30:00.000-05:00",
    "kind": "grid",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/08wem5u.jpg",
