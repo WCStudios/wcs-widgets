@@ -87,7 +87,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 const STATSSRC="https://wcstudios.github.io/wcs-widgets/ig-stats.js";
 const DRAFTSRC="https://wcstudios.github.io/wcs-widgets/draft-grid.js";
 const ACCTS=["wcstudios.co","lifeofbennyy"];
-let data=null,draft=null,accts=ACCTS,i=0,view='both',tab='grid',rows=[];
+// The account is tracked by NAME, never by position. The stats feed may list
+// accounts in any order, and the header used to follow that order while the
+// drafts below followed ACCTS — two embeds on one page then disagreed with
+// each other on every refresh. ?acct=lifeofbennyy pins an embed to one account.
+const PARAM_ACCT=new URLSearchParams(location.search).get('acct');
+let cur=(PARAM_ACCT&&ACCTS.includes(PARAM_ACCT))?PARAM_ACCT:ACCTS[0];
+let data=null,draft=null,accts=ACCTS,view='both',tab='grid',rows=[];
 const $=id=>document.getElementById(id);
 const fmt=n=>Number(n||0).toLocaleString("en-US");
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
@@ -101,33 +107,34 @@ function watchScroll(el){if(!el)return;el.addEventListener('scroll',()=>{el.clas
 function pinKey(a){return "wcspin:"+a;}
 function localPins(a){try{return new Set(JSON.parse(localStorage.getItem(pinKey(a))||"[]"));}catch(_){return new Set();}}
 function savePins(a,s){try{localStorage.setItem(pinKey(a),JSON.stringify([...s]));}catch(_){}}
-function togglePin(p){const a=accts[i],s=localPins(a);s.has(p)?s.delete(p):s.add(p);savePins(a,s);render();}
-function clearPins(){savePins(accts[i],new Set());render();toast("Local pins cleared");}
-function copyPins(){const a=accts[i],d=data&&data[a]||{},s=localPins(a);const fp=(d.grid||[]).filter(p=>p.pinned).map(p=>p.permalink);const all=[...new Set([...fp,...s])].filter(Boolean);if(!all.length){toast("No pins");return;}try{navigator.clipboard.writeText("PINNED:"+a+"|"+all.join(", "));toast("Copied — paste into Social Settings");}catch(_){toast("Copy failed");}}
+function togglePin(p){const a=cur,s=localPins(a);s.has(p)?s.delete(p):s.add(p);savePins(a,s);render();}
+function clearPins(){savePins(cur,new Set());render();toast("Local pins cleared");}
+function copyPins(){const a=cur,d=data&&data[a]||{},s=localPins(a);const fp=(d.grid||[]).filter(p=>p.pinned).map(p=>p.permalink);const all=[...new Set([...fp,...s])].filter(Boolean);if(!all.length){toast("No pins");return;}try{navigator.clipboard.writeText("PINNED:"+a+"|"+all.join(", "));toast("Copied — paste into Social Settings");}catch(_){toast("Copy failed");}}
 
 // ---- draft order ----
 function draftItems(a){return ((draft&&draft.items)||[]).filter(x=>(x.account||"wcstudios.co")===a);}
 function ordKey(a){return "wcsgrid:"+a;}
-function persist(){try{localStorage.setItem(ordKey(accts[i]),JSON.stringify(rows.map(r=>r.pageId)));}catch(_){}}
+function persist(){try{localStorage.setItem(ordKey(cur),JSON.stringify(rows.map(r=>r.pageId)));}catch(_){}}
 function loadOrder(a){
   const base=draftItems(a);let saved=null;try{saved=JSON.parse(localStorage.getItem(ordKey(a))||"null");}catch(_){}
   if(saved&&Array.isArray(saved)){const byId=Object.fromEntries(base.map(x=>[x.pageId,x]));const o=saved.map(id=>byId[id]).filter(Boolean);base.forEach(x=>{if(!saved.includes(x.pageId))o.unshift(x);});return o;}
   const key=p=>p.scheduleDate?new Date(p.scheduleDate).getTime():Number.POSITIVE_INFINITY;
   return base.slice().sort((x,y)=>{const kx=key(x),ky=key(y);if(kx!==ky)return ky-kx;return (y.order??0)-(x.order??0);});
 }
-function resetOrder(){try{localStorage.removeItem(ordKey(accts[i]));}catch(_){}rows=loadOrder(accts[i]);render();toast("Reset");}
+function resetOrder(){try{localStorage.removeItem(ordKey(cur));}catch(_){}rows=loadOrder(cur);render();toast("Reset");}
 function copyOrder(){const n=rows.length;const t="Grid Order (top = newest):\n"+rows.map((it,k)=>(n-k)+"  "+(it.title||it.pageId)).join("\n");try{navigator.clipboard.writeText(t);toast("Order copied");}catch(_){toast("Copy failed");}}
 
 // ---- view / tab ----
 function setView(v){view=v;render();}
 function setTab(t){tab=t;render();}
-function cycle(){if(accts.length>1){i=(i+1)%accts.length;rows=loadOrder(accts[i]);render();}}
+function setAcct(a){cur=a;rows=loadOrder(cur);render();}
+function cycle(){if(accts.length>1){setAcct(accts[(accts.indexOf(cur)+1)%accts.length]);}}
 function open2(u){if(u&&u!=='#')window.open(u,'_blank');}
 
 // ---- reel classification (grid vs reels-only) ----
 function clsKey(a){return "wcscls:"+a;}
 function localClass(a){try{return JSON.parse(localStorage.getItem(clsKey(a))||"{}");}catch(_){return {};}}
-function moveClass(perm,t){const a=accts[i],c=localClass(a);c[perm]=t;try{localStorage.setItem(clsKey(a),JSON.stringify(c));}catch(_){}render();}
+function moveClass(perm,t){const a=cur,c=localClass(a);c[perm]=t;try{localStorage.setItem(clsKey(a),JSON.stringify(c));}catch(_){}render();}
 function isReel(p,cls){const o=cls[p.permalink];if(o)return o==='reels';return p.productType==='REELS';}
 
 // ---- cell builders ----
@@ -158,7 +165,7 @@ function liveCell(p,showLabel){const perm=(p.permalink||'').replace(/'/g,"%27");
 }
 
 function render(){
-  const a=accts[i],d=(data&&data[a])||{};
+  const a=cur,d=(data&&data[a])||{};
   const pic=$('pic');
   if(d.profilePic){pic.style.backgroundImage="url('"+d.profilePic+"')";pic.textContent="";}
   else{pic.style.backgroundImage="";pic.textContent=(a[0]||"?").toUpperCase();}
@@ -208,8 +215,8 @@ function wireDrag(){
   });
 }
 
-function applyStats(d){if(!d)return;data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));render();}
-function applyDraft(){rows=loadOrder(accts[i]);render();}
+function applyStats(d){if(!d)return;data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));if(!accts.includes(cur))cur=accts[0]||cur;rows=loadOrder(cur);render();}
+function applyDraft(){rows=loadOrder(cur);render();}
 function loadStats(){const s=document.createElement('script');s.src=STATSSRC+"?t="+Date.now();s.onload=()=>{applyStats(window.IGDATA);s.remove();};s.onerror=()=>{s.remove();};document.head.appendChild(s);}
 function loadDraft(){const s=document.createElement('script');s.src=DRAFTSRC+"?t="+Date.now();s.onload=()=>{draft=window.DRAFTGRID;applyDraft();s.remove();};s.onerror=()=>{s.remove();};document.head.appendChild(s);}
 loadStats();loadDraft();watchResize();watchScroll($('grid'));setInterval(()=>{loadStats();loadDraft();},300000);
