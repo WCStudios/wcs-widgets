@@ -102,7 +102,9 @@ function render(){if(!data)return;const a=accts[ai],d=data[a]||{},m=META[a]||{av
 function setR(e,x){e&&e.stopPropagation();ri=x;render();}
 function cycleAcct(){if(accts.length>1){ai=(ai+1)%accts.length;render();}}
 function openPost(){const t=(data[accts[ai]]||{}).topPost;if(t&&t.permalink)window.open(t.permalink,"_blank");}
-function apply(d){if(!d)return;data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));render();}
+// ?acct=lifeofbennyy pins the strip to one account; otherwise the feed's first.
+const PARAM_ACCT=new URLSearchParams(location.search).get('acct');
+function apply(d){if(!d)return;data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));const want=PARAM_ACCT||accts[ai];const k=accts.indexOf(want);ai=k>=0?k:0;render();}
 function load(){const s=document.createElement('script');s.src=JSSRC+"?t="+Date.now();s.onload=()=>{apply(window.IGDATA);s.remove();};s.onerror=()=>{sub1.textContent="feed offline";s.remove();};document.head.appendChild(s);}
 load();setInterval(load,300000);window.addEventListener('resize',render);
 </script></body></html>
