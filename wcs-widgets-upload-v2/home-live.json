@@ -1,10 +1,10 @@
 {
- "updated": "2026-09-13T18:41:34.787Z",
+ "updated": "2026-09-13T18:46:39.638Z",
  "source": "worker",
  "tasks": {
-  "open": 29,
-  "inPost": 12,
-  "overdue": 14
+  "open": 28,
+  "inPost": 11,
+  "overdue": 13
  },
  "mostOverdue": {
   "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
@@ -13,9 +13,9 @@
  },
  "pings": [
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Walser Automotive",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "Walser - 2026 Honda OTT + CM Spots",
    "id": "3a5421efc766817d8024c961be3728db",
    "ago": "13d"
