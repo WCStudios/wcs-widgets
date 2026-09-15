@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-15T03:41:47.801Z",
+ "updated": "2026-09-15T03:46:47.432Z",
  "source": "worker",
  "tasks": {
   "open": 28,
@@ -12,6 +12,14 @@
   "days": 122
  },
  "pings": [
+  {
+   "kind": "rev",
+   "who": "Cascade CBX Sport",
+   "what": "left revisions",
+   "task": "Cascade CBX - 2026 Henderson Resort Spot",
+   "id": "3aa421efc76680eeafded8c0400e7a25",
+   "ago": "today"
+  },
   {
    "kind": "del",
    "who": "Walser Automotive",
@@ -27,14 +35,6 @@
    "task": "PS - 2026 HF Golf Tourney Recap",
    "id": "3c2421efc766805b8bb8f3c926d22b34",
    "ago": "17d"
-  },
-  {
-   "kind": "rev",
-   "who": "Cascade CBX Sport",
-   "what": "left revisions",
-   "task": "Cascade CBX - 2026 Henderson Resort Spot",
-   "id": "3aa421efc76680eeafded8c0400e7a25",
-   "ago": "24d"
   }
  ],
  "nextShoot": {
