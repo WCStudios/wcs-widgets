@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-15T16:43:41.556Z",
+ "updated": "2026-09-15T16:48:43.349Z",
  "source": "worker",
  "tasks": {
   "open": 28,
@@ -12,6 +12,14 @@
   "days": 123
  },
  "pings": [
+  {
+   "kind": "rev",
+   "who": "Tradition Companies",
+   "what": "left revisions",
+   "task": "TC - 2026 Fall Parade of Homes (RTH Wesley Model)",
+   "id": "3b8421efc76681378e88d42418a26c21",
+   "ago": "today"
+  },
   {
    "kind": "rev",
    "who": "Cascade CBX Sport",
@@ -27,14 +35,6 @@
    "task": "Walser - 2026 Honda OTT + CM Spots",
    "id": "3a5421efc766817d8024c961be3728db",
    "ago": "15d"
-  },
-  {
-   "kind": "del",
-   "who": "Pulltab Sports",
-   "what": "delivered",
-   "task": "PS - 2026 HF Golf Tourney Recap",
-   "id": "3c2421efc766805b8bb8f3c926d22b34",
-   "ago": "18d"
   }
  ],
  "nextShoot": {
