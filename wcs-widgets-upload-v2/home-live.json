@@ -1,10 +1,10 @@
 {
- "updated": "2026-09-16T14:07:13.618Z",
+ "updated": "2026-09-16T14:12:12.666Z",
  "source": "worker",
  "tasks": {
-  "open": 28,
-  "inPost": 11,
-  "overdue": 15
+  "open": 27,
+  "inPost": 10,
+  "overdue": 14
  },
  "mostOverdue": {
   "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
@@ -21,9 +21,9 @@
    "ago": "1d"
   },
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Tradition Companies",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "TC - 2026 Employee Retreat",
    "id": "1b96e02b4ebf4d33b116ba8f9a2cc5e8",
    "ago": "1d"
