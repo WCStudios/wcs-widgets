@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-19T04:57:33.974Z",
+ "updated": "2026-09-19T05:02:33.291Z",
  "source": "worker",
  "tasks": {
   "open": 27,
@@ -9,7 +9,7 @@
  "mostOverdue": {
   "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
   "id": "329421efc766803f9c95fa146f213c8b",
-  "days": 126
+  "days": 127
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "left revisions",
    "task": "RBC - 2026 The Great Northern Advisor Shoot",
    "id": "3a6421efc766815baf3dd4bb20a726ac",
-   "ago": "today"
+   "ago": "1d"
   },
   {
    "kind": "rev",
@@ -26,7 +26,7 @@
    "what": "left revisions",
    "task": "Cascade CBX - 2026 Henderson Resort Spot",
    "id": "3aa421efc76680eeafded8c0400e7a25",
-   "ago": "3d"
+   "ago": "4d"
   },
   {
    "kind": "del",
@@ -34,13 +34,13 @@
    "what": "delivered",
    "task": "TC - 2026 Employee Retreat",
    "id": "1b96e02b4ebf4d33b116ba8f9a2cc5e8",
-   "ago": "3d"
+   "ago": "4d"
   }
  ],
  "nextShoot": {
-  "name": "Walser - 2026 Honda Culture Video + Rolling OTT",
-  "id": "3c9421efc76681f7a307cbe27367c80e",
-  "date": "2026-09-18",
-  "time": "10:30 AM"
+  "name": "RVM - 2026 Demo In The Dirt",
+  "id": "3c3421efc766814eb4bdd5048741e2f1",
+  "date": "2026-09-19",
+  "time": "8:00 AM"
  }
 }
