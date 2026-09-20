@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-20T21:30:06.719Z",
+ "updatedAt": "2026-09-20T23:05:43.968Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -53,20 +53,6 @@
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/18zz410.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/07w1vld.jpg",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/1r6q9cz.jpg"
-   ]
-  },
-  {
-   "pageId": "39a421ef-c766-80d9-b29d-cc643b00e266",
-   "title": "Cascade CBX - Marek Houston Spot",
-   "account": "wcstudios.co",
-   "order": 7,
-   "status": "Scheduled",
-   "scheduleDate": "2026-09-20T18:00:00.000-05:00",
-   "kind": "grid",
-   "tiles": [
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/060lnkp.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1avdlph.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/0hcrwc6.jpg"
    ]
   },
   {
