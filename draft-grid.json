@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-17T11:36:23.814Z",
+ "updatedAt": "2026-09-20T21:25:05.298Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -60,8 +60,8 @@
    "title": "Cascade CBX - Marek Houston Spot",
    "account": "wcstudios.co",
    "order": 7,
-   "status": "Ready",
-   "scheduleDate": null,
+   "status": "Scheduled",
+   "scheduleDate": "2026-09-20T18:00:00.000-05:00",
    "kind": "grid",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/060lnkp.jpg",
