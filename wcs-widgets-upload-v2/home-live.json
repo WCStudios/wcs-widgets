@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-20T04:56:43.397Z",
+ "updated": "2026-09-20T05:01:46.593Z",
  "source": "worker",
  "tasks": {
   "open": 27,
@@ -9,7 +9,7 @@
  "mostOverdue": {
   "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
   "id": "329421efc766803f9c95fa146f213c8b",
-  "days": 127
+  "days": 128
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "left revisions",
    "task": "RBC - 2026 The Great Northern Advisor Shoot",
    "id": "3a6421efc766815baf3dd4bb20a726ac",
-   "ago": "1d"
+   "ago": "2d"
   },
   {
    "kind": "rev",
@@ -26,7 +26,7 @@
    "what": "left revisions",
    "task": "Cascade CBX - 2026 Henderson Resort Spot",
    "id": "3aa421efc76680eeafded8c0400e7a25",
-   "ago": "4d"
+   "ago": "5d"
   },
   {
    "kind": "del",
@@ -34,13 +34,13 @@
    "what": "delivered",
    "task": "TC - 2026 Employee Retreat",
    "id": "1b96e02b4ebf4d33b116ba8f9a2cc5e8",
-   "ago": "4d"
+   "ago": "5d"
   }
  ],
  "nextShoot": {
-  "name": "RVM - 2026 Demo In The Dirt",
-  "id": "3c3421efc766814eb4bdd5048741e2f1",
-  "date": "2026-09-19",
-  "time": "8:00 AM"
+  "name": "Walser - 2026 Kia OTT Spots + Service Video",
+  "id": "3cd421efc766813e95ceec2002a9d3a5",
+  "date": "2026-09-22",
+  "time": "10:00 AM"
  }
 }
