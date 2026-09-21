@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-21T20:47:43.362Z",
+ "updated": "2026-09-21T20:47:48.722Z",
  "source": "worker",
  "ar": [
   {
@@ -113,6 +113,39 @@
    "daysOverdue": 76,
    "bucket": "61-90 days",
    "notionUrl": "https://app.notion.com/3c8421efc766815d97accfddda330446",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3e2421ef-c766-81e7-a03a-e318e2788080",
+   "name": "River Valley Marine - Invoice 184 - 2026 Demo In The Dirt",
+   "client": "River Valley Marine",
+   "project": "2026 Demo In The Dirt",
+   "terms": "Net 7",
+   "items": [
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package. (Interviews utilize full day rates due to equipment being prepped, set up and torn down.)",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1500
+    },
+    {
+     "description": "Editing and post production",
+     "detail": "Post production of event recap and photo collection. (Social versions included)",
+     "qty": 5,
+     "unit": "hr",
+     "rate": 125
+    }
+   ],
+   "threaded": true,
+   "amount": 2186.62,
+   "status": "Sent",
+   "invoiceDate": "2026-08-31",
+   "dueDate": "2026-09-07",
+   "daysOverdue": 14,
+   "bucket": "1-30 days",
+   "notionUrl": "https://app.notion.com/3e2421efc76681e7a03ae318e2788080",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -576,7 +609,7 @@
  "arAging": [
   {
    "bucket": "1-30 days",
-   "amount": 16373.24
+   "amount": 18559.86
   },
   {
    "bucket": "61-90 days",
@@ -590,15 +623,15 @@
   },
   {
    "client": "River Valley Marine",
-   "amount": 4373.24
+   "amount": 6559.86
   }
  ],
  "summary": {
-  "arTotal": 23373.24,
-  "arSent": 9186.62,
+  "arTotal": 25559.86,
+  "arSent": 11373.24,
   "arDraft": 14186.62,
-  "arOverdue": 9186.62,
-  "arCount": 8,
+  "arOverdue": 11373.24,
+  "arCount": 9,
   "arDraftCount": 4,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
