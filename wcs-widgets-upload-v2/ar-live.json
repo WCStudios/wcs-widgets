@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-21T20:50:22.263Z",
+ "updated": "2026-09-21T21:47:30.534Z",
  "source": "worker",
  "ar": [
   {
@@ -77,6 +77,39 @@
    "daysOverdue": 0,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/1df9db988bd84148a8b9b05d3f89ef52",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3e2421ef-c766-811f-bfd2-d24dec51ff21",
+   "name": "Pulltab Sports - Invoice 185 - Cascade CBX Henderson Resort",
+   "client": "Pulltab Sports",
+   "project": "Cascade CBX Henderson Resort",
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1500
+    },
+    {
+     "description": "Editing and post production",
+     "detail": "- Editing of mulitple spa deliverables ",
+     "qty": 8,
+     "unit": "hr",
+     "rate": 125
+    }
+   ],
+   "threaded": false,
+   "amount": 2500,
+   "status": "Draft",
+   "invoiceDate": "2026-09-21",
+   "dueDate": "2026-10-06",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3e2421efc766811fbfd2d24dec51ff21",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -530,12 +563,16 @@
   {
    "bucket": "61-90 days",
    "amount": 4500
+  },
+  {
+   "bucket": "Not yet due",
+   "amount": 2500
   }
  ],
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 16500
+   "amount": 19000
   },
   {
    "client": "River Valley Marine",
@@ -543,12 +580,12 @@
   }
  ],
  "summary": {
-  "arTotal": 18686.62,
+  "arTotal": 21186.62,
   "arSent": 6686.62,
-  "arDraft": 12000,
+  "arDraft": 14500,
   "arOverdue": 6686.62,
-  "arCount": 6,
-  "arDraftCount": 3,
+  "arCount": 7,
+  "arDraftCount": 4,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
   "monthlyNet": 6285.03
