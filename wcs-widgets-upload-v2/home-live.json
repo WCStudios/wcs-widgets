@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-21T20:38:39.365Z",
+ "updated": "2026-09-21T20:43:37.676Z",
  "source": "worker",
  "tasks": {
   "open": 31,
@@ -16,6 +16,14 @@
    "kind": "rev",
    "who": "Tradition Companies",
    "what": "left revisions",
+   "task": "TC - 2026 Fall Parade of Homes (RTH Wesley Model)",
+   "id": "3b8421efc76681378e88d42418a26c21",
+   "ago": "today"
+  },
+  {
+   "kind": "rev",
+   "who": "Tradition Companies",
+   "what": "left revisions",
    "task": "TCB - 2026 The Morning Drive Event (Hazeltine)",
    "id": "37c421efc766815fb90af86cfd418199",
    "ago": "today"
@@ -27,14 +35,6 @@
    "task": "RBC - 2026 The Great Northern Advisor Shoot",
    "id": "3a6421efc766815baf3dd4bb20a726ac",
    "ago": "3d"
-  },
-  {
-   "kind": "rev",
-   "who": "Cascade CBX Sport",
-   "what": "left revisions",
-   "task": "Cascade CBX - 2026 Henderson Resort Spot",
-   "id": "3aa421efc76680eeafded8c0400e7a25",
-   "ago": "6d"
   }
  ],
  "nextShoot": {
