@@ -1,7 +1,47 @@
 {
- "updated": "2026-09-21T21:54:06.090Z",
+ "updated": "2026-09-21T21:55:38.442Z",
  "source": "worker",
  "ar": [
+  {
+   "notionPageId": "3e2421ef-c766-8139-89ef-dc1968670f48",
+   "name": "Pulltab Sports - Invoice 190 - MN Wild - Wild+ & Wall Of St.Paul",
+   "client": "Pulltab Sports",
+   "project": "MN Wild - Wild+ & Wall Of St.Paul",
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1500
+    },
+    {
+     "description": "Production day — half day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1000
+    },
+    {
+     "description": "Editing and post production",
+     "detail": "post production of two wild commercials + social deliverables",
+     "qty": 12,
+     "unit": "hr",
+     "rate": 125
+    }
+   ],
+   "threaded": false,
+   "amount": 4000,
+   "status": "Draft",
+   "invoiceDate": "2026-09-21",
+   "dueDate": "2026-10-06",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3e2421efc766813989efdc1968670f48",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
   {
    "notionPageId": "3e2421ef-c766-814c-8056-c09d5810c389",
    "name": "Pulltab Sports - Invoice 189 - RBC Echelon Event + Int.",
@@ -689,12 +729,12 @@
  ],
  "arAging": [
   {
-   "bucket": "1-30 days",
-   "amount": 14186.62
+   "bucket": "Not yet due",
+   "amount": 17750
   },
   {
-   "bucket": "Not yet due",
-   "amount": 13750
+   "bucket": "1-30 days",
+   "amount": 14186.62
   },
   {
    "bucket": "61-90 days",
@@ -704,7 +744,7 @@
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 30250
+   "amount": 34250
   },
   {
    "client": "River Valley Marine",
@@ -712,12 +752,12 @@
   }
  ],
  "summary": {
-  "arTotal": 32436.62,
+  "arTotal": 36436.62,
   "arSent": 6686.62,
-  "arDraft": 25750,
+  "arDraft": 29750,
   "arOverdue": 6686.62,
-  "arCount": 11,
-  "arDraftCount": 8,
+  "arCount": 12,
+  "arDraftCount": 9,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
   "monthlyNet": 6285.03
