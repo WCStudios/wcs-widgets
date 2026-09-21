@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-10T03:08:54.512Z",
+ "updated": "2026-09-21T20:47:20.460Z",
  "source": "worker",
  "ar": [
   {
@@ -92,7 +92,7 @@
    "status": "Sent",
    "invoiceDate": "2026-07-28",
    "dueDate": "2026-07-07",
-   "daysOverdue": 65,
+   "daysOverdue": 76,
    "bucket": "61-90 days",
    "notionUrl": "https://app.notion.com/3c8421efc766814db950dc6ec2be9deb",
    "pdfUrl": null,
@@ -110,9 +110,42 @@
    "status": "Sent",
    "invoiceDate": "2026-07-07",
    "dueDate": "2026-07-07",
-   "daysOverdue": 65,
+   "daysOverdue": 76,
    "bucket": "61-90 days",
    "notionUrl": "https://app.notion.com/3c8421efc766815d97accfddda330446",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3ce421ef-c766-81c6-9684-c9ce032fbe17",
+   "name": "River Valley Marine - Invoice 184 - TCB Brand Films",
+   "client": "River Valley Marine",
+   "project": "TCB Brand Films",
+   "terms": "Net 7",
+   "items": [
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package. (Interviews utilize full day rates due to equipment being prepped, set up and torn down.)",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1500
+    },
+    {
+     "description": "Editing and post production",
+     "detail": "Post production of event recap and photo collection. (Social versions included)",
+     "qty": 5,
+     "unit": "hr",
+     "rate": 125
+    }
+   ],
+   "threaded": true,
+   "amount": 2186.62,
+   "status": "Sent",
+   "invoiceDate": "2026-08-31",
+   "dueDate": "2026-09-07",
+   "daysOverdue": 14,
+   "bucket": "1-30 days",
+   "notionUrl": "https://app.notion.com/3ce421efc76681c69684c9ce032fbe17",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -128,7 +161,7 @@
    "status": "Sent",
    "invoiceDate": "2026-07-07",
    "dueDate": "2026-07-07",
-   "daysOverdue": 65,
+   "daysOverdue": 76,
    "bucket": "61-90 days",
    "notionUrl": "https://app.notion.com/3c8421efc7668100858ee648ca204b3d",
    "pdfUrl": null,
@@ -510,7 +543,7 @@
  "arAging": [
   {
    "bucket": "1-30 days",
-   "amount": 12000
+   "amount": 14186.62
   },
   {
    "bucket": "61-90 days",
@@ -521,14 +554,18 @@
   {
    "client": "Pulltab Sports",
    "amount": 19000
+  },
+  {
+   "client": "River Valley Marine",
+   "amount": 2186.62
   }
  ],
  "summary": {
-  "arTotal": 19000,
-  "arSent": 7000,
+  "arTotal": 21186.62,
+  "arSent": 9186.62,
   "arDraft": 12000,
-  "arOverdue": 7000,
-  "arCount": 6,
+  "arOverdue": 9186.62,
+  "arCount": 7,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
