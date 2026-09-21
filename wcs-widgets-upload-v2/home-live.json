@@ -1,10 +1,10 @@
 {
- "updated": "2026-09-21T20:53:38.851Z",
+ "updated": "2026-09-21T20:58:42.050Z",
  "source": "worker",
  "tasks": {
-  "open": 31,
-  "inPost": 14,
-  "overdue": 14
+  "open": 28,
+  "inPost": 11,
+  "overdue": 11
  },
  "mostOverdue": {
   "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
@@ -21,17 +21,17 @@
    "ago": "today"
   },
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Tradition Companies",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "TC - 2026 Fall Parade of Homes (RTH Wesley Model)",
    "id": "3b8421efc76681378e88d42418a26c21",
    "ago": "today"
   },
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Tradition Companies",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "TCB - 2026 The Morning Drive Event (Hazeltine)",
    "id": "37c421efc766815fb90af86cfd418199",
    "ago": "today"
