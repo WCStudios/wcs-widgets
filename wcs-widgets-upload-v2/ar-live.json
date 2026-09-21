@@ -1,7 +1,40 @@
 {
- "updated": "2026-09-21T21:52:48.703Z",
+ "updated": "2026-09-21T21:54:06.090Z",
  "source": "worker",
  "ar": [
+  {
+   "notionPageId": "3e2421ef-c766-814c-8056-c09d5810c389",
+   "name": "Pulltab Sports - Invoice 189 - RBC Echelon Event + Int.",
+   "client": "Pulltab Sports",
+   "project": "RBC Echelon Event + Int.",
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1500
+    },
+    {
+     "description": "Editing and post production",
+     "detail": "Editing of mulitple video highlgihts from event",
+     "qty": 20,
+     "unit": "hr",
+     "rate": 125
+    }
+   ],
+   "threaded": false,
+   "amount": 4000,
+   "status": "Draft",
+   "invoiceDate": "2026-09-21",
+   "dueDate": "2026-10-06",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3e2421efc766814c8056c09d5810c389",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
   {
    "notionPageId": "9d3da83e-6885-4163-bdf4-19c719246125",
    "name": "Pulltab Sports - Invoice 0183 - DripDrop - Whats In Your Bottle Commercial (Part 3)",
@@ -661,7 +694,7 @@
   },
   {
    "bucket": "Not yet due",
-   "amount": 9750
+   "amount": 13750
   },
   {
    "bucket": "61-90 days",
@@ -671,7 +704,7 @@
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 26250
+   "amount": 30250
   },
   {
    "client": "River Valley Marine",
@@ -679,12 +712,12 @@
   }
  ],
  "summary": {
-  "arTotal": 28436.62,
+  "arTotal": 32436.62,
   "arSent": 6686.62,
-  "arDraft": 21750,
+  "arDraft": 25750,
   "arOverdue": 6686.62,
-  "arCount": 10,
-  "arDraftCount": 7,
+  "arCount": 11,
+  "arDraftCount": 8,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
   "monthlyNet": 6285.03
