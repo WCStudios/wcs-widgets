@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-21T20:47:48.722Z",
+ "updated": "2026-09-21T20:49:59.069Z",
  "source": "worker",
  "ar": [
   {
@@ -95,24 +95,6 @@
    "daysOverdue": 76,
    "bucket": "61-90 days",
    "notionUrl": "https://app.notion.com/3c8421efc766814db950dc6ec2be9deb",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
-   "notionPageId": "3c8421ef-c766-815d-97ac-cfddda330446",
-   "name": "Pulltab Sports - Invoice 0176",
-   "client": "Pulltab Sports",
-   "project": null,
-   "terms": "Due on receipt",
-   "items": [],
-   "threaded": false,
-   "amount": 2500,
-   "status": "Sent",
-   "invoiceDate": "2026-07-07",
-   "dueDate": "2026-07-07",
-   "daysOverdue": 76,
-   "bucket": "61-90 days",
-   "notionUrl": "https://app.notion.com/3c8421efc766815d97accfddda330446",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -613,13 +595,13 @@
   },
   {
    "bucket": "61-90 days",
-   "amount": 7000
+   "amount": 4500
   }
  ],
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 19000
+   "amount": 16500
   },
   {
    "client": "River Valley Marine",
@@ -627,11 +609,11 @@
   }
  ],
  "summary": {
-  "arTotal": 25559.86,
-  "arSent": 11373.24,
+  "arTotal": 23059.86,
+  "arSent": 8873.24,
   "arDraft": 14186.62,
-  "arOverdue": 11373.24,
-  "arCount": 9,
+  "arOverdue": 8873.24,
+  "arCount": 8,
   "arDraftCount": 4,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
