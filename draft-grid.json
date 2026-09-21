@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-21T03:10:57.394Z",
+ "updatedAt": "2026-09-21T19:04:01.026Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -25,20 +25,6 @@
    "kind": "single",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0oiwdfj.jpg"
-   ]
-  },
-  {
-   "pageId": "39a421ef-c766-8098-b9d7-e33a53f78d6a",
-   "title": "DripDrip - Brother Battles Spot",
-   "account": "wcstudios.co",
-   "order": 3,
-   "status": "Scheduled",
-   "scheduleDate": "2026-09-21T14:00:00.000-05:00",
-   "kind": "grid",
-   "tiles": [
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/0waxzy5.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/0kvn61q.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1uu7224.jpg"
    ]
   },
   {
