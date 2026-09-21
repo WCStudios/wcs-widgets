@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-21T22:44:00.224Z",
+ "updated": "2026-09-21T22:48:59.750Z",
  "source": "worker",
  "tasks": {
   "open": 28,
@@ -14,6 +14,14 @@
  "pings": [
   {
    "kind": "rev",
+   "who": "Walser Automotive",
+   "what": "left revisions",
+   "task": "Walser - 2026 CJD OTT + CM Spots",
+   "id": "3ab421efc76681d9afcfdd8ffdf24a1c",
+   "ago": "today"
+  },
+  {
+   "kind": "rev",
    "who": "River Valley Marine",
    "what": "left revisions",
    "task": "RVM - 2026 Demo In The Dirt",
@@ -26,14 +34,6 @@
    "what": "delivered",
    "task": "TC - 2026 Fall Parade of Homes (RTH Wesley Model)",
    "id": "3b8421efc76681378e88d42418a26c21",
-   "ago": "today"
-  },
-  {
-   "kind": "del",
-   "who": "Tradition Companies",
-   "what": "delivered",
-   "task": "TCB - 2026 The Morning Drive Event (Hazeltine)",
-   "id": "37c421efc766815fb90af86cfd418199",
    "ago": "today"
   }
  ],
