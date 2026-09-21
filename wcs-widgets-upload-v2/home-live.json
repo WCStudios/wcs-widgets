@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-21T20:33:36.262Z",
+ "updated": "2026-09-21T20:38:39.365Z",
  "source": "worker",
  "tasks": {
   "open": 31,
@@ -14,6 +14,14 @@
  "pings": [
   {
    "kind": "rev",
+   "who": "Tradition Companies",
+   "what": "left revisions",
+   "task": "TCB - 2026 The Morning Drive Event (Hazeltine)",
+   "id": "37c421efc766815fb90af86cfd418199",
+   "ago": "today"
+  },
+  {
+   "kind": "rev",
    "who": "RBC Wealth",
    "what": "left revisions",
    "task": "RBC - 2026 The Great Northern Advisor Shoot",
@@ -26,14 +34,6 @@
    "what": "left revisions",
    "task": "Cascade CBX - 2026 Henderson Resort Spot",
    "id": "3aa421efc76680eeafded8c0400e7a25",
-   "ago": "6d"
-  },
-  {
-   "kind": "del",
-   "who": "Tradition Companies",
-   "what": "delivered",
-   "task": "TC - 2026 Employee Retreat",
-   "id": "1b96e02b4ebf4d33b116ba8f9a2cc5e8",
    "ago": "6d"
   }
  ],
