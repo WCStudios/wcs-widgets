@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-21T20:50:17.535Z",
+ "updated": "2026-09-21T20:50:22.263Z",
  "source": "worker",
  "ar": [
   {
@@ -128,39 +128,6 @@
    "daysOverdue": 14,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/3e2421efc76681e7a03ae318e2788080",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
-   "notionPageId": "3ce421ef-c766-81c6-9684-c9ce032fbe17",
-   "name": "River Valley Marine - Invoice 184 - TCB Brand Films",
-   "client": "River Valley Marine",
-   "project": "TCB Brand Films",
-   "terms": "Net 7",
-   "items": [
-    {
-     "description": "Production day — full day",
-     "detail": "On-site capture, crew and camera package. (Interviews utilize full day rates due to equipment being prepped, set up and torn down.)",
-     "qty": 1,
-     "unit": "day",
-     "rate": 1500
-    },
-    {
-     "description": "Editing and post production",
-     "detail": "Post production of event recap and photo collection. (Social versions included)",
-     "qty": 5,
-     "unit": "hr",
-     "rate": 125
-    }
-   ],
-   "threaded": true,
-   "amount": 2186.62,
-   "status": "Sent",
-   "invoiceDate": "2026-08-31",
-   "dueDate": "2026-09-07",
-   "daysOverdue": 14,
-   "bucket": "1-30 days",
-   "notionUrl": "https://app.notion.com/3ce421efc76681c69684c9ce032fbe17",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -558,7 +525,7 @@
  "arAging": [
   {
    "bucket": "1-30 days",
-   "amount": 16373.24
+   "amount": 14186.62
   },
   {
    "bucket": "61-90 days",
@@ -572,15 +539,15 @@
   },
   {
    "client": "River Valley Marine",
-   "amount": 4373.24
+   "amount": 2186.62
   }
  ],
  "summary": {
-  "arTotal": 20873.24,
-  "arSent": 8873.24,
+  "arTotal": 18686.62,
+  "arSent": 6686.62,
   "arDraft": 12000,
-  "arOverdue": 8873.24,
-  "arCount": 7,
+  "arOverdue": 6686.62,
+  "arCount": 6,
   "arDraftCount": 3,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
