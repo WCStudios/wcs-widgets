@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-21T21:51:15.736Z",
+ "updated": "2026-09-21T21:52:48.703Z",
  "source": "worker",
  "ar": [
   {
@@ -110,6 +110,39 @@
    "daysOverdue": 0,
    "bucket": "Not yet due",
    "notionUrl": "https://app.notion.com/3e2421efc7668145a909e510f5e64aae",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3e2421ef-c766-81a5-8e22-edb82ba44070",
+   "name": "Pulltab Sports - Invoice 188 - RBC Great Northern Advisors",
+   "client": "Pulltab Sports",
+   "project": "RBC Great Northern Advisors",
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1500
+    },
+    {
+     "description": "Editing and post production",
+     "detail": "Editing of advisor brand film",
+     "qty": 8,
+     "unit": "hr",
+     "rate": 125
+    }
+   ],
+   "threaded": false,
+   "amount": 2500,
+   "status": "Draft",
+   "invoiceDate": "2026-09-21",
+   "dueDate": "2026-10-06",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3e2421efc76681a58e22edb82ba44070",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -628,7 +661,7 @@
   },
   {
    "bucket": "Not yet due",
-   "amount": 7250
+   "amount": 9750
   },
   {
    "bucket": "61-90 days",
@@ -638,7 +671,7 @@
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 23750
+   "amount": 26250
   },
   {
    "client": "River Valley Marine",
@@ -646,12 +679,12 @@
   }
  ],
  "summary": {
-  "arTotal": 25936.62,
+  "arTotal": 28436.62,
   "arSent": 6686.62,
-  "arDraft": 19250,
+  "arDraft": 21750,
   "arOverdue": 6686.62,
-  "arCount": 9,
-  "arDraftCount": 6,
+  "arCount": 10,
+  "arDraftCount": 7,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
   "monthlyNet": 6285.03
