@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-21T20:43:37.676Z",
+ "updated": "2026-09-21T20:48:40.273Z",
  "source": "worker",
  "tasks": {
   "open": 31,
@@ -12,6 +12,14 @@
   "days": 129
  },
  "pings": [
+  {
+   "kind": "rev",
+   "who": "River Valley Marine",
+   "what": "left revisions",
+   "task": "RVM - 2026 Demo In The Dirt",
+   "id": "3c3421efc766814eb4bdd5048741e2f1",
+   "ago": "today"
+  },
   {
    "kind": "rev",
    "who": "Tradition Companies",
@@ -27,14 +35,6 @@
    "task": "TCB - 2026 The Morning Drive Event (Hazeltine)",
    "id": "37c421efc766815fb90af86cfd418199",
    "ago": "today"
-  },
-  {
-   "kind": "rev",
-   "who": "RBC Wealth",
-   "what": "left revisions",
-   "task": "RBC - 2026 The Great Northern Advisor Shoot",
-   "id": "3a6421efc766815baf3dd4bb20a726ac",
-   "ago": "3d"
   }
  ],
  "nextShoot": {
