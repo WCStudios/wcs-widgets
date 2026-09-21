@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-21T21:47:30.534Z",
+ "updated": "2026-09-21T21:48:39.986Z",
  "source": "worker",
  "ar": [
   {
@@ -161,6 +161,39 @@
    "daysOverdue": 14,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/3e2421efc76681e7a03ae318e2788080",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3e2421ef-c766-8119-98b1-e4b23a86c3c7",
+   "name": "Pulltab Sports - Invoice 186 - HF Golf Tourney Recap",
+   "client": "Pulltab Sports",
+   "project": "HF Golf Tourney Recap",
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1500
+    },
+    {
+     "description": "Editing and post production",
+     "detail": "- Editing of tourney recap",
+     "qty": 5,
+     "unit": "hr",
+     "rate": 100
+    }
+   ],
+   "threaded": false,
+   "amount": 2000,
+   "status": "Draft",
+   "invoiceDate": "2026-09-21",
+   "dueDate": "2026-10-06",
+   "daysOverdue": 0,
+   "bucket": "Not yet due",
+   "notionUrl": "https://app.notion.com/3e2421efc766811998b1e4b23a86c3c7",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -561,18 +594,18 @@
    "amount": 14186.62
   },
   {
-   "bucket": "61-90 days",
+   "bucket": "Not yet due",
    "amount": 4500
   },
   {
-   "bucket": "Not yet due",
-   "amount": 2500
+   "bucket": "61-90 days",
+   "amount": 4500
   }
  ],
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 19000
+   "amount": 21000
   },
   {
    "client": "River Valley Marine",
@@ -580,12 +613,12 @@
   }
  ],
  "summary": {
-  "arTotal": 21186.62,
+  "arTotal": 23186.62,
   "arSent": 6686.62,
-  "arDraft": 14500,
+  "arDraft": 16500,
   "arOverdue": 6686.62,
-  "arCount": 7,
-  "arDraftCount": 4,
+  "arCount": 8,
+  "arDraftCount": 5,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
   "monthlyNet": 6285.03
