@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-22T05:14:58.367Z",
+ "updated": "2026-09-22T05:19:59.190Z",
  "source": "worker",
  "tasks": {
   "open": 28,
@@ -14,6 +14,14 @@
  "pings": [
   {
    "kind": "rev",
+   "who": "Cascade CBX Sport",
+   "what": "left revisions",
+   "task": "Cascade CBX - 2026 Andrew Fisher Spot",
+   "id": "3ce421efc766804a93b7d2e963df2a04",
+   "ago": "today"
+  },
+  {
+   "kind": "rev",
    "who": "Walser Automotive",
    "what": "left revisions",
    "task": "Walser - 2026 CJD OTT + CM Spots",
@@ -26,14 +34,6 @@
    "what": "left revisions",
    "task": "RVM - 2026 Demo In The Dirt",
    "id": "3c3421efc766814eb4bdd5048741e2f1",
-   "ago": "1d"
-  },
-  {
-   "kind": "del",
-   "who": "Tradition Companies",
-   "what": "delivered",
-   "task": "TC - 2026 Fall Parade of Homes (RTH Wesley Model)",
-   "id": "3b8421efc76681378e88d42418a26c21",
    "ago": "1d"
   }
  ],
