@@ -1,9 +1,9 @@
 {
- "updated": "2026-09-22T19:27:15.456Z",
+ "updated": "2026-09-22T19:32:16.769Z",
  "source": "worker",
  "tasks": {
-  "open": 27,
-  "inPost": 10,
+  "open": 28,
+  "inPost": 11,
   "overdue": 10
  },
  "mostOverdue": {
@@ -29,9 +29,9 @@
    "ago": "1d"
   },
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "River Valley Marine",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "RVM - 2026 Demo In The Dirt",
    "id": "3c3421efc766814eb4bdd5048741e2f1",
    "ago": "1d"
