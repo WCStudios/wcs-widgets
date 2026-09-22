@@ -1,10 +1,10 @@
 {
- "updated": "2026-09-22T19:17:13.680Z",
+ "updated": "2026-09-22T19:22:20.127Z",
  "source": "worker",
  "tasks": {
-  "open": 28,
-  "inPost": 11,
-  "overdue": 11
+  "open": 27,
+  "inPost": 10,
+  "overdue": 10
  },
  "mostOverdue": {
   "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
@@ -21,9 +21,9 @@
    "ago": "today"
   },
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Walser Automotive",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "Walser - 2026 CJD OTT + CM Spots",
    "id": "3ab421efc76681d9afcfdd8ffdf24a1c",
    "ago": "1d"
