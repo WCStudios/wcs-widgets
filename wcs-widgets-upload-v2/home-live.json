@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-23T14:10:14.340Z",
+ "updated": "2026-09-23T14:15:14.403Z",
  "source": "worker",
  "tasks": {
   "open": 28,
@@ -13,9 +13,9 @@
  },
  "pings": [
   {
-   "kind": "del",
+   "kind": "rev",
    "who": "Cascade CBX Sport",
-   "what": "delivered",
+   "what": "left revisions",
    "task": "Cascade CBX - 2026 Andrew Fisher Spot",
    "id": "3ce421efc766804a93b7d2e963df2a04",
    "ago": "1d"
