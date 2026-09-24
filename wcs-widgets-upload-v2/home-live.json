@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T04:57:59.888Z",
+ "updated": "2026-09-24T05:03:01.056Z",
  "source": "worker",
  "tasks": {
   "open": 28,
@@ -9,7 +9,7 @@
  "mostOverdue": {
   "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
   "id": "329421efc766803f9c95fa146f213c8b",
-  "days": 131
+  "days": 132
  },
  "pings": [
   {
@@ -26,7 +26,7 @@
    "what": "left revisions",
    "task": "Cascade CBX - 2026 Andrew Fisher Spot",
    "id": "3ce421efc766804a93b7d2e963df2a04",
-   "ago": "1d"
+   "ago": "2d"
   },
   {
    "kind": "del",
@@ -34,7 +34,7 @@
    "what": "delivered",
    "task": "Walser - 2026 CJD OTT + CM Spots",
    "id": "3ab421efc76681d9afcfdd8ffdf24a1c",
-   "ago": "2d"
+   "ago": "3d"
   }
  ],
  "nextShoot": {
