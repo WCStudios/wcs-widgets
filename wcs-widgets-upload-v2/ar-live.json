@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T15:46:07.474Z",
+ "updated": "2026-09-24T15:46:46.497Z",
  "source": "worker",
  "ar": [
   {
@@ -110,18 +110,18 @@
    "items": [
     {
      "description": "DripDrop - Whats In Your Bottle Commercial (Part 3)",
-     "detail": "",
+     "detail": null,
      "qty": 1,
-     "unit": "",
+     "unit": null,
      "rate": 4000
     }
    ],
-   "threaded": false,
+   "threaded": true,
    "amount": 4000,
-   "status": "Draft",
+   "status": "Sent",
    "invoiceDate": "2026-08-27",
    "dueDate": "2026-08-27",
-   "daysOverdue": 0,
+   "daysOverdue": 28,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/9d3da83e68854163bdf419c719246125",
    "pdfUrl": null,
@@ -753,11 +753,11 @@
  ],
  "summary": {
   "arTotal": 36552.62,
-  "arSent": 14802.62,
-  "arDraft": 21750,
-  "arOverdue": 14802.62,
+  "arSent": 18802.62,
+  "arDraft": 17750,
+  "arOverdue": 18802.62,
   "arCount": 12,
-  "arDraftCount": 7,
+  "arDraftCount": 6,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
   "monthlyNet": 6285.03
