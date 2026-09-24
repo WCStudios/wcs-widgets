@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T15:45:46.541Z",
+ "updated": "2026-09-24T15:46:01.484Z",
  "source": "worker",
  "ar": [
   {
@@ -25,32 +25,6 @@
    "daysOverdue": 28,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/9e725ac48e5d4d0398ff956b5bd0c508",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
-   "notionPageId": "1df9db98-8bd8-4148-a8b9-b05d3f89ef52",
-   "name": "Pulltab Sports - Invoice 0182 - DripDrop - Whats In Your Bottle Commercial (Part 2)",
-   "client": "Pulltab Sports",
-   "project": "DripDrop - Whats In Your Bottle Commercial (Part 2)",
-   "terms": "Due on receipt",
-   "items": [
-    {
-     "description": "DripDrop - Whats In Your Bottle Commercial (Part 2)",
-     "detail": null,
-     "qty": 1,
-     "unit": null,
-     "rate": 4000
-    }
-   ],
-   "threaded": true,
-   "amount": 4116,
-   "status": "Sent",
-   "invoiceDate": "2026-08-27",
-   "dueDate": "2026-08-27",
-   "daysOverdue": 28,
-   "bucket": "1-30 days",
-   "notionUrl": "https://app.notion.com/1df9db988bd84148a8b9b05d3f89ef52",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -150,6 +124,32 @@
    "daysOverdue": 0,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/9d3da83e68854163bdf419c719246125",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "1df9db98-8bd8-4148-a8b9-b05d3f89ef52",
+   "name": "Pulltab Sports - Invoice 0182 - DripDrop - Whats In Your Bottle Commercial (Part 2)",
+   "client": "Pulltab Sports",
+   "project": "DripDrop - Whats In Your Bottle Commercial (Part 2)",
+   "terms": "Due on receipt",
+   "items": [
+    {
+     "description": "DripDrop - Whats In Your Bottle Commercial (Part 2)",
+     "detail": null,
+     "qty": 1,
+     "unit": null,
+     "rate": 4000
+    }
+   ],
+   "threaded": true,
+   "amount": 4000,
+   "status": "Sent",
+   "invoiceDate": "2026-08-27",
+   "dueDate": "2026-08-27",
+   "daysOverdue": 28,
+   "bucket": "1-30 days",
+   "notionUrl": "https://app.notion.com/1df9db988bd84148a8b9b05d3f89ef52",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -734,7 +734,7 @@
   },
   {
    "bucket": "1-30 days",
-   "amount": 14418.62
+   "amount": 14302.62
   },
   {
    "bucket": "61-90 days",
@@ -744,7 +744,7 @@
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 34482
+   "amount": 34366
   },
   {
    "client": "River Valley Marine",
@@ -752,10 +752,10 @@
   }
  ],
  "summary": {
-  "arTotal": 36668.62,
-  "arSent": 14918.62,
+  "arTotal": 36552.62,
+  "arSent": 14802.62,
   "arDraft": 21750,
-  "arOverdue": 14918.62,
+  "arOverdue": 14802.62,
   "arCount": 12,
   "arDraftCount": 7,
   "monthlyBurn": 7214.97,
