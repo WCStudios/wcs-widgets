@@ -46,7 +46,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .chip::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex:0 0 auto}
 .c-over{color:var(--over);background:var(--overbg)}
 .c-paid{color:var(--paid);background:var(--paidbg)}
-.c-due{color:var(--muted);background:var(--soft)}
+.c-due{color:var(--paid);background:var(--paidbg)}
 .c-draft{color:var(--draft);background:transparent;border:1px dashed var(--line);padding:2px 6px}
 .c-draft::before{background:transparent;border:1.5px solid currentColor;width:6px;height:6px}
 /* Delete stays hidden until the row is hovered - present when wanted, silent
@@ -639,7 +639,10 @@ function editInBuilder(row){
      reload. Tell the builder directly as well; it picks up whichever arrives. */
   try { new BroadcastChannel(BUS).postMessage({kind: "handoff", at: Date.now()}); } catch(e){}
   openInNotion(BUILDER_PAGE);
-  flash("Opening in the builder…");
+  // Name it. If this ever says an invoice you did not click, the row moved
+  // under the cursor rather than the handoff going to the wrong place.
+  const num = (/invoice\s+#?(\d+)/i.exec(row.name || "") || [])[1];
+  flash("Opening invoice " + (num || row.client || "") + " in the builder…");
 }
 
 async function removeInvoice(row, btn){
@@ -740,6 +743,23 @@ const LIVE_SRCS = [
 ];
 let baked = null, liveAt = null, shown = null;
 
+/* Re-rendering while the pointer is over the list yanks rows out from under the
+   cursor: the row you were reaching for shifts by one and the Edit button you
+   land on belongs to a different invoice. The live feed polls every 20s and
+   chaseFeed polls harder right after any action, so the window for this is not
+   small. Hold a feed repaint until the mouse leaves the list. */
+let pendingView = null;
+function paintView(v){
+  const list = document.getElementById("rows");
+  if(list && list.matches(":hover")){ pendingView = v; return; }
+  pendingView = null;
+  render(v);
+}
+document.getElementById("rows").addEventListener("mouseleave", () => {
+  if(!pendingView) return;
+  const v = pendingView; pendingView = null; render(v);
+});
+
 function applyLive(){
   if(!baked) return;
   const bust = "?t=" + Date.now();
@@ -764,7 +784,7 @@ function applyLive(){
       };
       // Totals must follow the rows on screen, or a filtered row still counts.
       // A hand-marked row changes the open set without changing the row count.
-      render((dropped || marks().length) ? recompute(view) : view);
+      paintView((dropped || marks().length) ? recompute(view) : view);
       drainLog();
       // live.updated is a full ISO timestamp; fmtDate wants a plain date.
       document.getElementById("sub").textContent =
