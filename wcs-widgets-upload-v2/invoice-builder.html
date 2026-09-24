@@ -442,7 +442,12 @@ function applySticky(saved){
 }
 
 function snapshotForm(){
-  const o = {items: items, dueTouched: dueTouched, open: openState};
+  /* editingPageId rides along on purpose. Without it a reload forgets which
+     Notion row this draft belongs to, Create/Send silently makes a second row,
+     and you end up with duplicates of an invoice you thought you were editing. */
+  const o = {items: items, dueTouched: dueTouched, open: openState,
+             editingPageId: editingPageId, editingThreaded: editingThreaded,
+             editingStatus: editingStatus};
   FIELDS.forEach(id => o[id] = $(id).value);
   return o;
 }
@@ -1203,7 +1208,7 @@ function loadHandoff(){
   } catch(e){ return; }
 
   // Stale handoffs are ignored; this should only ever be seconds old.
-  if(!h || !h.invoice || Date.now() - (h.at || 0) > 120000) return;
+  if(!h || !h.invoice || Date.now() - (h.at || 0) > 600000) return;
   const inv = h.invoice;
 
   editingAdopted = false;      // the tracker asked for this one by name
@@ -1234,6 +1239,24 @@ function loadHandoff(){
   setOpen("client", true);
   flag("Editing invoice " + (num || "") + (inv.threaded ? " \u00b7 already sent" : ""), "saved");
 }
+
+/* The builder is normally already open inside Notion when the tracker hands an
+   invoice across, and navigating to its page does NOT reload an embed Notion
+   has kept mounted — so init() never runs again, loadHandoff() never fires, and
+   you keep looking at whichever invoice was last loaded. Listen for the handoff
+   instead of only reading it at startup: `storage` fires in every other frame
+   on this origin, the bus covers the cases it misses, and the visibility/focus
+   checks catch an embed that was suspended while both were delivered. */
+window.addEventListener("storage", e => {
+  if(e.key === HANDOFF && e.newValue) loadHandoff();
+});
+try {
+  new BroadcastChannel("wcs-invoices").addEventListener("message", e => {
+    if(e && e.data && e.data.kind === "handoff") loadHandoff();
+  });
+} catch(e){}
+document.addEventListener("visibilitychange", () => { if(!document.hidden) loadHandoff(); });
+window.addEventListener("focus", () => loadHandoff());
 
 /* Guards shared by both buttons, so neither can fire a half-built invoice. */
 function ready(needEmail){
@@ -1335,6 +1358,11 @@ function init(reset){
     items = d.items || [];
     dueTouched = !!d.dueTouched;
     if(d.cName) $("cPick").value = d.cName;
+    if(d.editingPageId){
+      setEditing({notionPageId: d.editingPageId, threaded: d.editingThreaded,
+                  status: d.editingStatus});
+      editingAdopted = false;   // this row was chosen, not guessed from a number
+    }
     drawItems(); paint(); setTimeout(fit, 60);
     flag("Draft restored");
     if(!storageOK) flag("Storage blocked — drafts won't persist");
