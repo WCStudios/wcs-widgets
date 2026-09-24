@@ -634,6 +634,10 @@ function editInBuilder(row){
     flash("This browser won't allow the handoff");
     return;
   }
+  /* A storage event never fires in the frame that wrote it, and Notion often
+     keeps the builder embed mounted, so the page it navigates to may not
+     reload. Tell the builder directly as well; it picks up whichever arrives. */
+  try { new BroadcastChannel(BUS).postMessage({kind: "handoff", at: Date.now()}); } catch(e){}
   openInNotion(BUILDER_PAGE);
   flash("Opening in the builder…");
 }
