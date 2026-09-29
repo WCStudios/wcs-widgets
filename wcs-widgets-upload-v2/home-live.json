@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-29T20:14:51.883Z",
+ "updated": "2026-09-29T20:19:53.004Z",
  "source": "worker",
  "tasks": {
   "open": 28,
@@ -14,19 +14,19 @@
  "pings": [
   {
    "kind": "del",
+   "who": "Cascade CBX Sport",
+   "what": "delivered",
+   "task": "Cascade CBX - 2026 Andrew Fisher Spot",
+   "id": "3ce421efc766804a93b7d2e963df2a04",
+   "ago": "today"
+  },
+  {
+   "kind": "del",
    "who": "River Valley Marine",
    "what": "delivered",
    "task": "RVM - 2026 Demo In The Dirt",
    "id": "3c3421efc766814eb4bdd5048741e2f1",
    "ago": "1d"
-  },
-  {
-   "kind": "del",
-   "who": "Cascade CBX Sport",
-   "what": "delivered",
-   "task": "Cascade CBX - 2026 Andrew Fisher Spot",
-   "id": "3ce421efc766804a93b7d2e963df2a04",
-   "ago": "7d"
   },
   {
    "kind": "del",
