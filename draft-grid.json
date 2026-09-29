@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-09-29T19:24:49.757Z",
+ "updatedAt": "2026-09-29T19:28:48.555Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -25,6 +25,20 @@
    "kind": "single",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0oiwdfj.jpg"
+   ]
+  },
+  {
+   "pageId": "39a421ef-c766-8087-bbd3-e33754733327",
+   "title": "Cascade CBX - CodeTheThrow Spot",
+   "account": "wcstudios.co",
+   "order": 6,
+   "status": "Draft",
+   "scheduleDate": null,
+   "kind": "grid",
+   "tiles": [
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/18zz410.jpg",
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/07w1vld.jpg",
+    "https://wcstudios.github.io/wcs-widgets/grid-tiles/1r6q9cz.jpg"
    ]
   },
   {
