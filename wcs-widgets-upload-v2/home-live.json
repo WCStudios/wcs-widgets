@@ -1,10 +1,10 @@
 {
- "updated": "2026-10-05T22:03:01.883Z",
+ "updated": "2026-10-05T22:08:00.064Z",
  "source": "worker",
  "tasks": {
-  "open": 33,
-  "inPost": 14,
-  "overdue": 11
+  "open": 31,
+  "inPost": 12,
+  "overdue": 10
  },
  "mostOverdue": {
   "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
