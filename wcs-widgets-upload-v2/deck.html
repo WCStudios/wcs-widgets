@@ -1,0 +1,517 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>WCStudios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* WCStudios deck player.
+   One file for every deck. The deck itself is a sealed JSON file next to this
+   page; the key rides in the #fragment, which the browser never sends anywhere.
+   Layout is decided per slide from what is on it, so writing a deck in Notion
+   is just writing: headings, text, images, callouts, a table, dividers between
+   slides. */
+:root{--acc:#e8622c;--bg:#0c0c0c;--ink:#f3f0eb;--mut:#a39f99;--faint:#6f6b66;--line:rgba(255,255,255,.12);
+ --card:rgba(255,255,255,.045);--W:1920px;--H:1080px}
+.light{--bg:#f5f3ef;--ink:#151515;--mut:#5d5a55;--faint:#8c8882;--line:rgba(0,0,0,.12);--card:rgba(0,0,0,.035)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#000;overflow:hidden}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#stage{position:relative;width:var(--W);height:var(--H);flex:0 0 auto;transform-origin:center center;background:var(--bg);overflow:hidden}
+.slide{position:absolute;inset:0;background:var(--bg);opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s linear .45s}
+.slide.on{opacity:1;visibility:visible;transition:opacity .45s ease}
+.slide.on .rise{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+.slide.on .rise.d2{animation-delay:.08s}.slide.on .rise.d3{animation-delay:.16s}.slide.on .rise.d4{animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.slide,.slide.on{transition:none}.slide.on .rise{animation:none}}
+
+/* chrome on every slide */
+.mark{position:absolute;top:64px;left:96px;font-family:Archivo;font-variation-settings:"wdth" 125;font-weight:900;
+ font-size:26px;letter-spacing:1px;z-index:5;color:var(--ink)}
+.mark b{color:var(--acc);font-weight:900}
+.meta{position:absolute;top:70px;right:96px;font-size:17px;letter-spacing:2.4px;text-transform:uppercase;color:var(--mut);font-weight:600;z-index:5}
+.num{position:absolute;bottom:58px;right:96px;font-size:17px;color:var(--faint);font-weight:600;letter-spacing:1px;z-index:5;font-variant-numeric:tabular-nums}
+.onimg .mark,.onimg .meta,.onimg .num{color:#fff}.onimg .meta,.onimg .num{color:rgba(255,255,255,.7)}
+
+/* type */
+.eye{font-size:20px;letter-spacing:3.2px;text-transform:uppercase;color:var(--acc);font-weight:700;margin-bottom:30px}
+.h1{font-family:Archivo;font-variation-settings:"wdth" 125;font-weight:900;font-size:150px;line-height:.92;letter-spacing:-3px;text-transform:uppercase}
+.h2{font-family:Archivo;font-variation-settings:"wdth" 112;font-weight:850;font-size:84px;line-height:1;letter-spacing:-2px}
+.h3s{font-family:Archivo;font-variation-settings:"wdth" 110;font-weight:800;font-size:40px;line-height:1.1;letter-spacing:-.6px;margin:34px 0 10px}
+.p{font-size:31px;line-height:1.5;color:var(--mut);max-width:1180px;margin-top:26px}
+.p strong{color:var(--ink)}
+.lst{list-style:none;margin-top:44px;display:grid;gap:22px}
+.lst li{font-size:33px;line-height:1.35;display:flex;gap:26px;align-items:baseline;padding-bottom:22px;border-bottom:1px solid var(--line)}
+.lst li:last-child{border-bottom:none}
+.lst li::before{content:"";flex:0 0 12px;height:12px;background:var(--acc);border-radius:2px;transform:translateY(-6px)}
+ol.lst{counter-reset:n}
+ol.lst li::before{counter-increment:n;content:counter(n,decimal-leading-zero);flex:0 0 auto;width:auto;height:auto;background:none;
+ color:var(--acc);font-family:Archivo;font-variation-settings:"wdth" 125;font-weight:900;font-size:28px;transform:none}
+.lst li.chk::before{content:"\2713";background:none;color:var(--acc);font-weight:900;height:auto;transform:none}
+.lst ul.lst{margin-top:16px;gap:10px}.lst ul.lst li{font-size:26px;color:var(--mut);border:none;padding:0}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.85em;background:var(--card);padding:2px 8px;border-radius:6px}
+.c-orange,.c-red,.c-brown{color:var(--acc)}.c-gray{color:var(--mut)}.c-blue{color:#5b9cf0}.c-green{color:#3fbf8a}.c-purple{color:#a798f2}.c-yellow{color:#e0b13c}.c-pink{color:#e57aa8}
+
+/* layouts */
+.pad{position:absolute;inset:0;padding:190px 96px 140px;display:flex;flex-direction:column;justify-content:center}
+.bgimg{position:absolute;inset:0;background-size:cover;background-position:center}
+.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.05) 32%,rgba(0,0,0,.2) 55%,rgba(0,0,0,.86) 100%)}
+.cover .pad,.full .pad{justify-content:flex-end;padding-bottom:150px;color:#fff}
+.cover .p,.full .p{color:rgba(255,255,255,.8)}
+.cover .h1{max-width:1600px}
+.full .h2{font-size:104px;max-width:1500px}
+.cover.noimg .pad,.full.noimg .pad{color:var(--ink)}.cover.noimg .p{color:var(--mut)}
+.cover.noimg::after{content:"";position:absolute;left:96px;right:96px;bottom:110px;height:6px;background:var(--acc)}
+
+.split .txt{position:absolute;top:0;bottom:0;left:0;width:52%;padding:190px 80px 140px 96px;display:flex;flex-direction:column;justify-content:center}
+.split .pic{position:absolute;top:0;bottom:0;right:0;width:48%;background-size:cover;background-position:center}
+.split .h2{font-size:76px}.split .p{font-size:30px}
+.split.flip .txt{left:auto;right:0}.split.flip .pic{right:auto;left:0}
+.split.flip .mark{color:#fff}
+
+.stats .grid{display:grid;gap:28px;margin-top:64px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:46px 44px 44px;display:flex;flex-direction:column;gap:18px;min-height:300px}
+.stat .ic{font-size:40px;line-height:1}
+.stat .big{font-family:Archivo;font-variation-settings:"wdth" 125;font-weight:900;font-size:96px;line-height:.95;letter-spacing:-2px;color:var(--acc)}
+.stat .lab{font-size:28px;line-height:1.4;color:var(--mut);margin-top:auto}
+.stat .lab strong{color:var(--ink)}
+
+.quote .pad{justify-content:center;padding-right:520px}
+.quote.onimg .pad{color:#fff}
+.quote .qm{font-family:Archivo;font-weight:900;font-size:240px;line-height:.6;color:var(--acc);height:120px}
+.quote .qt{font-family:Archivo;font-variation-settings:"wdth" 100;font-weight:700;font-size:64px;line-height:1.18;letter-spacing:-1px}
+.quote .who{margin-top:46px;font-size:24px;letter-spacing:2.6px;text-transform:uppercase;color:var(--acc);font-weight:700}
+.quote .qpic{position:absolute;top:0;bottom:0;right:0;width:440px;background-size:cover;background-position:center}
+
+.table table{width:100%;border-collapse:collapse;margin-top:56px;font-size:29px}
+.table th{text-align:left;font-size:18px;letter-spacing:2.6px;text-transform:uppercase;color:var(--faint);font-weight:700;padding:0 28px 22px}
+.table td{padding:28px;border-top:1px solid var(--line);vertical-align:top;line-height:1.35;color:var(--mut)}
+.table td:first-child,.table th:first-child{padding-left:0}
+.table td:first-child{color:var(--ink);font-weight:700}
+.table tr>*:last-child{color:var(--ink)}
+.table th:last-child{color:var(--acc)}
+.table td:last-child{background:linear-gradient(90deg,rgba(232,98,44,.10),rgba(232,98,44,0));font-weight:600}
+
+.video .frame{margin-top:44px;flex:1;min-height:0;border-radius:18px;overflow:hidden;background:#000;border:1px solid var(--line)}
+.video iframe{width:100%;height:100%;border:0}
+.video .pad{justify-content:flex-start}
+
+.gallery .gg{display:grid;gap:18px;margin-top:40px;flex:1;min-height:0}
+.gallery .gg div{background-size:cover;background-position:center;border-radius:14px}
+
+.cols{display:grid;gap:64px;margin-top:44px}
+.cols .p{margin-top:12px;font-size:28px}
+.cols img{width:100%;border-radius:14px;display:block;margin-top:16px}
+.cap{font-size:20px;color:var(--faint);margin-top:12px}
+
+/* controls */
+#bar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:6px;align-items:center;
+ background:rgba(18,18,18,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.1);
+ border-radius:14px;padding:6px;opacity:0;transition:opacity .25s;z-index:20;color:#eee}
+body.ui #bar{opacity:1}
+#bar button{background:none;border:0;color:inherit;font:600 12px Inter;letter-spacing:.4px;padding:9px 12px;border-radius:9px;cursor:pointer;display:flex;align-items:center;gap:6px}
+#bar button:hover{background:rgba(255,255,255,.1)}
+#bar .ct{font:600 12px Inter;color:#aaa;padding:0 10px;font-variant-numeric:tabular-nums;min-width:62px;text-align:center}
+#bar svg{width:16px;height:16px}
+#bar .sep{width:1px;height:20px;background:rgba(255,255,255,.12);margin:0 2px}
+#prog{position:fixed;left:0;top:0;height:3px;background:var(--acc);z-index:21;transition:width .35s ease}
+.hit{position:fixed;top:0;bottom:0;width:22%;z-index:10;cursor:pointer}
+.hit.l{left:0}.hit.r{right:0}
+
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:34vh;overflow:auto;background:rgba(14,14,14,.94);color:#ddd;
+ border-top:1px solid rgba(255,255,255,.12);padding:18px 26px 70px;font-size:15px;line-height:1.55;z-index:15;display:none}
+#notes.on{display:block}
+#notes h6{font:700 10px Inter;letter-spacing:1.6px;text-transform:uppercase;color:var(--acc);margin-bottom:8px}
+
+#overview{position:fixed;inset:0;background:#0b0b0b;z-index:30;overflow:auto;padding:40px;display:none}
+#overview.on{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px;align-content:start}
+#overview .th{aspect-ratio:16/9;position:relative;overflow:hidden;border-radius:10px;border:1px solid rgba(255,255,255,.1);cursor:pointer}
+#overview .th.cur{outline:2px solid var(--acc);outline-offset:3px}
+#overview .th .inner{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;pointer-events:none}
+#overview .th .inner .slide{opacity:1;visibility:visible;transition:none}
+#overview .th span{position:absolute;left:10px;bottom:8px;font:700 11px Inter;color:#fff;background:rgba(0,0,0,.6);padding:3px 7px;border-radius:6px;z-index:3}
+
+#msg{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#ddd;z-index:40;background:#0b0b0b;text-align:center;padding:30px}
+#msg .mk{font-family:Archivo;font-variation-settings:"wdth" 125;font-weight:900;font-size:30px;letter-spacing:1px;color:#fff}
+#msg .mk b{color:var(--acc)}
+#msg p{font-size:14px;color:#8a8a8a;max-width:420px;line-height:1.5}
+#msg.load .mk{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+
+@media print{
+ @page{size:1920px 1080px;margin:0}
+ html,body{background:#fff;overflow:visible;height:auto}
+ #bar,#prog,.hit,#notes,#overview,#msg{display:none!important}
+ #viewport{position:static;display:block}
+ #stage{transform:none!important;width:auto;height:auto;background:none;overflow:visible}
+ .slide{position:relative;width:1920px;height:1080px;opacity:1!important;visibility:visible!important;page-break-after:always;break-after:page;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .slide .rise{animation:none!important}
+}
+</style></head><body>
+<div id="prog"></div>
+<div id="viewport"><div id="stage"></div></div>
+<div class="hit l" id="hl"></div><div class="hit r" id="hr"></div>
+<div id="notes"></div>
+<div id="overview"></div>
+<div id="bar">
+ <button id="bPrev" title="Previous (←)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg></button>
+ <span class="ct" id="ct">1 / 1</span>
+ <button id="bNext" title="Next (→)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg></button>
+ <span class="sep"></span>
+ <button id="bGrid" title="All slides (G)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Slides</button>
+ <button id="bNotes" title="Speaker notes (N)" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16M4 10h16M4 15h10"/></svg>Notes</button>
+ <button id="bPdf" title="Save as PDF (P)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14"/></svg>PDF</button>
+ <button id="bFull" title="Present full screen (F)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Present</button>
+</div>
+<div id="msg" class="load"><div class="mk"><b>WCS</b>TUDIOS</div><p id="msgt">Loading</p></div>
+
+<script>
+(() => {
+const $ = (s, el = document) => el.querySelector(s);
+const qs = new URLSearchParams(location.search);
+const SLUG = (qs.get("d") || "").replace(/[^a-f0-9]/g, "");
+const [K_DECK, K_NOTES] = location.hash.slice(1).split(".");
+const BASE = location.href.replace(/[^/]*([?#].*)?$/, "");
+const RAW = "https://raw.githubusercontent.com/wcstudios/wcs-widgets/main/wcs-widgets-upload-v2/";
+
+function fail(t){ const m = $("#msg"); m.classList.remove("load"); $("#msgt").textContent = t; m.style.display = "flex"; }
+
+const b64 = s => Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/") + "===".slice((s.length + 3) % 4)), c => c.charCodeAt(0));
+async function key(raw){ return crypto.subtle.importKey("raw", b64(raw), "AES-GCM", false, ["decrypt"]); }
+async function open(k, bytes){ return new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv: bytes.slice(0, 12) }, k, bytes.slice(12))); }
+async function fetchBytes(path){
+  for (const u of [BASE + path + "?t=" + Date.now(), RAW + path + "?t=" + Date.now()]) {
+    try { const r = await fetch(u, { cache: "no-store" }); if (r.ok) return new Uint8Array(await r.arrayBuffer()); } catch(e){}
+  }
+  throw new Error("missing");
+}
+
+/* ── rich text ─────────────────────────────── */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+function rt(arr){
+  return (arr || []).map(r => {
+    let h = esc(r.x).replace(/\n/g, "<br>");
+    if (r.c) h = `<code>${h}</code>`;
+    if (r.b) h = `<strong>${h}</strong>`;
+    if (r.i) h = `<em>${h}</em>`;
+    if (r.u) h = `<u>${h}</u>`;
+    if (r.s) h = `<s>${h}</s>`;
+    if (r.k && !/_background$/.test(r.k)) h = `<span class="c-${r.k}">${h}</span>`;
+    if (r.h && /^https?:/.test(r.h)) h = `<a href="${esc(r.h)}" target="_blank" rel="noopener">${h}</a>`;
+    return h;
+  }).join("");
+}
+const txt = n => (n.r || []).map(r => r.x).join("");
+
+/* ── media ─────────────────────────────────── */
+let DECK_KEY, media = {};
+async function resolveMedia(u){
+  if (!u || !u.startsWith("enc:")) return u;
+  const name = u.slice(4);
+  if (media[name]) return media[name];
+  const pt = await open(DECK_KEY, await fetchBytes("decks/" + SLUG + "/" + name));
+  const ml = pt[0], mime = new TextDecoder().decode(pt.slice(1, 1 + ml));
+  return media[name] = URL.createObjectURL(new Blob([pt.slice(1 + ml)], { type: mime }));
+}
+function videoEmbed(u){
+  if (!u) return null;
+  let m;
+  if ((m = u.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/([a-f0-9]+))?/))) return `https://player.vimeo.com/video/${m[1]}${m[2] ? "?h=" + m[2] + "&" : "?"}title=0&byline=0&portrait=0&dnt=1`;
+  if ((m = u.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/))) return `https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1`;
+  if (/frame\.io|wistia|loom\.com\/share/.test(u)) return u;
+  return null;
+}
+
+/* ── slide model ───────────────────────────── */
+function chunks(nodes){
+  const out = []; let cur = [];
+  nodes.forEach(n => { if (n.t === "divider") { out.push(cur); cur = []; } else cur.push(n); });
+  out.push(cur);
+  return out.map((c, i) => ({ ix: i, nodes: c })).filter(c => c.nodes.length);
+}
+function classify(s, first){
+  const N = s.nodes, has = t => N.filter(n => n.t === t);
+  const imgs = has("image"), vids = N.filter(n => n.t === "video" || ((n.t === "embed" || n.t === "bookmark") && videoEmbed(n.u)));
+  const callouts = has("callout"), quotes = has("quote"), tables = has("table"), cols = has("columns");
+  const lists = N.filter(n => /list_item|to_do/.test(n.t));
+  const paras = has("paragraph").filter(p => txt(p).trim());
+  const words = N.reduce((a, n) => a + txt(n).length, 0);
+  if (has("heading_1").length) return "cover";
+  if (first && !N.some(n => /heading/.test(n.t))) return "cover";
+  if (quotes.length) return "quote";
+  if (tables.length) return "table";
+  if (callouts.length >= 2) return "stats";
+  if (vids.length && !imgs.length) return "video";
+  if (imgs.length >= 2 && !lists.length && words < 120) return "gallery";
+  if (imgs.length && !lists.length && !cols.length && paras.length <= 1 && words < 200) return "full";
+  if (imgs.length) return "split";
+  return "text";
+}
+
+function listHTML(nodes){
+  let html = "", i = 0;
+  while (i < nodes.length) {
+    const t = nodes[i].t;
+    if (!/list_item|to_do/.test(t)) { i++; continue; }
+    const kind = t === "numbered_list_item" ? "ol" : "ul";
+    let items = "";
+    while (i < nodes.length && nodes[i].t === t) {
+      const n = nodes[i++];
+      const sub = (n.ch || []).filter(c => /list_item/.test(c.t));
+      items += `<li class="${n.t === "to_do" ? "chk" : ""}"><span>${rt(n.r)}${sub.length ? listHTML(sub) : ""}</span></li>`;
+    }
+    html += `<${kind} class="lst">${items}</${kind}>`;
+  }
+  return html;
+}
+/* Body content in reading order, for text-ish layouts. */
+function bodyHTML(nodes, opts = {}){
+  let h = "", i = 0, dl = 2;
+  const d = () => ` rise d${Math.min(4, dl++)}`;
+  while (i < nodes.length) {
+    const n = nodes[i];
+    if (/list_item|to_do/.test(n.t)) {
+      const run = []; while (i < nodes.length && nodes[i].t === n.t) run.push(nodes[i++]);
+      h += `<div class="${d()}">${listHTML(run)}</div>`; continue;
+    }
+    i++;
+    switch (n.t) {
+      case "heading_3": if (opts.skipEye !== n) h += `<div class="h3s${d()}">${rt(n.r)}</div>`; break;
+      case "heading_2": if (opts.skipTitle !== n) h += `<div class="h2${d()}">${rt(n.r)}</div>`; break;
+      case "paragraph": if (txt(n).trim()) h += `<p class="p${d()}">${rt(n.r)}</p>`; break;
+      case "callout": h += `<p class="p${d()}">${n.ic ? n.ic + " " : ""}${rt(n.r)}</p>`; break;
+      case "toggle": h += `<p class="p${d()}"><strong>${rt(n.r)}</strong></p>` + bodyHTML(n.ch || []); break;
+      case "columns": {
+        const cs = n.ch || [];
+        h += `<div class="cols${d()}" style="grid-template-columns:repeat(${cs.length},1fr)">` +
+          cs.map(c => `<div>${(c.ch||[]).map(x => x.t === "image" ? `<img data-src="${esc(x.u)}" alt="">` : "").join("")}${bodyHTML((c.ch||[]).filter(x => x.t !== "image"))}</div>`).join("") + `</div>`;
+        break;
+      }
+    }
+  }
+  return h;
+}
+
+function header(N){
+  const eye = N.find(n => n.t === "heading_3");
+  const title = N.find(n => n.t === "heading_2") || N.find(n => n.t === "heading_1");
+  // An h3 only reads as an eyebrow when it comes before the title.
+  const isEye = eye && title && N.indexOf(eye) < N.indexOf(title);
+  return { eye: isEye ? eye : null, title };
+}
+
+function render(s, i, total, deck){
+  const N = s.nodes, L = s.layout, el = document.createElement("section");
+  el.className = "slide " + L;
+  const img = N.find(n => n.t === "image");
+  const { eye, title } = header(N);
+  const eyeH = eye ? `<div class="eye rise">${rt(eye.r)}</div>` : "";
+  const rest = N.filter(n => n !== eye && n !== title && n.t !== "image");
+  const meta = esc(deck.client ? "Prepared for " + deck.client : deck.title || "");
+  let body = "", bg = null;
+  switch (L) {
+    case "cover": {
+      bg = img ? img.u : (i === 0 ? deck.cover : null);
+      const h1 = N.find(n => n.t === "heading_1");
+      const t = h1 ? rt(h1.r) : esc(deck.title || "");
+      const sub = rest.filter(n => n !== h1);
+      const eyeC = eye ? eyeH : (deck.client ? `<div class="eye rise">Prepared for ${esc(deck.client)}</div>` : "");
+      body = `<div class="pad">${eyeC}<div class="h1 rise d2">${t}</div>${bodyHTML(sub)}</div>`;
+      break;
+    }
+    case "full":
+      bg = img.u;
+      body = `<div class="pad">${eyeH}${title ? `<div class="h2 rise d2">${rt(title.r)}</div>` : ""}${bodyHTML(rest)}</div>`;
+      break;
+    case "split": {
+      const flip = i % 2 === 0;
+      if (flip) el.classList.add("flip");
+      body = `<div class="pic" data-bg="${esc(img.u)}"></div><div class="txt">${eyeH}${title ? `<div class="h2 rise d2">${rt(title.r)}</div>` : ""}${bodyHTML(rest)}</div>`;
+      break;
+    }
+    case "stats": {
+      const cs = N.filter(n => n.t === "callout");
+      const cards = cs.map((c, k) => {
+        const r = c.r || [];
+        let big = "", lab = r;
+        if (r[0] && r[0].b) { big = esc(r[0].x.trim()); lab = r.slice(1); }
+        return `<div class="stat rise d${Math.min(4, k + 2)}">${c.ic && !big ? `<div class="ic">${c.ic}</div>` : ""}${big ? `<div class="big">${big}</div>` : ""}<div class="lab">${rt(lab).replace(/^\s*(<br>)*/, "")}</div></div>`;
+      }).join("");
+      const other = rest.filter(n => n.t !== "callout");
+      body = `<div class="pad">${eyeH}${title ? `<div class="h2 rise">${rt(title.r)}</div>` : ""}${bodyHTML(other)}<div class="grid" style="grid-template-columns:repeat(${Math.min(cs.length, 4)},1fr)">${cards}</div></div>`;
+      break;
+    }
+    case "quote": {
+      const q = N.find(n => n.t === "quote");
+      const after = N[N.indexOf(q) + 1];
+      const who = after && after.t === "paragraph" ? after : null;
+      if (img) { bg = img.u; }
+      body = `<div class="pad"><div class="qm rise">&ldquo;</div><div class="qt rise d2">${rt(q.r)}</div>${who ? `<div class="who rise d3">${rt(who.r)}</div>` : ""}</div>`;
+      if (img) el.classList.add("qbg");
+      break;
+    }
+    case "table": {
+      const t = N.find(n => n.t === "table");
+      const rows = t.rows || [];
+      const head = t.hdr && rows.length ? rows[0] : null;
+      const bodyRows = head ? rows.slice(1) : rows;
+      const tbl = `<table class="rise d3">${head ? `<tr>${head.map(c => `<th>${rt(c)}</th>`).join("")}</tr>` : ""}${bodyRows.map(r => `<tr>${r.map(c => `<td>${rt(c)}</td>`).join("")}</tr>`).join("")}</table>`;
+      body = `<div class="pad">${eyeH}${title ? `<div class="h2 rise d2">${rt(title.r)}</div>` : ""}${bodyHTML(rest.filter(n => n.t !== "table"))}${tbl}</div>`;
+      break;
+    }
+    case "video": {
+      const v = N.find(n => n.t === "video" || ((n.t === "embed" || n.t === "bookmark") && videoEmbed(n.u)));
+      const src = videoEmbed(v.u);
+      const inner = src ? `<iframe data-src="${esc(src)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`
+                        : `<video controls playsinline data-src="${esc(v.u)}" style="width:100%;height:100%;background:#000"></video>`;
+      body = `<div class="pad">${eyeH}${title ? `<div class="h2 rise d2">${rt(title.r)}</div>` : ""}${bodyHTML(rest.filter(n => n !== v))}<div class="frame rise d3">${inner}</div></div>`;
+      break;
+    }
+    case "gallery": {
+      const ims = N.filter(n => n.t === "image");
+      const cols = ims.length <= 2 ? ims.length : ims.length === 4 ? 2 : 3;
+      body = `<div class="pad">${eyeH}${title ? `<div class="h2 rise d2">${rt(title.r)}</div>` : ""}<div class="gg rise d3" style="grid-template-columns:repeat(${cols},1fr)">${ims.map(x => `<div data-bg="${esc(x.u)}"></div>`).join("")}</div></div>`;
+      break;
+    }
+    default:
+      body = `<div class="pad">${eyeH}${title ? `<div class="h2 rise d2">${rt(title.r)}</div>` : ""}${bodyHTML(rest)}</div>`;
+  }
+  const onimg = bg && L !== "split";
+  if (L === "quote" && img) {
+    el.innerHTML = `<div class="qpic" data-bg="${esc(img.u)}"></div>` + body;
+  } else {
+    el.innerHTML = (bg ? `<div class="bgimg" data-bg="${esc(bg)}"></div><div class="scrim"></div>` : "") + body;
+  }
+  if (onimg && L !== "quote") el.classList.add("onimg");
+  if ((L === "cover" || L === "full") && !bg) el.classList.add("noimg");
+  el.insertAdjacentHTML("beforeend", `<div class="mark"><b>WCS</b>TUDIOS</div>${i > 0 ? `<div class="meta">${meta}</div>` : ""}<div class="num">${i + 1} / ${total}</div>`);
+  return el;
+}
+
+/* ── boot ──────────────────────────────────── */
+let slides = [], cur = 0, notesBy = {}, deck;
+const stage = $("#stage");
+
+function fit(){
+  const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+  stage.style.transform = `scale(${s})`;
+}
+async function hydrate(root){
+  for (const el of root.querySelectorAll("[data-bg]")) {
+    try { el.style.backgroundImage = `url("${await resolveMedia(el.dataset.bg)}")`; } catch(e){}
+    el.removeAttribute("data-bg");
+  }
+  for (const el of root.querySelectorAll("img[data-src]")) {
+    try { el.src = await resolveMedia(el.dataset.src); } catch(e){}
+    el.removeAttribute("data-src");
+  }
+}
+function go(i, push = true){
+  i = Math.max(0, Math.min(slides.length - 1, i));
+  const prev = slides[cur];
+  if (prev) { prev.el.classList.remove("on"); prev.el.querySelectorAll("iframe[src]").forEach(f => { f.dataset.src = f.src; f.removeAttribute("src"); }); }
+  cur = i;
+  const s = slides[i];
+  s.el.classList.add("on");
+  s.el.querySelectorAll("iframe[data-src],video[data-src]").forEach(f => { f.src = f.dataset.src; f.removeAttribute("data-src"); });
+  $("#ct").textContent = `${i + 1} / ${slides.length}`;
+  $("#prog").style.width = ((i + 1) / slides.length * 100) + "%";
+  const n = notesBy[s.ix];
+  $("#notes").innerHTML = `<h6>Notes · slide ${i + 1}</h6>` + (n ? bodyHTML(n).replace(/class="[^"]*rise[^"]*"/g, "") : "<p style='color:#777'>No notes on this slide.</p>");
+  if (push) { const u = new URL(location.href); u.searchParams.set("s", i + 1); history.replaceState(null, "", u); }
+  [i + 1, i + 2].forEach(k => slides[k] && hydrate(slides[k].el));
+}
+function overview(on){
+  const ov = $("#overview");
+  if (!on) { ov.classList.remove("on"); ov.innerHTML = ""; return; }
+  ov.innerHTML = "";
+  slides.forEach((s, k) => {
+    const th = document.createElement("div");
+    th.className = "th" + (k === cur ? " cur" : "");
+    const inner = document.createElement("div");
+    inner.className = "inner" + (deck.theme === "light" ? " light" : "");
+    const clone = s.el.cloneNode(true); clone.classList.add("on");
+    clone.querySelectorAll("iframe,video").forEach(f => f.remove());
+    inner.appendChild(clone);
+    th.appendChild(inner);
+    th.insertAdjacentHTML("beforeend", `<span>${k + 1}</span>`);
+    th.onclick = () => { overview(false); go(k); };
+    ov.appendChild(th);
+    requestAnimationFrame(() => { inner.style.transform = `scale(${th.clientWidth / 1920})`; });
+  });
+  ov.classList.add("on");
+}
+async function printAll(){
+  for (const s of slides) await hydrate(s.el);
+  window.print();
+}
+
+async function boot(){
+  if (!SLUG || !K_DECK) return fail("This link is incomplete. Ask WCStudios for a fresh one.");
+  if (!window.crypto || !crypto.subtle) return fail("This browser can't open the deck. Try Chrome or Safari.");
+  try {
+    DECK_KEY = await key(K_DECK);
+    const env = JSON.parse(new TextDecoder().decode(await fetchBytes("decks/" + SLUG + ".json")));
+    deck = JSON.parse(new TextDecoder().decode(await open(DECK_KEY, b64(env.data))));
+  } catch(e) { return fail("This deck could not be opened. The link may be out of date."); }
+  document.title = (deck.title || "Deck") + " · WCStudios";
+  if (deck.theme === "light") stage.classList.add("light"), document.documentElement.style.setProperty("--acc", "#d4551f");
+  if (K_NOTES && deck.notes) {
+    try { notesBy = JSON.parse(new TextDecoder().decode(await open(await key(K_NOTES), b64(deck.notes)))); $("#bNotes").hidden = false; } catch(e){}
+  }
+  const cs = chunks(deck.nodes || []);
+  cs.forEach((c, k) => c.layout = classify(c, k === 0));
+  slides = cs;
+  slides.forEach((s, k) => { s.el = render(s, k, slides.length, deck); stage.appendChild(s.el); });
+  if (!slides.length) return fail("This deck has no slides yet.");
+  fit();
+  await hydrate(slides[0].el);
+  $("#msg").style.display = "none";
+  const start = Math.max(1, parseInt(qs.get("s") || "1", 10)) - 1;
+  go(start, false);
+  for (const s of slides) await hydrate(s.el);
+}
+
+addEventListener("resize", fit);
+addEventListener("keydown", e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key;
+  if ($("#overview").classList.contains("on")) { if (k === "Escape" || k === "g") overview(false); return; }
+  if (["ArrowRight", "ArrowDown", "PageDown", " ", "Enter"].includes(k)) { e.preventDefault(); go(cur + 1); }
+  else if (["ArrowLeft", "ArrowUp", "PageUp", "Backspace"].includes(k)) { e.preventDefault(); go(cur - 1); }
+  else if (k === "Home") go(0); else if (k === "End") go(slides.length - 1);
+  else if (k === "f") fullscreen();
+  else if (k === "g") overview(true);
+  else if (k === "n" && !$("#bNotes").hidden) $("#notes").classList.toggle("on");
+  else if (k === "p") printAll();
+});
+function fullscreen(){
+  const d = document;
+  if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+  else {
+    const el = d.documentElement, req = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (req) req.call(el).catch(() => window.open(location.href, "_blank", "noopener"));
+    else window.open(location.href, "_blank", "noopener");
+  }
+}
+$("#hl").onclick = () => go(cur - 1);
+$("#hr").onclick = () => go(cur + 1);
+$("#bPrev").onclick = () => go(cur - 1);
+$("#bNext").onclick = () => go(cur + 1);
+$("#bGrid").onclick = () => overview(true);
+$("#bNotes").onclick = () => $("#notes").classList.toggle("on");
+$("#bPdf").onclick = printAll;
+$("#bFull").onclick = fullscreen;
+let hideT;
+addEventListener("mousemove", () => { document.body.classList.add("ui"); clearTimeout(hideT); hideT = setTimeout(() => document.body.classList.remove("ui"), 2200); });
+let tx = null;
+addEventListener("touchstart", e => { tx = e.touches[0].clientX; document.body.classList.add("ui"); }, { passive: true });
+addEventListener("touchend", e => { if (tx == null) return; const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) go(cur + (dx < 0 ? 1 : -1)); tx = null; });
+boot();
+})();
+</script>
+</body></html>
