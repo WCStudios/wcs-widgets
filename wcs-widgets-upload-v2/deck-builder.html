@@ -29,7 +29,7 @@
 .layouts{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:8px 0 4px}
 .layouts button{padding:6px 2px;font-size:9.5px;font-weight:700;border-radius:7px}
 .layouts button.on{border-color:var(--accent);color:var(--accent)}
-.stat{display:flex;gap:6px;margin-bottom:6px}.stat input:first-child{flex:0 0 34%}
+.statrow{display:flex;gap:6px;margin-bottom:6px}.statrow input:first-child{flex:0 0 34%}
 #show{position:fixed;inset:0;background:#000;z-index:50;display:none;align-items:center;justify-content:center}
 #show.on{display:flex}
 #show .wcs-stage{transform-origin:center center;flex:0 0 auto}
@@ -61,12 +61,12 @@
     <div class="grp" data-g="slides">
       <div class="lbl" data-toggle>Slides <span class="sum" id="sumSlides"></span><span class="chev">›</span></div>
       <div class="gb"><div class="slist" id="slist"></div>
-        <div class="lab" style="margin-top:10px">Add a slide</div><div class="layouts" id="addLayouts"></div></div>
+        <div class="flab" style="margin-top:10px">Add a slide</div><div class="layouts" id="addLayouts"></div></div>
     </div>
     <div class="grp" data-g="slide">
       <div class="lbl" data-toggle>Slide <span id="curN"></span> <span class="sum" id="sumSlide"></span><span class="chev">›</span></div>
       <div class="gb">
-        <div class="lab">Layout</div><div class="layouts" id="layouts"></div>
+        <div class="flab">Layout</div><div class="layouts" id="layouts"></div>
         <div id="fields" style="margin-top:10px"></div>
       </div>
     </div>
@@ -216,7 +216,7 @@ function drawFields(){
   if (f.includes("video")) h.push(inp("video", "Vimeo or YouTube link"));
   if (f.includes("table")) h.push(ta("table", "Table", 5, "(one row per line, cells split with | , first row is the header)"));
   if (f.includes("stats")) {
-    h.push(`<div class="lab">Stat cards</div>` + (s.stats || []).map((x, k) => `<div class="stat"><input data-st="${k}" data-sf="n" value="${esc(x.n)}" placeholder="12"><input data-st="${k}" data-sf="l" value="${esc(x.l)}" placeholder="what it means"></div>`).join("")
+    h.push(`<div class="flab">Stat cards</div>` + (s.stats || []).map((x, k) => `<div class="statrow"><input data-st="${k}" data-sf="n" value="${esc(x.n)}" placeholder="12"><input data-st="${k}" data-sf="l" value="${esc(x.l)}" placeholder="what it means"></div>`).join("")
       + `<div class="r2" style="margin-bottom:9px"><button data-stadd>+ Card</button><button data-strm>− Card</button></div>`);
   }
   h.push(ta("notes", "Speaker notes", 2, "(only you see these when presenting)"));
