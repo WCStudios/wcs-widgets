@@ -1,0 +1,397 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>WCStudios Contracts</title>
+<style>
+/* Contracts & Decks hub widgets. One file, five views:
+     ?view=strip | timeline | scope | generator | decks
+   Data is contracts-live.json, sealed with AES-GCM by the invoice worker. The
+   key sits in the #fragment of the embed URL inside the private Notion page,
+   so the public repo only ever holds ciphertext. */
+:root{--bg:#fff;--line:#e9e9e7;--hair:#f2f2f0;--text:#191918;--muted:#5f5f5c;--faint:#8f8f8b;
+ --accent:#d4551f;--track:rgba(212,85,31,.14);--over:#c2410c;--good:#15803d;--blue:#2a78d6;--green:#1baf7a;--purple:#4a3aa7;
+ --card:#fafaf9;--hover:rgba(0,0,0,.035);--field:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#191919;--line:#2c2c2c;--hair:#242424;--text:#f0f0f0;
+ --muted:#a3a39e;--faint:#7c7c78;--accent:#f97b47;--track:rgba(249,123,71,.16);--over:#ff8a6b;--good:#81b29a;
+ --blue:#3987e5;--green:#199e70;--purple:#9085e9;--card:#1f1f1f;--hover:rgba(255,255,255,.04);--field:#202020}}
+:root{color-scheme:light dark}
+*{margin:0;box-sizing:border-box}
+html,body{min-height:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;font-size:12px}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+.k{font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--faint);font-weight:700}
+.big{font-size:clamp(30px,3.2vw,38px);font-weight:800;letter-spacing:-1.9px;line-height:1;font-variant-numeric:tabular-nums}
+.sub{font-size:10.5px;color:var(--faint);margin-top:7px;line-height:1.45}
+.sub b{color:var(--muted);font-weight:700}
+.chip{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+ color:var(--accent);background:var(--track);padding:3px 7px;border-radius:5px;white-space:nowrap}
+.chip.gray{color:var(--muted);background:rgba(127,127,127,.12)}
+.chip.good{color:var(--good);background:color-mix(in srgb,var(--good) 14%,transparent)}
+.chip.blue{color:var(--blue);background:color-mix(in srgb,var(--blue) 14%,transparent)}
+.chip.hot{color:var(--over);background:color-mix(in srgb,var(--over) 13%,transparent)}
+.wrap{padding:18px 22px}
+.head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px}
+.title{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.note{font-size:10.5px;color:var(--faint)}
+.empty{padding:26px 0;color:var(--faint);font-size:12px}
+#gate{padding:22px;display:none}
+#gate input{width:100%;max-width:420px;margin-top:8px}
+#gate p{color:var(--faint);font-size:11px;margin-top:6px;line-height:1.5}
+
+/* ── strip ── */
+.strip{display:flex;min-height:100vh;width:100%;overflow-x:auto}
+.panel{flex:1 1 0;min-width:196px;padding:16px clamp(15px,1.5vw,20px);border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center}
+.panel:last-child{border-right:none}
+.inner{min-height:128px;display:flex;flex-direction:column}
+.inner .body{flex:1;display:flex;flex-direction:column;justify-content:center}
+.row{display:flex;align-items:center;gap:8px;border-top:1px solid var(--hair);margin:10px -7px 0;padding:8px 7px 3px;border-radius:7px;cursor:pointer;transition:background .12s}
+.row:hover{background:var(--hover)}
+.rn{flex:1;min-width:0;font-size:11px;font-weight:700;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:640px){.strip{display:grid;grid-template-columns:1fr 1fr}.panel{min-width:0;border-bottom:1px solid var(--line)}
+ .panel:nth-child(2n){border-right:none}.big{font-size:24px;letter-spacing:-1px}}
+
+/* ── timeline ── */
+.tl{position:relative}
+.tl-axis{display:grid;margin-left:var(--lw);font-size:9px;color:var(--faint);font-weight:700;letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:6px}
+.tl-axis span{border-left:1px solid var(--hair);padding-left:5px;white-space:nowrap;overflow:hidden}
+.tl-row{display:flex;align-items:center;height:38px;border-bottom:1px solid var(--hair);cursor:pointer}
+.tl-row:hover{background:var(--hover)}
+.tl-lab{flex:0 0 var(--lw);padding-right:12px;min-width:0}
+.tl-lab .n{font-size:11.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-lab .m{font-size:9.5px;color:var(--faint);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-track{position:relative;flex:1;height:100%}
+.bar{position:absolute;top:11px;height:16px;border-radius:5px;display:flex;align-items:center;padding:0 7px;font-size:9.5px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden}
+.bar.pend{background:repeating-linear-gradient(135deg,var(--c) 0 6px,color-mix(in srgb,var(--c) 55%,transparent) 6px 12px)!important}
+.bar.open{-webkit-mask-image:linear-gradient(90deg,#000 70%,transparent);mask-image:linear-gradient(90deg,#000 70%,transparent)}
+.today{position:absolute;top:-22px;bottom:0;width:2px;background:var(--accent);border-radius:1px;pointer-events:none}
+.today::before{content:"Today";position:absolute;top:0;left:5px;font-size:8.5px;font-weight:800;color:var(--accent);letter-spacing:.6px;text-transform:uppercase}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.undated{margin-top:12px;font-size:10.5px;color:var(--faint);line-height:1.5}
+.undated b{color:var(--muted)}
+
+/* ── scope ── */
+.scope{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.sc{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--card)}
+.sc .t{font-size:12.5px;font-weight:800;display:flex;justify-content:space-between;gap:8px;align-items:flex-start;cursor:pointer}
+.sc .t:hover{color:var(--accent)}
+.sc .when{font-size:10px;color:var(--faint);margin-top:3px}
+.sc .nums{display:flex;align-items:baseline;gap:8px;margin-top:14px}
+.sc .of{font-size:12px;color:var(--faint);font-weight:700}
+.meter{position:relative;height:10px;border-radius:5px;background:rgba(127,127,127,.14);margin-top:10px;overflow:visible}
+.meter .d{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:5px 0 0 5px}
+.meter .a{position:absolute;top:0;bottom:0;background:var(--track)}
+.meter .pace{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--text);border-radius:1px}
+.sc .verdict{font-size:10.5px;margin-top:9px;color:var(--muted)}
+.sc .verdict b{font-weight:800}
+.tasks{margin-top:10px;border-top:1px solid var(--hair);padding-top:6px}
+.task{display:flex;gap:8px;align-items:center;padding:5px 6px;margin:0 -6px;border-radius:6px;cursor:pointer;font-size:10.5px}
+.task:hover{background:var(--hover)}
+.task .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.task .dt{color:var(--faint);font-variant-numeric:tabular-nums;font-size:9.5px}
+.dot{width:6px;height:6px;border-radius:50%;flex:0 0 auto;background:var(--faint)}
+.dot.done{background:var(--good)}.dot.act{background:var(--accent)}
+
+/* ── forms ── */
+label{display:block;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);font-weight:700;margin-bottom:5px}
+input,select,textarea{width:100%;font:500 12px -apple-system,BlinkMacSystemFont,Inter,sans-serif;color:var(--text);background:var(--field);
+ border:1px solid var(--line);border-radius:8px;padding:8px 10px;outline:none}
+input:focus,select:focus{border-color:var(--accent)}
+input::placeholder{color:var(--faint)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.sect{margin-top:18px}
+.sect>.k{margin-bottom:10px;display:block}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 14px;font-weight:800;font-size:11.5px;cursor:pointer}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.ghost{background:none;color:var(--muted);border:1px solid var(--line)}
+.btn.ghost:hover{color:var(--text)}
+.actions{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap}
+.preview{font-size:13px;font-weight:800;margin-top:6px}
+.status{font-size:11px;color:var(--muted)}
+.status a{color:var(--accent);font-weight:700}
+
+/* ── decks ── */
+.decks{display:flex;flex-direction:column}
+.deck{display:flex;align-items:center;gap:14px;padding:11px 8px;margin:0 -8px;border-radius:9px;border-bottom:1px solid var(--hair)}
+.deck:hover{background:var(--hover)}
+.deck .nm{font-size:12.5px;font-weight:800}
+.deck .mt{font-size:10px;color:var(--faint);margin-top:2px}
+.deck .grow{flex:1;min-width:0}
+.mini{background:none;border:1px solid var(--line);border-radius:7px;padding:6px 10px;font-size:10.5px;font-weight:700;cursor:pointer;color:var(--muted);white-space:nowrap}
+.mini:hover{color:var(--text);border-color:var(--faint)}
+.mini.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.how{margin-top:14px;font-size:10.5px;color:var(--faint);line-height:1.6}
+.how b{color:var(--muted)}
+#toast{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:11px;font-weight:700;padding:7px 12px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none}
+#toast.on{opacity:1}
+</style></head><body>
+<div id="gate"><div class="k">Contracts feed key</div><input id="gateKey" placeholder="Paste the hub key"><p>This widget reads a sealed file. The key is in the embed link inside the private Contracts &amp; Decks page.</p></div>
+<div id="app"></div>
+<div id="toast"></div>
+<script>
+(() => {
+const VIEW = new URLSearchParams(location.search).get("view") || "strip";
+const LSK = "wcsContractsKey.v1", CONN = "wcsWorkerConn.v1";
+const RAW = "https://raw.githubusercontent.com/wcstudios/wcs-widgets/main/wcs-widgets-upload-v2/contracts-live.json";
+const PAGES = "contracts-live.json";
+const DECKS_DB = "https://app.notion.com/p/bd7e4ceb53ea406791f7bb59e7c86459";
+const app = document.getElementById("app");
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const money = n => n == null ? "—" : "$" + Math.round(n).toLocaleString("en-US");
+const MO = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const d0 = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+const fmt = s => { const d = d0(s); return MO[d.getMonth()] + " " + d.getDate(); };
+const fmtY = s => { const d = d0(s); return MO[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear(); };
+const TODAY = (() => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); })();
+const iso = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const days = (a, b) => Math.round((b - a) / 864e5);
+const addMonths = (s, m) => { const d = d0(s); d.setMonth(d.getMonth() + m); d.setDate(d.getDate() - 1); return iso(d); };
+function toast(t){ const el = document.getElementById("toast"); el.textContent = t; el.classList.add("on"); setTimeout(() => el.classList.remove("on"), 1800); }
+function openUrl(url){
+  if (!url) return;
+  if (/notion\.(so|com)/.test(url)) { try { window.top.location.href = url; } catch(e){} setTimeout(() => { try { window.open(url, "_blank", "noopener"); } catch(e){} }, 600); }
+  else window.open(url, "_blank", "noopener");
+}
+async function copy(t){
+  try { await navigator.clipboard.writeText(t); toast("Link copied"); return; } catch(e){}
+  const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select();
+  try { document.execCommand("copy"); toast("Link copied"); } catch(e){ prompt("Copy this link", t); }
+  ta.remove();
+}
+
+/* ── key + feed ── */
+const b64 = s => Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/") + "===".slice((s.length + 3) % 4)), c => c.charCodeAt(0));
+function rawKey(){
+  const h = location.hash.slice(1);
+  if (h) { try { localStorage.setItem(LSK, h); } catch(e){} return h; }
+  try { return localStorage.getItem(LSK) || ""; } catch(e){ return ""; }
+}
+let KEY = null;
+async function getKey(){
+  const r = rawKey(); if (!r) return null;
+  try { return KEY = await crypto.subtle.importKey("raw", b64(r), "AES-GCM", false, ["decrypt"]); } catch(e){ return null; }
+}
+async function load(){
+  const out = [];
+  for (const u of [PAGES + "?t=" + Date.now(), RAW + "?t=" + Date.now()]) {
+    try {
+      const r = await fetch(u, { cache: "no-store" }); if (!r.ok) continue;
+      const env = await r.json(); const bytes = b64(env.data);
+      const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: bytes.slice(0, 12) }, KEY, bytes.slice(12));
+      out.push(JSON.parse(new TextDecoder().decode(pt)));
+    } catch(e){}
+  }
+  out.sort((a, b) => (b.updated || "").localeCompare(a.updated || ""));
+  return out[0] || null;
+}
+
+/* ── helpers on the data ── */
+const isDoc = c => !["Template"].includes(c.status) && !["Template","Sales Doc","Release Form"].includes(c.type);
+const live = c => isDoc(c) && ["Active","Signed"].includes(c.status);
+const pending = c => isDoc(c) && ["Sent","Draft"].includes(c.status);
+const endOf = c => c.end || (c.start && c.term ? addMonths(c.start, c.term) : null);
+const TYPE_COLOR = { "Client Retainer": "var(--accent)", "Client Project": "var(--green)", "Contractor": "var(--blue)" };
+const statusChip = s => `<span class="chip ${s === "Active" || s === "Signed" ? "good" : s === "Sent" ? "blue" : s === "Expired" ? "hot" : "gray"}">${esc(s)}</span>`;
+
+/* ── views ── */
+function strip(F){
+  const C = F.contracts, act = C.filter(live), pend = C.filter(pending);
+  const clients = act.filter(c => c.type !== "Contractor"), crew = act.filter(c => c.type === "Contractor");
+  const mrr = clients.reduce((t, c) => t + (c.monthly || 0), 0), out = crew.reduce((t, c) => t + (c.monthly || 0), 0);
+  const review = C.filter(c => c.review && isDoc(c)).length;
+  const ends = C.filter(c => live(c) && endOf(c) && d0(endOf(c)) >= TODAY).sort((a, b) => endOf(a).localeCompare(endOf(b)));
+  const nx = ends[0];
+  const pendTop = pend.sort((a, b) => (b.edited || "").localeCompare(a.edited || ""))[0];
+  return `<div class="strip">
+   <div class="panel"><div class="inner"><div class="k">Active contracts</div><div class="body"><div class="big">${act.length}</div>
+    <div class="sub"><b>${clients.length}</b> client &middot; <b>${crew.length}</b> crew${review ? ` &middot; <span class="chip hot">${review} to review</span>` : ""}</div></div></div></div>
+   <div class="panel"><div class="inner"><div class="k">Under contract / mo</div><div class="body"><div class="big">${money(mrr)}</div>
+    <div class="sub"><b>${money(mrr * 12)}</b>/yr in &middot; crew <b>${money(out)}</b>/mo out</div></div></div></div>
+   <div class="panel"><div class="inner"><div class="k">Awaiting signature</div><div class="body"><div class="big">${pend.length}</div>
+    ${pendTop ? `<div class="row" data-u="${esc(pendTop.url)}"><span class="rn">${esc(pendTop.name)}</span>${pendTop.monthly ? `<span class="chip">${money(pendTop.monthly)}/mo</span>` : statusChip(pendTop.status)}</div>` : `<div class="sub">Nothing out for signature</div>`}</div></div></div>
+   <div class="panel"><div class="inner"><div class="k">Next renewal</div><div class="body">
+    ${nx ? `<div class="big" style="letter-spacing:-1.3px">${fmt(endOf(nx))}</div><div class="row" data-u="${esc(nx.url)}"><span class="rn">${esc(nx.client || nx.party || nx.name)}</span><span class="chip ${days(TODAY, d0(endOf(nx))) <= 60 ? "hot" : ""}">${days(TODAY, d0(endOf(nx)))}d</span></div>`
+         : `<div class="big">&mdash;</div><div class="sub">No end dates set</div>`}
+   </div></div></div></div>`;
+}
+
+function timeline(F){
+  const rows = F.contracts.filter(c => isDoc(c) && (c.start || c.end)).sort((a, b) => (a.start || a.end).localeCompare(b.start || b.end));
+  const undated = F.contracts.filter(c => isDoc(c) && !c.start && !c.end);
+  const w0 = new Date(TODAY.getFullYear(), TODAY.getMonth() - 6, 1), months = 20;
+  const w1 = new Date(w0.getFullYear(), w0.getMonth() + months, 1), span = w1 - w0;
+  const pct = d => Math.max(0, Math.min(100, (d - w0) / span * 100));
+  const axis = Array.from({ length: months }, (_, i) => { const d = new Date(w0.getFullYear(), w0.getMonth() + i, 1); return `<span>${MO[d.getMonth()]}${d.getMonth() === 0 || i === 0 ? " ’" + String(d.getFullYear()).slice(2) : ""}</span>`; }).join("");
+  const body = rows.map(c => {
+    const s = c.start ? d0(c.start) : w0, e = endOf(c) ? d0(endOf(c)) : w1;
+    const l = pct(s), r = pct(e), col = TYPE_COLOR[c.type] || "var(--purple)";
+    const pend = pending(c), open = !endOf(c);
+    const lab = c.monthly ? money(c.monthly) + "/mo" : "";
+    return `<div class="tl-row" data-u="${esc(c.url)}" title="${esc(c.name)}\n${c.start ? fmtY(c.start) : "?"} → ${endOf(c) ? fmtY(endOf(c)) : "open"}\n${c.status}">
+      <div class="tl-lab"><div class="n">${esc(c.client || c.party || c.name)}</div><div class="m">${esc(c.type)} &middot; ${esc(c.status)}</div></div>
+      <div class="tl-track"><div class="bar ${pend ? "pend" : ""} ${open ? "open" : ""}" style="--c:${col};background:${col};left:${l}%;width:${Math.max(1.2, r - l)}%">${r - l > 9 ? lab : ""}</div></div></div>`;
+  }).join("");
+  const tpos = pct(TODAY);
+  return `<div class="wrap" style="--lw:210px"><div class="head"><div class="title">Contract timeline</div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>Client retainer</span><span><i style="background:var(--blue)"></i>Crew</span><span><i style="background:var(--green)"></i>Project</span><span><i style="background:repeating-linear-gradient(135deg,var(--faint) 0 3px,transparent 3px 6px)"></i>Sent, not signed</span></div></div>
+    <div class="tl"><div class="tl-axis" style="grid-template-columns:repeat(${months},1fr)">${axis}</div>
+    <div style="position:relative">${body || `<div class="empty">No dated contracts yet.</div>`}
+    <div style="position:absolute;top:0;bottom:0;left:210px;right:0;pointer-events:none"><div class="today" style="left:${tpos}%"></div></div></div></div>
+    ${undated.length ? `<div class="undated">No dates yet: ${undated.map(c => `<b>${esc(c.client || c.party || c.name)}</b>`).join(", ")}. Add a Start and End in the Contracts table to place them.</div>` : ""}</div>`;
+}
+
+function scope(F){
+  if (!F.scope.length) return `<div class="wrap"><div class="title">Retainer scope</div><div class="empty">No active retainers with a deliverable count. Set Deliverables on a Client Retainer row.</div></div>`;
+  const cards = F.scope.map(s => {
+    const inc = s.included || 0, del = s.delivered, act = s.active;
+    const started = s.start ? d0(s.start) <= TODAY : true;
+    let pace = null;
+    if (s.start && s.end && started) pace = Math.min(1, Math.max(0, days(d0(s.start), TODAY) / Math.max(1, days(d0(s.start), d0(s.end)))));
+    const exp = pace == null ? null : Math.round(inc * pace);
+    let verdict;
+    if (!started) verdict = `Term starts <b>${fmtY(s.start)}</b>. ${act ? act + " job" + (act === 1 ? "" : "s") + " already booked in the term." : ""}`;
+    else if (exp == null) verdict = "Add start and end dates to track pace.";
+    else if (del >= exp) verdict = `<b style="color:var(--good)">On pace.</b> ${exp} expected by today.`;
+    else verdict = `<b style="color:var(--over)">${exp - del} behind pace.</b> ${exp} expected by today${act ? `, ${act} in progress` : ""}.`;
+    const tasks = (s.tasks || []).slice(0, 6).map(t => {
+      const done = t.s === "Done" || t.del;
+      return `<div class="task" data-u="${esc(t.u)}"><span class="dot ${done ? "done" : "act"}"></span><span class="nm">${esc(t.n)}</span><span class="dt">${t.d ? fmt(t.d) : ""}</span></div>`;
+    }).join("");
+    return `<div class="sc"><div class="t" data-u="${esc((F.contracts.find(c => c.id === s.contractId) || {}).url)}"><span>${esc(s.name)}</span><span class="chip">${inc} incl.</span></div>
+      <div class="when">${s.start ? fmtY(s.start) : "?"} → ${s.end ? fmtY(s.end) : "?"}</div>
+      <div class="nums"><span class="big">${del}</span><span class="of">of ${inc} delivered</span>${act ? `<span class="chip gray">${act} in progress</span>` : ""}</div>
+      <div class="meter"><div class="d" style="width:${Math.min(100, del / Math.max(1, inc) * 100)}%"></div>
+        <div class="a" style="left:${Math.min(100, del / Math.max(1, inc) * 100)}%;width:${Math.max(0, Math.min(100 - del / Math.max(1, inc) * 100, act / Math.max(1, inc) * 100))}%"></div>
+        ${exp != null ? `<div class="pace" style="left:${Math.min(99.5, exp / Math.max(1, inc) * 100)}%" title="Expected by today: ${exp}"></div>` : ""}</div>
+      <div class="verdict">${verdict}</div>
+      ${tasks ? `<div class="tasks">${tasks}</div>` : ""}</div>`;
+  }).join("");
+  return `<div class="wrap"><div class="head"><div class="title">Retainer scope</div><div class="note">Delivered vs. contracted, from Tasks inside each term. The black tick is where you should be today.</div></div><div class="scope">${cards}</div></div>`;
+}
+
+/* generator */
+const GEN = "wcsContractGen.v1";
+function isDefault(tok){ return /\d|\$/.test(tok) || (/^[a-z]/.test(tok) && !/@|email/i.test(tok)); }
+function generator(F){
+  const T = F.templates;
+  if (!T.length) return `<div class="wrap"><div class="title">Contract generator</div><div class="empty">No templates yet. Mark a Contracts row as Status = Template and give it a Template Key.</div></div>`;
+  const opts = T.map(t => `<option value="${t.id}">${esc(t.name.replace(/\[.*?\]\s*/g, "").trim() || t.name)}</option>`).join("");
+  const cls = F.clients.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
+  return `<div class="wrap"><div class="head"><div class="title">Contract generator</div><div class="note">Fills a template and drops a Draft into Contracts.</div></div>
+    <div class="grid2"><div><label>Template</label><select id="gT">${opts}</select></div>
+    <div><label>Client (optional)</label><select id="gC"><option value="">None</option>${cls}</select></div></div>
+    <div class="sect"><span class="k">Fill in the blanks</span><div class="grid2" id="gF"></div></div>
+    <div class="sect"><span class="k">Contract record</span><div class="grid2">
+      <div><label>Start</label><input type="date" id="pStart"></div>
+      <div><label>Term (months)</label><input type="number" id="pTerm" min="1"></div>
+      <div><label>End</label><input type="date" id="pEnd"></div>
+      <div><label>Monthly value</label><input type="number" id="pMonthly" placeholder="$"></div>
+      <div><label>Deliverables (full term)</label><input type="number" id="pDel"></div>
+      <div><label>Hours / month</label><input type="number" id="pHours"></div>
+    </div></div>
+    <div class="sect"><span class="k">Will be created as</span><div class="preview" id="gTitle"></div></div>
+    <div class="actions"><button class="btn" id="gGo">Create draft</button><span class="status" id="gS"></span>
+      <span style="flex:1"></span><button class="btn ghost" id="gConn">Worker connection</button></div>
+    <div id="connBox" style="display:none" class="sect"><div class="grid2"><div><label>widgetAction webhook URL</label><input id="cU"></div><div><label>Widget key</label><input id="cK"></div></div>
+      <div class="actions"><button class="btn ghost" id="cSave">Save</button><span class="note">Shared with the invoice widgets on this browser.</span></div></div></div>`;
+}
+function wireGenerator(F){
+  const $ = id => document.getElementById(id);
+  const tpl = () => F.templates.find(t => t.id === $("gT").value);
+  const client = () => F.clients.find(c => c.id === $("gC").value);
+  let saved = {}; try { saved = JSON.parse(localStorage.getItem(GEN) || "{}"); } catch(e){}
+  if (saved.t && F.templates.some(t => t.id === saved.t)) $("gT").value = saved.t;
+  function fields(){
+    const t = tpl(), c = client();
+    $("gF").innerHTML = t.tokens.map((tok, i) => {
+      let v = isDefault(tok) ? tok : "";
+      if (/^date$/i.test(tok)) v = fmtY(iso(TODAY));
+      if (c) {
+        if (/client name/i.test(tok)) v = c.name;
+        if (/client (email|e-mail)/i.test(tok)) v = c.email;
+        if (/client contact/i.test(tok)) v = c.contact;
+      }
+      return `<div><label>${esc(tok)}</label><input data-tok="${esc(tok)}" value="${esc(v)}" placeholder="${esc(tok)}"></div>`;
+    }).join("");
+    $("pTerm").value = t.term ?? ""; $("pMonthly").value = t.monthly ?? ""; $("pHours").value = t.hours ?? "";
+    if (!$("pStart").value) $("pStart").value = iso(TODAY);
+    syncEnd(); preview();
+    $("gF").querySelectorAll("input").forEach(i => i.oninput = preview);
+  }
+  function syncEnd(){ if ($("pStart").value && $("pTerm").value) $("pEnd").value = addMonths($("pStart").value, Number($("pTerm").value)); }
+  function values(){ const o = {}; $("gF").querySelectorAll("input").forEach(i => { if (i.value.trim()) o[i.dataset.tok] = i.value.trim(); }); return o; }
+  function title(){ const v = values(); return tpl().name.replace(/\[([^\[\]]+)\]/g, (m, k) => v[k.trim()] || m); }
+  function preview(){ $("gTitle").textContent = title(); }
+  $("gT").onchange = () => { try { localStorage.setItem(GEN, JSON.stringify({ t: $("gT").value })); } catch(e){} fields(); };
+  $("gC").onchange = fields;
+  $("pStart").oninput = syncEnd; $("pTerm").oninput = syncEnd;
+  $("gConn").onclick = () => { const b = $("connBox"); b.style.display = b.style.display === "none" ? "block" : "none"; let c = {}; try { c = JSON.parse(localStorage.getItem(CONN) || "{}"); } catch(e){} $("cU").value = c.url || ""; $("cK").value = c.key || ""; };
+  $("cSave").onclick = () => { try { localStorage.setItem(CONN, JSON.stringify({ url: $("cU").value.trim(), key: $("cK").value.trim() })); toast("Saved"); } catch(e){ toast("This browser blocked saving"); } };
+  $("gGo").onclick = async () => {
+    let c = {}; try { c = JSON.parse(localStorage.getItem(CONN) || "{}"); } catch(e){}
+    if (!c.url || !c.key) { $("gS").textContent = "Connect the worker first (button on the right)."; $("connBox").style.display = "block"; return; }
+    const t = tpl(), v = values(), cl = client();
+    const nameTok = Object.keys(v).find(k => /(contractor|client) name|^name$/i.test(k));
+    const mailTok = Object.keys(v).find(k => /@|email/i.test(k));
+    const ttl = title();
+    const payload = { templateId: t.id, title: ttl, values: v, props: {
+      party: (nameTok && v[nameTok]) || (cl && cl.name) || "", email: (mailTok && /@/.test(v[mailTok]) ? v[mailTok] : (cl && cl.email && cl.email.split(",")[0].trim()) || ""),
+      clientId: cl ? cl.id : "", start: $("pStart").value, end: $("pEnd").value, monthly: $("pMonthly").value,
+      term: $("pTerm").value, deliverables: $("pDel").value, hours: $("pHours").value,
+      total: $("pMonthly").value && $("pTerm").value ? Number($("pMonthly").value) * Number($("pTerm").value) : "" } };
+    $("gGo").disabled = true; $("gS").textContent = "Creating…";
+    try {
+      await fetch(c.url, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ key: c.key, action: "createContract", payload }) });
+    } catch(e){ $("gS").textContent = "Couldn't reach the worker."; $("gGo").disabled = false; return; }
+    $("gS").textContent = "Sent. Watching for the new draft…";
+    const t0 = Date.now();
+    const tick = setInterval(async () => {
+      const f = await load(); const hit = f && f.contracts.find(x => x.name === ttl);
+      if (hit) { clearInterval(tick); $("gS").innerHTML = `Draft ready: <a href="#" id="gOpen">open ${esc(ttl)}</a>`; document.getElementById("gOpen").onclick = e => { e.preventDefault(); openUrl(hit.url); }; $("gGo").disabled = false; }
+      else if (Date.now() - t0 > 150000) { clearInterval(tick); $("gS").textContent = "Not showing yet. Check Contracts in Notion; the worker may still be running or need a redeploy."; $("gGo").disabled = false; }
+    }, 10000);
+  };
+  fields();
+}
+
+function decks(F){
+  const rows = F.decks.map(d => `<div class="deck"><div class="grow"><div class="nm">${esc(d.name)}</div>
+      <div class="mt">${d.client ? esc(d.client) + " &middot; " : ""}${d.slides} slide${d.slides === 1 ? "" : "s"} &middot; edited ${d.edited ? fmt(d.edited.slice(0, 10)) : ""}</div></div>
+      ${statusChip(d.status)}
+      <button class="mini pri" data-open="${esc(d.present)}">Present</button>
+      <button class="mini" data-copy="${esc(d.share)}">Copy client link</button>
+      <button class="mini" data-u="${esc(d.url)}">Edit</button></div>`).join("");
+  return `<div class="wrap"><div class="head"><div class="title">Decks</div><button class="mini" data-u="${DECKS_DB}">+ New deck</button></div>
+    <div class="decks">${rows || `<div class="empty">No decks yet.</div>`}</div>
+    <div class="how"><b>Writing a deck:</b> one Notion page per deck, slides split with dividers. <b>H1</b> makes a cover. <b>H3</b> above an <b>H2</b> is the small orange label. An image with a short title goes full bleed; with text it splits the slide. Two or more <b>callouts</b> become stat cards (bold the number). A <b>quote</b> is a testimonial, a <b>table</b> is a comparison, a Vimeo link plays inline. A toggle named <b>Notes</b> is speaker notes: visible from Present, never on the client link.</div></div>`;
+}
+
+/* ── boot ── */
+async function render(){
+  const F = await load();
+  if (!F) { app.innerHTML = `<div class="wrap"><div class="empty">Couldn't read the contracts feed. If this keeps happening, the key in this embed link is wrong.</div></div>`; return; }
+  const was = VIEW === "generator" && document.getElementById("gT");
+  if (was) return; // never clobber a form someone is filling in
+  app.innerHTML = ({ strip, timeline, scope, generator, decks }[VIEW] || strip)(F);
+  if (VIEW === "generator") wireGenerator(F);
+}
+document.addEventListener("click", e => {
+  const u = e.target.closest("[data-u]"); if (u && !e.target.closest("button[data-copy],button[data-open]")) { openUrl(u.dataset.u); return; }
+  const c = e.target.closest("[data-copy]"); if (c) { copy(c.dataset.copy); return; }
+  const o = e.target.closest("[data-open]"); if (o) window.open(o.dataset.open, "_blank", "noopener");
+});
+(async () => {
+  if (!(await getKey())) {
+    document.getElementById("gate").style.display = "block";
+    document.getElementById("gateKey").onchange = async e => { try { localStorage.setItem(LSK, e.target.value.trim()); } catch(_){} location.reload(); };
+    return;
+  }
+  await render();
+  setInterval(render, 60000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });
+})();
+})();
+</script>
+</body></html>
