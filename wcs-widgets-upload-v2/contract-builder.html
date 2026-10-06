@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
+<title>Contract Builder · WCStudios</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="builder.css?v=1">
+</head><body>
+<div class="bar">
+  <div class="ttl">Contract builder<small id="barsub">WCStudios</small></div>
+  <span class="chip" id="chip"></span>
+  <button id="bReset">Reset</button>
+  <button id="bPrint">Save PDF</button>
+  <button class="primary" id="bGo">Create draft</button>
+</div>
+<div class="split">
+  <div class="form" id="form">
+    <div class="pick"><label>Template</label><select id="tPick"></select></div>
+    <div class="pick"><label>Client <span style="opacity:.6;text-transform:none;letter-spacing:0">(fills client blanks)</span></label><select id="cPick"><option value="">None</option></select></div>
+
+    <div class="grp" data-g="blanks">
+      <div class="lbl" data-toggle>Fill in the blanks <span class="sum" id="sumBlanks"></span><span class="chev">›</span></div>
+      <div class="gb" id="blanks"></div>
+    </div>
+
+    <div class="grp" data-g="term">
+      <div class="lbl" data-toggle>Term &amp; money <span class="sum" id="sumTerm"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="r2"><div class="f"><label>Start</label><input type="date" id="pStart"></div>
+          <div class="f"><label>Term (months)</label><input type="number" id="pTerm" min="1"></div></div>
+        <div class="f"><label>End <span class="hint">(auto from term)</span></label><input type="date" id="pEnd"></div>
+        <div class="r2"><div class="f"><label>Monthly value $</label><input type="number" id="pMonthly"></div>
+          <div class="f"><label>Total value $</label><input type="number" id="pTotal" placeholder="auto"></div></div>
+        <div class="r2"><div class="f"><label>Deliverables (full term)</label><input type="number" id="pDel"></div>
+          <div class="f"><label>Hours / month</label><input type="number" id="pHours"></div></div>
+      </div>
+    </div>
+
+    <div class="grp" data-g="record">
+      <div class="lbl" data-toggle>Contract record <span class="sum" id="sumRec"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="f"><label>Title in Contracts</label><input id="rTitle"></div>
+        <div class="r2"><div class="f"><label>Party</label><input id="rParty"></div>
+          <div class="f"><label>Status</label><select id="rStatus"><option>Draft</option><option>Sent</option></select></div></div>
+        <div class="f"><label>Contact email</label><input id="rEmail" type="email"></div>
+      </div>
+    </div>
+
+    <div class="grp closed" data-g="conn">
+      <div class="lbl" data-toggle>Worker connection <span class="sum" id="sumConn"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="f"><label>widgetAction webhook URL</label><input id="cU"></div>
+        <div class="f"><label>Widget key</label><input id="cK"></div>
+        <button id="cSave">Save connection</button>
+        <p class="note" style="margin-top:8px">Shared with the invoice builder on this browser. If the invoice builder already works here, this is already set.</p>
+      </div>
+    </div>
+    <p class="note" id="status"></p>
+  </div>
+  <div class="paper" id="paperWrap"><div class="scaler" id="scaler"><div class="doc" id="doc"></div></div></div>
+</div>
+<script src="hub.js?v=1"></script>
+<script>
+(() => {
+const H = window.WCSHub, $ = id => document.getElementById(id), esc = H.esc;
+const STORE = "wcsContractBuilder.v1";
+let F = null, typed = {}, saveT;
+const tpl = () => F.templates.find(t => t.id === $("tPick").value);
+const client = () => F.clients.find(c => c.id === $("cPick").value);
+const label = t => /\[/.test(t.name) ? t.key.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) : t.name;
+const isDefault = tok => /\d|\$/.test(tok) || (/^[a-z]/.test(tok) && !/@|email/i.test(tok));
+function chip(t, cls = ""){ const c = $("chip"); c.textContent = t; c.className = "chip on " + cls; }
+
+/* The record fields feed the blanks they obviously match, unless typed over. */
+function derived(){
+  const m = Number($("pMonthly").value), term = Number($("pTerm").value), c = client();
+  const s = $("pStart").value, e = $("pEnd").value;
+  return [
+    [/^date$/i, H.fmtLong(s || H.iso(H.today()))],
+    [/^end date$/i, e ? H.fmtLong(e) : ""],
+    [/monthly (rate|value|fee)/i, m ? H.money(m) : ""],
+    [/annual total|total value/i, m && term ? H.money(m * term) : ""],
+    [/term months|^term$/i, term ? String(term) : ""],
+    [/term label/i, s && e ? `${H.d0(s).getFullYear() % 100}/${H.d0(e).getFullYear() % 100} Season` : ""],
+    [/deliverables summary/i, $("pDel").value ? `${$("pDel").value} high quality video projects throughout the term` : ""],
+    [/client name/i, c ? c.name : ""],
+    [/client (email|e-mail)/i, c ? (c.email || "").split(",")[0].trim() : ""],
+    [/client contact/i, c ? c.contact : ""],
+  ];
+}
+function buildBlanks(){
+  const t = tpl();
+  $("blanks").innerHTML = t.tokens.length ? t.tokens.map(tok =>
+    `<div class="f"><label>${esc(tok)}</label><input data-tok="${esc(tok)}" placeholder="${esc(tok)}"></div>`).join("")
+    : `<p class="note">This template has no [bracketed] blanks.</p>`;
+  $("blanks").querySelectorAll("input").forEach(i => {
+    if (isDefault(i.dataset.tok)) i.value = i.dataset.tok;
+    i.oninput = () => { typed[i.dataset.tok] = 1; render(); };
+  });
+}
+function values(){
+  const map = derived(), o = {};
+  $("blanks").querySelectorAll("input").forEach(i => {
+    const tok = i.dataset.tok;
+    if (!typed[tok]) { const hit = map.find(([re]) => re.test(tok)); if (hit && hit[1]) i.value = hit[1]; }
+    if (i.value.trim()) o[tok] = i.value.trim();
+  });
+  return o;
+}
+function titleFor(v){
+  const t = tpl();
+  let ttl = t.name.replace(/\[([^\[\]]+)\]/g, (m, k) => v[k.trim()] || m);
+  if (!/\[/.test(t.name) && $("rParty").value) ttl = t.name.replace(/^WCS\s+/, "") + " - " + $("rParty").value;
+  return ttl;
+}
+function render(){
+  if (!F) return;
+  const t = tpl(), v = values();
+  if ($("pStart").value && $("pTerm").value && !typed._end) $("pEnd").value = H.addMonths($("pStart").value, $("pTerm").value);
+  const nameTok = Object.keys(v).find(k => /(contractor|client) name|^name$/i.test(k));
+  const mailTok = Object.keys(v).find(k => /@|email/i.test(k));
+  if (!typed._party) $("rParty").value = (nameTok && v[nameTok]) || (client() && client().name) || "";
+  if (!typed._email) $("rEmail").value = (mailTok && /@/.test(v[mailTok]) ? v[mailTok] : "") || (client() && (client().email || "").split(",")[0].trim()) || "";
+  if (!typed._title) $("rTitle").value = titleFor(v);
+  const filled = t.tokens.filter(k => v[k] && v[k] !== k).length;
+  $("sumBlanks").textContent = `${filled} of ${t.tokens.length} filled`;
+  $("sumTerm").textContent = [$("pMonthly").value ? H.money($("pMonthly").value) + "/mo" : "", $("pTerm").value ? $("pTerm").value + " mo" : ""].filter(Boolean).join(" · ");
+  $("sumRec").textContent = $("rStatus").value;
+  $("barsub").textContent = label(t) + " template";
+  const props = [
+    ["Type", t.type === "Template" ? (/retainer|client/i.test(t.key) ? "Client Retainer" : /release/i.test(t.key) ? "Release Form" : "Contractor") : t.type],
+    ["Party", $("rParty").value], ["Term", $("pStart").value ? `${H.fmtY($("pStart").value)} → ${H.fmtY($("pEnd").value)}` : ""],
+    ["Monthly", $("pMonthly").value ? H.money($("pMonthly").value) : ""], ["Status", $("rStatus").value]].filter(p => p[1]);
+  $("doc").innerHTML = `<div class="cover"><div class="wm"><b>WCS</b>TUDIOS</div><div class="tag">A video &amp; post production company</div></div>
+    <div class="pg"><h1 class="t">${H.rtHTML([{ x: $("rTitle").value }])}</h1>
+    <div class="props">${props.map(([k, x]) => `<span>${k}</span><b>${esc(x)}</b>`).join("")}</div>
+    ${H.docHTML(t.nodes || [], v)}</div>`;
+  H.fitPaper($("paperWrap"), $("scaler"), $("doc"));
+  clearTimeout(saveT); saveT = setTimeout(save, 400);
+}
+function save(){
+  try {
+    const blanks = {}; $("blanks").querySelectorAll("input").forEach(i => { if (typed[i.dataset.tok]) blanks[i.dataset.tok] = i.value; });
+    localStorage.setItem(STORE, JSON.stringify({ t: $("tPick").value, c: $("cPick").value, blanks,
+      f: Object.fromEntries(["pStart","pTerm","pEnd","pMonthly","pTotal","pDel","pHours","rTitle","rParty","rStatus","rEmail"].map(k => [k, $(k).value])), typed }));
+  } catch(e){}
+}
+function restore(){
+  let s; try { s = JSON.parse(localStorage.getItem(STORE) || "null"); } catch(e){}
+  if (!s) return false;
+  if (s.t && F.templates.some(t => t.id === s.t)) $("tPick").value = s.t;
+  if (s.c) $("cPick").value = s.c;
+  buildBlanks();
+  typed = s.typed || {};
+  for (const [k, v] of Object.entries(s.f || {})) if ($(k)) $(k).value = v;
+  $("blanks").querySelectorAll("input").forEach(i => { if (s.blanks && i.dataset.tok in s.blanks) i.value = s.blanks[i.dataset.tok]; });
+  return true;
+}
+function applyTemplateDefaults(){
+  const t = tpl();
+  $("pTerm").value = t.term ?? ""; $("pMonthly").value = t.monthly ?? ""; $("pHours").value = t.hours ?? "";
+  if (!$("pStart").value) $("pStart").value = H.iso(H.today());
+}
+
+async function create(){
+  const c = H.conn();
+  if (!c.url || !c.key) { document.querySelector('[data-g="conn"]').classList.remove("closed"); chip("Connect the worker", "err"); return; }
+  const t = tpl(), v = values(), cl = client();
+  const total = $("pTotal").value || ($("pMonthly").value && $("pTerm").value ? Number($("pMonthly").value) * Number($("pTerm").value) : "");
+  const payload = { templateId: t.id, title: $("rTitle").value, values: v, props: {
+    party: $("rParty").value, email: $("rEmail").value, clientId: cl ? cl.id : "", status: $("rStatus").value,
+    start: $("pStart").value, end: $("pEnd").value, monthly: $("pMonthly").value, total, term: $("pTerm").value,
+    deliverables: $("pDel").value, hours: $("pHours").value } };
+  const want = payload.title;
+  $("bGo").disabled = true; chip("Creating…");
+  try { await H.post("createContract", payload); } catch(e){ chip("Couldn't reach the worker", "err"); $("bGo").disabled = false; return; }
+  $("status").textContent = "Sent to the worker. The draft shows up in Contracts in about a minute.";
+  H.watch(f => f.contracts.find(x => x.name === want), hit => {
+    chip("Draft created", "saved"); $("bGo").disabled = false;
+    $("status").innerHTML = `Draft ready: <a href="#" id="open">${esc(want)}</a>`;
+    $("open").onclick = e => { e.preventDefault(); H.openUrl(hit.url); };
+  }, () => { $("bGo").disabled = false; chip("Still waiting", "err"); $("status").textContent = "Not in the feed yet. Check Contracts in Notion; if nothing arrived, the worker needs its latest deploy."; });
+}
+
+async function boot(){
+  F = await H.loadFeed();
+  if (!F) { $("doc").innerHTML = `<div class="pg"><p>Couldn't read the contracts feed. The key in this embed link is missing or wrong.</p></div>`; return; }
+  $("tPick").innerHTML = F.templates.map(t => `<option value="${t.id}">${esc(label(t))}</option>`).join("");
+  $("cPick").innerHTML = `<option value="">None</option>` + F.clients.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
+  if (!restore()) { buildBlanks(); applyTemplateDefaults(); }
+  const cc = H.conn(); $("cU").value = cc.url || ""; $("cK").value = cc.key || ""; $("sumConn").textContent = cc.url ? "connected" : "not set";
+  H.wireGroups();
+  $("tPick").onchange = () => { typed = {}; buildBlanks(); applyTemplateDefaults(); render(); };
+  $("cPick").onchange = render;
+  ["pStart","pTerm","pMonthly","pTotal","pDel","pHours","rStatus"].forEach(k => $(k).addEventListener("input", render));
+  $("pEnd").addEventListener("input", () => { typed._end = 1; render(); });
+  [["rTitle","_title"],["rParty","_party"],["rEmail","_email"]].forEach(([k, f]) => $(k).addEventListener("input", () => { typed[f] = 1; render(); }));
+  $("cSave").onclick = () => { H.setConn($("cU").value.trim(), $("cK").value.trim()) ? H.toast("Connection saved") : H.toast("This browser blocked saving"); $("sumConn").textContent = "connected"; };
+  $("bReset").onclick = () => { try { localStorage.removeItem(STORE); } catch(e){} typed = {}; ["pStart","pEnd","pTotal","pDel","rTitle","rParty","rEmail"].forEach(k => $(k).value = ""); buildBlanks(); applyTemplateDefaults(); render(); chip("Reset"); };
+  $("bPrint").onclick = () => window.print();
+  $("bGo").onclick = create;
+  addEventListener("resize", () => H.fitPaper($("paperWrap"), $("scaler"), $("doc")));
+  render();
+}
+boot();
+})();
+</script>
+</body></html>
