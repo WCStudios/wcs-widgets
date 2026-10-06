@@ -71,21 +71,24 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:.85em;background:var(--c
 .split .pic{position:absolute;top:0;bottom:0;right:0;width:48%;background-size:cover;background-position:center}
 .split .h2{font-size:76px}.split .p{font-size:30px}
 .split.flip .txt{left:auto;right:0}.split.flip .pic{right:auto;left:0}
-.split.flip .mark{color:#fff}
+.split.flip .mark{color:#fff;text-shadow:0 1px 12px rgba(0,0,0,.35)}
+.split:not(.flip) .meta,.quote.qbg .meta{color:rgba(255,255,255,.85);text-shadow:0 1px 12px rgba(0,0,0,.4)}
+.split .pic::after,.quote .qpic::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,0) 22%)}
 
 .stats .grid{display:grid;gap:28px;margin-top:64px}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:46px 44px 44px;display:flex;flex-direction:column;gap:18px;min-height:300px}
 .stat .ic{font-size:40px;line-height:1}
-.stat .big{font-family:Archivo;font-variation-settings:"wdth" 125;font-weight:900;font-size:96px;line-height:.95;letter-spacing:-2px;color:var(--acc)}
+.stat .big{font-family:Archivo;font-variation-settings:"wdth" 125;font-weight:900;font-size:80px;line-height:.98;letter-spacing:-1.6px;color:var(--acc)}
 .stat .lab{font-size:28px;line-height:1.4;color:var(--mut);margin-top:auto}
 .stat .lab strong{color:var(--ink)}
 
-.quote .pad{justify-content:center;padding-right:520px}
+.quote .pad{justify-content:center;padding-right:180px}
+.quote.qbg .pad{padding-right:820px}
 .quote.onimg .pad{color:#fff}
 .quote .qm{font-family:Archivo;font-weight:900;font-size:240px;line-height:.6;color:var(--acc);height:120px}
 .quote .qt{font-family:Archivo;font-variation-settings:"wdth" 100;font-weight:700;font-size:64px;line-height:1.18;letter-spacing:-1px}
 .quote .who{margin-top:46px;font-size:24px;letter-spacing:2.6px;text-transform:uppercase;color:var(--acc);font-weight:700}
-.quote .qpic{position:absolute;top:0;bottom:0;right:0;width:440px;background-size:cover;background-position:center}
+.quote .qpic{position:absolute;top:0;bottom:0;right:0;width:700px;background-size:cover;background-position:center}
 
 .table table{width:100%;border-collapse:collapse;margin-top:56px;font-size:29px}
 .table th{text-align:left;font-size:18px;letter-spacing:2.6px;text-transform:uppercase;color:var(--faint);font-weight:700;padding:0 28px 22px}
