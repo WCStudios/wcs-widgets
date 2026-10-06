@@ -1,0 +1,229 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
+<title>Proposal Builder · WCStudios</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="builder.css?v=1">
+</head><body>
+<div class="bar">
+  <div class="ttl">Proposal builder<small id="barsub">WCStudios</small></div>
+  <span class="chip" id="chip"></span>
+  <button id="bReset">Reset</button>
+  <button id="bPrint">Save PDF</button>
+  <button class="primary" id="bGo">Create proposal</button>
+</div>
+<div class="split">
+  <div class="form">
+    <div class="pick"><label>Client</label><select id="cPick"><option value="">New client</option></select></div>
+
+    <div class="grp" data-g="who">
+      <div class="lbl" data-toggle>Prepared for <span class="sum" id="sumWho"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="f"><label>Company</label><input id="company" placeholder="Gateway Fiber"></div>
+        <div class="f"><label>Client contact</label><input id="contact" placeholder="David Workman"></div>
+        <div class="f"><label>Project</label><input id="project" placeholder="Apartment Project"></div>
+        <div class="r2"><div class="f"><label>Proposal date</label><input type="date" id="date"></div>
+          <div class="f"><label>Delivery deadline</label><input type="date" id="delivery"></div></div>
+        <div class="f"><label>Title in Notion <span class="hint">(auto)</span></label><input id="title"></div>
+      </div>
+    </div>
+
+    <div class="grp" data-g="overview">
+      <div class="lbl" data-toggle>Overview <span class="sum" id="sumOv"></span><span class="chev">›</span></div>
+      <div class="gb"><div class="f"><label>What the piece is and why <span class="hint">(**bold** works)</span></label><textarea id="overview" rows="4"></textarea></div></div>
+    </div>
+
+    <div class="grp" data-g="scope">
+      <div class="lbl" data-toggle>Scope of work <span class="sum" id="sumScope"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="f"><label>Production <span class="hint">(one per line)</span></label><textarea id="scope" rows="3"></textarea></div>
+        <div class="f"><label>Deliverables <span class="hint">(one per line)</span></label><textarea id="deliv" rows="3"></textarea></div>
+      </div>
+    </div>
+
+    <div class="grp" data-g="plan">
+      <div class="lbl" data-toggle>Production plan <span class="sum"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="f"><label>Pre-production</label><input id="pre"></div>
+        <div class="f"><label>Production</label><input id="prod"></div>
+        <div class="f"><label>Post-production</label><input id="post"></div>
+      </div>
+    </div>
+
+    <div class="grp" data-g="items">
+      <div class="lbl" data-toggle>Proposal breakdown <span class="sum" id="sumItems"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="pz" id="presets"></div>
+        <div class="pzhint">Tap to add. Lines with hours and a rate add to their section; a flat amount covers the whole line.</div>
+        <div id="items"></div>
+        <button class="add" id="bAdd">+ Add line</button>
+      </div>
+    </div>
+
+    <div class="grp closed" data-g="terms">
+      <div class="lbl" data-toggle>Payment terms <span class="sum" id="sumTerms"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="f"><label>Deposit due on agreement</label><select id="deposit"><option value="50">50% deposit, 50% on first draft</option><option value="100">100% due on agreement</option><option value="0">Net 10 on delivery</option></select></div>
+        <div class="f"><label><input type="checkbox" id="license" checked>Include the footage usage license</label></div>
+      </div>
+    </div>
+
+    <div class="grp closed" data-g="conn">
+      <div class="lbl" data-toggle>Worker connection <span class="sum" id="sumConn"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="f"><label>widgetAction webhook URL</label><input id="cU"></div>
+        <div class="f"><label>Widget key</label><input id="cK"></div>
+        <button id="cSave">Save connection</button>
+      </div>
+    </div>
+    <p class="note" id="status"></p>
+  </div>
+  <div class="paper" id="paperWrap"><div class="scaler" id="scaler"><div class="doc" id="doc"></div></div></div>
+</div>
+<script src="hub.js?v=1"></script>
+<script>
+(() => {
+const H = window.WCSHub, $ = id => document.getElementById(id), esc = H.esc;
+const STORE = "wcsProposalBuilder.v1";
+const SECTIONS = ["Production", "Post Production", "Add-ons"];
+const PRESETS = [
+  { l: "Half day shoot", sec: "Production", desc: "Production day (half day)", flat: 1200 },
+  { l: "Full day shoot", sec: "Production", desc: "Production day (full day)", flat: 1500 },
+  { l: "Crew on site", sec: "Production", desc: "One production artist on site" },
+  { l: "Gear + travel", sec: "Production", desc: "Equipment setup/tear down, transportation, gear prep" },
+  { l: "Main edit", sec: "Post Production", desc: "Produce one main video", hours: 8, rate: 120 },
+  { l: "Social cut", sec: "Post Production", desc: "Short-form social version", hours: 3, rate: 120 },
+  { l: "Finishing", sec: "Post Production", desc: "Included edit, music licensing, coloring, sound design & mastering" },
+  { l: "1 revision", sec: "Post Production", desc: "One round of revisions included" },
+  { l: "Drone", sec: "Add-ons", desc: "Drone coverage", flat: 350 },
+];
+const DEF = { pre: "brief kickoff, shot list, schedule, location coordination", prod: "crew, interview coverage, supporting visuals", post: "assembly, color, audio cleanup, music licensing, graphics" };
+let F = null, items = [], titleTyped = false, saveT;
+const chip = (t, c = "") => { $("chip").textContent = t; $("chip").className = "chip on " + c; };
+const lineAmt = it => (Number(it.flat) || 0) + (Number(it.hours) || 0) * (Number(it.rate) || 0);
+const secTotal = s => items.filter(i => i.sec === s).reduce((a, i) => a + lineAmt(i), 0);
+const total = () => items.reduce((a, i) => a + lineAmt(i), 0);
+const usd = n => "$" + Number(n || 0).toLocaleString("en-US");
+
+function drawItems(){
+  $("items").innerHTML = items.map((it, k) => `<div class="item" data-k="${k}"><button class="x" data-x="${k}" title="Remove">×</button>
+    <div class="f" style="padding-right:22px"><label>Section</label><select data-f="sec">${SECTIONS.map(s => `<option ${s === it.sec ? "selected" : ""}>${s}</option>`).join("")}</select></div>
+    <div class="f"><label>Description</label><input data-f="desc" value="${esc(it.desc || "")}"></div>
+    <div class="r3"><div class="f"><label>Hours</label><input data-f="hours" type="number" value="${esc(it.hours ?? "")}"></div>
+      <div class="f"><label>Rate $</label><input data-f="rate" type="number" value="${esc(it.rate ?? "")}"></div>
+      <div class="f"><label>Flat $</label><input data-f="flat" type="number" value="${esc(it.flat ?? "")}"></div></div>
+    <div class="amt">${lineAmt(it) ? `<b>${usd(lineAmt(it))}</b>` : "included"}</div></div>`).join("");
+  $("items").querySelectorAll(".item").forEach(el => {
+    const it = items[+el.dataset.k];
+    el.querySelectorAll("[data-f]").forEach(inp => inp.oninput = inp.onchange = () => { it[inp.dataset.f] = inp.value; el.querySelector(".amt").innerHTML = lineAmt(it) ? `<b>${usd(lineAmt(it))}</b>` : "included"; render(); });
+  });
+  $("items").querySelectorAll("[data-x]").forEach(b => b.onclick = () => { items.splice(+b.dataset.x, 1); drawItems(); render(); });
+}
+
+function nodes(){
+  const N = [], R = H.parseRT, orange = (ic, t) => ({ t: "heading_3", r: [{ x: ic + " ", k: "orange" }, { x: t, b: 1, k: "orange" }] });
+  N.push({ t: "heading_3", r: [{ x: "Overview", b: 1, k: "orange" }] });
+  (H.paras($("overview").value).length ? H.paras($("overview").value) : [""]).forEach(p => N.push(H.P(p)));
+  N.push({ t: "divider" });
+  N.push(orange("\u{1F4CD}", "Scope of Work"));
+  H.lines($("scope").value).forEach(l => N.push({ t: "bulleted_list_item", r: R(l) }));
+  const dl = H.lines($("deliv").value);
+  if (dl.length) N.push({ t: "bulleted_list_item", r: [{ x: "Deliverables", b: 1 }], ch: dl.map(l => ({ t: "bulleted_list_item", r: R(l) })) });
+  N.push({ t: "divider" });
+  N.push(orange("\u{1F3AC}", "Production Plan"));
+  [["Pre-production", "pre"], ["Production", "prod"], ["Post-production", "post"]].forEach(([k, id]) => { if ($(id).value.trim()) N.push({ t: "bulleted_list_item", r: [{ x: k + ": ", b: 1 }, ...R($(id).value)] }); });
+  if ($("delivery").value) N.push({ t: "bulleted_list_item", r: [{ x: "Final delivery deadline: " }, { x: "by " + H.fmtLong($("delivery").value), b: 1 }] });
+  N.push({ t: "divider" });
+  N.push({ t: "heading_3", r: [{ x: "\u{1F4B0} " }, { x: "Proposal Breakdown", b: 1, k: "orange" }] });
+  const rows = [[[{ x: "Item" }], [{ x: "Hours", b: 1 }], [{ x: "Rate", b: 1 }], [{ x: "Total", b: 1 }]]];
+  for (const s of SECTIONS) {
+    const its = items.filter(i => i.sec === s); if (!its.length) continue;
+    const r = [[{ x: s, b: 1 }], [], [], [{ x: usd(secTotal(s)), b: 1 }]]; r.cls = "grp"; rows.push(r);
+    its.forEach(i => rows.push([R(i.desc || ""), i.hours ? [{ x: String(i.hours) }] : [], i.rate ? [{ x: usd(i.rate) + "/hr" }] : [], i.flat ? [{ x: usd(i.flat) }] : []]));
+  }
+  rows.push([[], [], [], []]);
+  const tr = [[{ x: "Total", b: 1 }], [], [], [{ x: usd(total()), b: 1 }]]; tr.cls = "tot"; rows.push(tr);
+  N.push({ t: "table", hdr: 1, num: 1, rows });
+  N.push({ t: "divider" });
+  N.push({ t: "heading_3", r: [{ x: "\u{1F4DD} " }, { x: "Payment Terms", b: 1, k: "orange" }] });
+  const dep = $("deposit").value;
+  if (dep === "50") N.push({ t: "bulleted_list_item", r: [{ x: "50% deposit due upon project agreement", b: 1 }, { x: " to secure the shoot date and begin pre-production. " }, { x: "50% balance due upon delivery of first draft(s).", b: 1 }] });
+  else if (dep === "100") N.push({ t: "bulleted_list_item", r: [{ x: "Full payment due upon project agreement", b: 1 }, { x: " to secure the shoot date and begin pre-production." }] });
+  else N.push({ t: "bulleted_list_item", r: [{ x: "Invoice sent on delivery, due within 10 days (Net 10).", b: 1 }] });
+  N.push({ t: "bulleted_list_item", r: [{ x: "Final deliverables will be provided once the remaining balance is received." }] });
+  N.push({ t: "bulleted_list_item", r: [{ x: "Payments can be made via check, ACH, or credit card (processing fees may apply)." }] });
+  if ($("license").checked) N.push({ t: "bulleted_list_item", r: [{ x: "Footage Usage License", b: 1 }], ch: [
+    { t: "bulleted_list_item", r: [{ x: "WCStudios retains full ownership and copyright of all raw footage captured during production." }] },
+    { t: "bulleted_list_item", r: [{ x: "The client is granted a " }, { x: "non-exclusive, perpetual license", b: 1 }, { x: " to use the final delivered videos for marketing, web, and internal purposes." }] },
+    { t: "bulleted_list_item", r: [{ x: "Raw footage files are not included in the base project cost. If the client wishes to obtain the raw files, they may be purchased separately under a " }, { x: "footage buyout agreement", b: 1 }, { x: ", with pricing determined by project scope and file volume." }] },
+    { t: "bulleted_list_item", r: [{ x: "WCStudios reserves the right to use completed projects and footage excerpts for portfolio, marketing, and promotional purposes unless otherwise agreed in writing." }] } ] });
+  N.push({ t: "divider" });
+  N.push({ t: "heading_3", r: [{ x: "\u{1F91D}\u{1F3FC} " }, { x: "Client Acceptance", b: 1, k: "orange" }] });
+  N.push({ t: "to_do", r: [{ x: "I accept the terms of this proposal." }] });
+  return N;
+}
+function autoTitle(){ const c = $("company").value.trim(), p = $("project").value.trim(); return "Project Proposal - " + (c || "Client") + (p ? ` (${p})` : ""); }
+function render(){
+  if (!titleTyped) $("title").value = autoTitle();
+  $("sumWho").textContent = $("company").value;
+  $("sumOv").textContent = $("overview").value.slice(0, 40);
+  $("sumScope").textContent = H.lines($("deliv").value).length ? H.lines($("deliv").value).length + " deliverables" : "";
+  $("sumItems").textContent = total() ? usd(total()) : "";
+  $("sumTerms").textContent = $("deposit").selectedOptions[0].text.split(",")[0];
+  $("barsub").textContent = total() ? `${$("company").value || "New proposal"} · ${usd(total())}` : "WCStudios";
+  const props = [["Company", $("company").value], ["Client", $("contact").value], ["Date", H.fmtLong($("date").value)]].filter(p => p[1]);
+  $("doc").innerHTML = `<div class="cover"><div class="wm"><b>WCS</b>TUDIOS</div><div class="tag">A video &amp; post production company</div></div>
+    <div class="pg"><h1 class="t">${esc($("title").value)}</h1><div class="props">${props.map(([k, x]) => `<span>${k}</span><b>${esc(x)}</b>`).join("")}</div>${H.docHTML(nodes())}</div>`;
+  H.fitPaper($("paperWrap"), $("scaler"), $("doc"));
+  clearTimeout(saveT); saveT = setTimeout(save, 400);
+}
+const FIELDS = ["company","contact","project","date","delivery","title","overview","scope","deliv","pre","prod","post","deposit"];
+function save(){ try { localStorage.setItem(STORE, JSON.stringify({ c: $("cPick").value, f: Object.fromEntries(FIELDS.map(k => [k, $(k).value])), lic: $("license").checked, items, titleTyped })); } catch(e){} }
+function restore(){
+  let s; try { s = JSON.parse(localStorage.getItem(STORE) || "null"); } catch(e){}
+  if (!s) return false;
+  $("cPick").value = s.c || ""; for (const [k, v] of Object.entries(s.f || {})) if ($(k)) $(k).value = v;
+  $("license").checked = s.lic !== false; items = s.items || []; titleTyped = !!s.titleTyped; return true;
+}
+function defaults(){
+  FIELDS.forEach(k => $(k).value = ""); $("deposit").value = "50"; $("license").checked = true;
+  $("date").value = H.iso(H.today()); $("pre").value = DEF.pre; $("prod").value = DEF.prod; $("post").value = DEF.post;
+  items = [{ ...PRESETS[0] }, { ...PRESETS[2] }, { ...PRESETS[3] }, { ...PRESETS[4] }, { ...PRESETS[6] }, { ...PRESETS[7] }].map(p => { const { l, ...x } = p; return x; });
+  titleTyped = false;
+}
+async function create(){
+  const c = H.conn();
+  if (!c.url || !c.key) { document.querySelector('[data-g="conn"]').classList.remove("closed"); chip("Connect the worker", "err"); return; }
+  const want = $("title").value;
+  const payload = { title: want, company: $("company").value, client: $("contact").value, date: $("date").value, nodes: nodes() };
+  $("bGo").disabled = true; chip("Creating…");
+  try { await H.post("createProposal", payload); } catch(e){ chip("Couldn't reach the worker", "err"); $("bGo").disabled = false; return; }
+  $("status").textContent = "Sent. The proposal lands in WCS Project Proposals in about a minute.";
+  H.watch(f => (f.proposals || []).find(p => p.name === want), hit => {
+    chip("Proposal created", "saved"); $("bGo").disabled = false;
+    $("status").innerHTML = `Ready: <a href="#" id="open">${esc(want)}</a>`; $("open").onclick = e => { e.preventDefault(); H.openUrl(hit.url); };
+  }, () => { chip("Still waiting", "err"); $("bGo").disabled = false; $("status").textContent = "Not in the feed yet. Check the proposals table; if nothing arrived, the worker needs its latest deploy."; });
+}
+async function boot(){
+  F = await H.loadFeed();
+  if (F) $("cPick").innerHTML = `<option value="">New client</option>` + F.clients.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
+  if (!restore()) defaults();
+  $("presets").innerHTML = PRESETS.map((p, k) => `<button data-p="${k}">${esc(p.l)}${p.flat ? `<b>${usd(p.flat)}</b>` : p.rate ? `<b>${p.hours}h</b>` : ""}</button>`).join("");
+  $("presets").querySelectorAll("[data-p]").forEach(b => b.onclick = () => { const { l, ...x } = PRESETS[+b.dataset.p]; items.push({ ...x }); drawItems(); render(); });
+  $("bAdd").onclick = () => { items.push({ sec: "Post Production", desc: "" }); drawItems(); render(); };
+  drawItems();
+  H.wireGroups();
+  const cc = H.conn(); $("cU").value = cc.url || ""; $("cK").value = cc.key || ""; $("sumConn").textContent = cc.url ? "connected" : "not set";
+  $("cSave").onclick = () => { H.setConn($("cU").value.trim(), $("cK").value.trim()); H.toast("Connection saved"); $("sumConn").textContent = "connected"; };
+  $("cPick").onchange = () => { const c = F && F.clients.find(x => x.id === $("cPick").value); if (c) { $("company").value = c.name; $("contact").value = (c.contact || "").split(",")[0].trim(); } render(); };
+  FIELDS.forEach(k => $(k).addEventListener("input", render)); $("license").onchange = render;
+  $("title").addEventListener("input", () => { titleTyped = true; });
+  $("bReset").onclick = () => { try { localStorage.removeItem(STORE); } catch(e){} $("cPick").value = ""; defaults(); drawItems(); render(); chip("Reset"); };
+  $("bPrint").onclick = () => window.print();
+  $("bGo").onclick = create;
+  addEventListener("resize", () => H.fitPaper($("paperWrap"), $("scaler"), $("doc")));
+  render();
+}
+boot();
+})();
+</script>
+</body></html>
