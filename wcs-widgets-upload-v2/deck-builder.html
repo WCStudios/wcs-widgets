@@ -30,6 +30,24 @@
 .layouts button{padding:6px 2px;font-size:9.5px;font-weight:700;border-radius:7px}
 .layouts button.on{border-color:var(--accent);color:var(--accent)}
 .statrow{display:flex;gap:6px;margin-bottom:6px}.statrow input:first-child{flex:0 0 34%}
+.vwrap{position:relative;flex:0 0 auto}
+.view .grip{font-size:46px;left:-66px;width:50px;color:rgba(255,255,255,.55)}
+.light .view .grip{color:rgba(0,0,0,.35)}
+.view .stat>.grip{left:auto;right:18px;top:16px}
+.view [data-f]{cursor:text;border-radius:6px;transition:box-shadow .12s}
+.view [data-f]:hover{box-shadow:0 0 0 3px rgba(232,98,44,.5)}
+.view .editing{outline:6px solid #e8622c!important;outline-offset:8px;background:rgba(232,98,44,.08)!important}
+.view [data-img]{cursor:pointer}
+.view [data-img]:hover{filter:brightness(1.08)}
+.vwrap.drop .view,.th.drop{outline:3px dashed #e8622c;outline-offset:3px}
+.dropcap{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(232,98,44,.16);color:#fff;font:800 15px Inter;z-index:6;pointer-events:none;border-radius:10px;text-shadow:0 1px 8px rgba(0,0,0,.5)}
+.vwrap.drop .dropcap{display:flex}
+.imgbar{position:absolute;z-index:7;display:none;gap:6px;padding:6px;background:rgba(15,15,15,.88);border-radius:9px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.imgbar.on{display:flex}
+.imgbar button{background:transparent;color:#fff;border-color:rgba(255,255,255,.22);font-size:10.5px;padding:5px 9px}
+.imgbar button:hover{border-color:#fff}
+.th.drag{opacity:.35}
+.th.dropafter{box-shadow:4px 0 0 #e8622c}
 #show{position:fixed;inset:0;background:#000;z-index:50;display:none;align-items:center;justify-content:center}
 #show.on{display:flex}
 #show .wcs-stage{transform-origin:center center;flex:0 0 auto}
@@ -81,7 +99,9 @@
     <p class="note" id="status"></p>
   </div>
   <div class="paper" id="paper">
-    <div class="view" id="view"></div>
+    <p class="edithint">Click any text on the slide to edit it. Drag <b>⠇</b> to reorder bullets and cards. Drop image files onto a slide, a thumbnail, or <b>+</b>.</p>
+    <div class="vwrap" id="vwrap"><div class="view" id="view"></div><div class="dropcap" id="dropcap">Drop to place on this slide</div><div class="imgbar" id="imgbar"></div></div>
+    <input type="file" id="fileIn" accept="image/*" multiple hidden>
     <div class="strip" id="strip"></div>
     <p class="note">Images: paste any public image link (your site, Squarespace, a Dropbox share link). After the deck is created you can keep editing it as a normal Notion page.</p>
   </div>
@@ -125,14 +145,14 @@ const client = () => F && F.clients.find(c => c.id === $("cPick").value);
 /* One builder slide -> the node list a Notion page holds (and the player renders). */
 function toNodes(s, i){
   const N = [], R = H.parseRT, add = n => N.push(n);
-  const img = (u, pin) => ({ t: "image", u: fixUrl(u), cap: pin ? [{ x: "layout: " + pin }] : [] });
+  const img = (u, pin) => ({ t: "image", u: resolve(u), cap: pin ? [{ x: "layout: " + pin }] : [] });
   const head = () => { if (s.eyebrow) add({ t: "heading_3", r: R(s.eyebrow) }); if (s.title) add({ t: "heading_2", r: R(s.title) }); };
   const body = () => H.paras(s.body).forEach(p => add(H.P(p)));
   const bullets = () => H.lines(s.bullets).forEach(l => add({ t: s.numbered ? "numbered_list_item" : "bulleted_list_item", r: R(l) }));
   switch (s.layout) {
     case "cover": if (s.eyebrow) add({ t: "heading_3", r: R(s.eyebrow) }); add({ t: "heading_1", r: R(s.title || "") }); body(); if (s.image) add(img(s.image)); break;
     case "text": head(); body(); bullets(); break;
-    case "split": head(); body(); bullets(); if (s.image) add(img(s.image, "split")); break;
+    case "split": head(); body(); bullets(); if (s.image) add(img(s.image, "split" + (s.side ? " " + s.side : ""))); break;
     case "full": head(); body(); if (s.image) add(img(s.image, "full")); break;
     case "stats": head(); (s.stats || []).filter(x => x.n || x.l).forEach(x => add({ t: "callout", r: [{ x: x.n, b: 1 }, { x: " " + (x.l || "") }] })); break;
     case "quote": add({ t: "quote", r: R(s.quote || "") }); if (s.who) add(H.P(s.who)); if (s.image) add(img(s.image)); break;
@@ -148,7 +168,7 @@ function toNodes(s, i){
   if (s.notes && s.notes.trim()) add({ t: "toggle", r: [{ x: "Notes" }], ch: H.paras(s.notes).map(p => H.P(p)) });
   return N;
 }
-const meta = () => ({ title: $("dTitle").value || "Untitled deck", client: client() ? client().name : "", theme: $("dTheme").value, cover: fixUrl($("dCover").value) || null });
+const meta = () => ({ title: $("dTitle").value || "Untitled deck", client: client() ? client().name : "", theme: $("dTheme").value, cover: resolve($("dCover").value) || null });
 
 function slideEl(s, i){
   const nodes = toNodes(s, i).filter(n => !(n.t === "toggle" && /^notes$/i.test(W.txt(n))));
@@ -169,20 +189,57 @@ function stageWith(el){
 }
 function drawPreview(){
   const v = $("view"); v.innerHTML = "";
-  const st = stageWith(slideEl(deck.slides[cur], cur));
+  const sl = deck.slides[cur];
+  const st = stageWith(slideEl(sl, cur));
   v.appendChild(st);
   st.style.transform = `scale(${v.clientWidth / 1920})`;
+  tagView(st, sl);
+}
+/* Mark what on the rendered slide maps to which field of the slide model. */
+function tagView(st, sl){
+  const T = (el, f) => { if (el) el.dataset.f = f; };
+  T(st.querySelector(".eye"), "eyebrow");
+  T(st.querySelector(".h1") || st.querySelector(".h2"), "title");
+  st.querySelectorAll(".p").forEach((p, k) => T(p, "body:" + k));
+  st.querySelectorAll(".lst > li").forEach((li, k) => { T(li.querySelector("span"), "bullet:" + k); li.dataset.mv = "bullet:" + k; });
+  st.querySelectorAll(".stat").forEach((c, k) => { T(c.querySelector(".big"), "statn:" + k); T(c.querySelector(".lab"), "statl:" + k); c.dataset.mv = "stat:" + k; });
+  T(st.querySelector(".qt"), "quote"); T(st.querySelector(".who"), "who");
+  st.querySelectorAll("table tr").forEach((tr, r) => tr.querySelectorAll("th,td").forEach((c, ci) => T(c, `cell:${r}:${ci}`)));
+  const pic = st.querySelector(".pic,.qpic");
+  if (pic) pic.dataset.img = "image";
+  const bg = st.querySelector(".bgimg");
+  if (bg) bg.dataset.img = sl.image ? "image" : (cur === 0 ? "cover" : "image");
+  st.querySelectorAll(".gg > div").forEach((g, k) => { g.dataset.img = "images:" + k; });
+  H.sortable(st, (g, a, b) => {
+    if (g === "bullet") { const ls = H.lines(sl.bullets); H.moveIn(ls, a, b); sl.bullets = ls.join("\n"); }
+    if (g === "stat") H.moveIn(sl.stats, a, b);
+    full();
+  });
 }
 function drawStrip(){
   const s = $("strip"); s.innerHTML = "";
   deck.slides.forEach((sl, i) => {
-    const th = document.createElement("div"); th.className = "th" + (i === cur ? " cur" : "");
+    const th = document.createElement("div"); th.className = "th" + (i === cur ? " cur" : ""); th.draggable = true; th.dataset.i = i;
     const el = slideEl(sl, i); el.querySelectorAll("iframe").forEach(f => f.remove());
     th.appendChild(stageWith(el)); th.insertAdjacentHTML("beforeend", `<span>${i + 1}</span>`);
-    th.onclick = () => select(i); s.appendChild(th);
+    th.onclick = () => select(i);
+    th.addEventListener("dragstart", e => { e.dataTransfer.setData("text/x-slide", String(i)); e.dataTransfer.effectAllowed = "move"; th.classList.add("drag"); });
+    th.addEventListener("dragend", () => th.classList.remove("drag"));
+    dropZone(th, refs => placeFiles(refs, i));
+    th.addEventListener("dragover", e => { if ([...e.dataTransfer.types].includes("text/x-slide")) { e.preventDefault(); th.classList.add("dropafter"); } });
+    th.addEventListener("dragleave", () => th.classList.remove("dropafter"));
+    th.addEventListener("drop", e => {
+      const from = e.dataTransfer.getData("text/x-slide");
+      if (from === "") return;
+      e.preventDefault(); th.classList.remove("dropafter"); const a = +from; if (a === i) return;
+      const [x] = deck.slides.splice(a, 1); deck.slides.splice(i, 0, x); cur = i; full();
+    });
+    s.appendChild(th);
   });
-  const add = document.createElement("div"); add.className = "th addth"; add.textContent = "+"; add.title = "Add a text slide";
-  add.onclick = () => addSlide("text"); s.appendChild(add);
+  const add = document.createElement("div"); add.className = "th addth"; add.textContent = "+"; add.title = "Add a slide (or drop images here for new image slides)";
+  add.onclick = () => addSlide("text");
+  dropZone(add, files => newImageSlides(files));
+  s.appendChild(add);
 }
 function drawList(){
   $("slist").innerHTML = deck.slides.map((s, i) => `<div class="srow ${i === cur ? "cur" : ""}" data-i="${i}"><span class="n">${i + 1}</span>
@@ -211,7 +268,7 @@ function drawFields(){
   if (f.includes("body")) h.push(ta("body", "Text", 3, "(**bold**, blank line = new paragraph)"));
   if (f.includes("bullets")) h.push(ta("bullets", "Bullets", 4, "(one per line)"));
   if (f.includes("numbered")) h.push(`<div class="f"><label><input type="checkbox" data-k="numbered" ${s.numbered ? "checked" : ""}>Numbered list</label></div>`);
-  if (f.includes("image")) h.push(inp("image", "Image URL", "https://…", s.layout === "cover" && cur === 0 ? "(blank uses the deck cover)" : ""));
+  if (f.includes("image")) h.push(inp("image", "Image", "Link, or drop a file on the slide", s.layout === "cover" && cur === 0 ? "(blank uses the deck cover)" : ""));
   if (f.includes("images")) h.push(ta("images", "Image URLs", 4, "(one per line)"));
   if (f.includes("video")) h.push(inp("video", "Vimeo or YouTube link"));
   if (f.includes("table")) h.push(ta("table", "Table", 5, "(one row per line, cells split with | , first row is the header)"));
@@ -243,6 +300,119 @@ function starter(){
   ] };
 }
 
+/* ── Dropped images ───────────────────────────────────────────
+   Files are resized in the browser (long edge 1920, JPEG) and held as data
+   URLs until the deck is created; the worker uploads them to Notion, so they
+   end up as real images on the deck page. The draft keeps them in IndexedDB. */
+const media = {};
+function resolve(u){ if (!u) return ""; if (u.startsWith("local:")) return media[u.slice(6)] || ""; return fixUrl(u); }
+const idb = (() => { let p; return () => p || (p = new Promise((ok, no) => { try { const r = indexedDB.open("wcsDeckBuilder", 1); r.onupgradeneeded = () => r.result.createObjectStore("media"); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); } catch(e){ no(e); } })); })();
+async function mediaPut(id, url){ media[id] = url; try { const db = await idb(); db.transaction("media", "readwrite").objectStore("media").put(url, id); } catch(e){} }
+async function mediaLoadAll(){ try { const db = await idb(); await new Promise(ok => { const st = db.transaction("media").objectStore("media"); const rq = st.openCursor(); rq.onsuccess = () => { const c = rq.result; if (c) { media[c.key] = c.value; c.continue(); } else ok(); }; rq.onerror = ok; }); } catch(e){} }
+function shrink(file){
+  return new Promise((ok, no) => {
+    const fr = new FileReader();
+    fr.onload = () => { const im = new Image(); im.onload = () => {
+      const k = Math.min(1, 1920 / Math.max(im.width, im.height)), c = document.createElement("canvas");
+      c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+      const g = c.getContext("2d"); g.fillStyle = "#111"; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height);
+      ok(c.toDataURL("image/jpeg", 0.82)); }; im.onerror = no; im.src = fr.result; };
+    fr.onerror = no; fr.readAsDataURL(file);
+  });
+}
+async function refsFrom(dt){
+  const files = [...(dt.files || [])].filter(f => /^image\//.test(f.type));
+  if (files.length) {
+    chip(`Adding ${files.length} image${files.length > 1 ? "s" : ""}…`);
+    const out = [];
+    for (const f of files) {
+      const id = (f.name || "image").replace(/\.[^.]+$/, "").replace(/[^a-z0-9]+/gi, "-").slice(0, 24).toLowerCase() + "-" + Math.random().toString(36).slice(2, 6);
+      try { await mediaPut(id, await shrink(f)); out.push("local:" + id); } catch(e){}
+    }
+    chip("Image added", "saved");
+    return out;
+  }
+  const url = (dt.getData("text/uri-list") || dt.getData("text/plain") || "").split("\n").map(x => x.trim()).find(x => /^https?:\/\//.test(x));
+  return url ? [url] : [];
+}
+function dropZone(el, onRefs){
+  el.addEventListener("dragover", e => { if (![...e.dataTransfer.types].some(t => t === "Files" || t === "text/uri-list")) return; e.preventDefault(); el.classList.add("drop"); });
+  el.addEventListener("dragleave", e => { if (!el.contains(e.relatedTarget)) el.classList.remove("drop"); });
+  el.addEventListener("drop", async e => {
+    el.classList.remove("drop");
+    if (![...e.dataTransfer.types].some(t => t === "Files" || t === "text/uri-list")) return;
+    e.preventDefault(); e.stopPropagation();
+    const refs = await refsFrom(e.dataTransfer); if (refs.length) onRefs(refs, e);
+  });
+}
+function putImage(s, ref, slot){
+  if (s.layout === "gallery") { const ls = H.lines(s.images); if (slot != null) ls[slot] = ref; else ls.push(ref); s.images = ls.join("\n"); return; }
+  if (["text", "stats", "table", "video"].includes(s.layout)) s.layout = "split";
+  s.image = ref;
+}
+function placeFiles(refs, i, slot){
+  const s = deck.slides[i];
+  if (refs.length > 1 && s.layout !== "gallery") { s.layout = "gallery"; s.images = [s.image, ...refs].filter(Boolean).join("\n"); }
+  else if (s.layout === "gallery" && slot == null) refs.forEach(r => putImage(s, r));
+  else if (i === 0 && s.layout === "cover" && !s.image && slot == null) $("dCover").value = refs[0];
+  else putImage(s, refs[0], slot);
+  cur = i; full();
+}
+function newImageSlides(refs){
+  refs.forEach(r => deck.slides.push({ layout: "full", title: "", image: r }));
+  cur = deck.slides.length - 1; full();
+}
+/* Image toolbar over the big preview. */
+let barFor = null;
+function imgBar(target){
+  const bar = $("imgbar"), s = deck.slides[cur], key = target.dataset.img;
+  const vr = $("vwrap").getBoundingClientRect(), r = target.getBoundingClientRect();
+  barFor = key;
+  bar.innerHTML = `<button data-a="up">Upload</button><button data-a="url">Paste link</button>${s.layout === "split" ? `<button data-a="side">Swap side</button>` : ""}<button data-a="rm">Remove</button>`;
+  bar.style.left = (r.left - vr.left + 10) + "px"; bar.style.top = (r.top - vr.top + 10) + "px";
+  bar.classList.add("on");
+  bar.querySelectorAll("[data-a]").forEach(b => b.onclick = e => {
+    e.stopPropagation(); const a = b.dataset.a; bar.classList.remove("on");
+    const slot = key.startsWith("images:") ? +key.split(":")[1] : null;
+    if (a === "up") { $("fileIn").onchange = async () => { const refs = await refsFrom({ files: $("fileIn").files, getData: () => "" }); $("fileIn").value = ""; if (refs.length) key === "cover" ? ($("dCover").value = refs[0], full()) : placeFiles(refs, cur, slot); }; $("fileIn").click(); }
+    if (a === "url") H.ask(b, "Image link", "", v => { if (!v) return; if (key === "cover") $("dCover").value = v; else putImage(s, v, slot); full(); });
+    if (a === "side") { s.side = (s.side === "left" || (!s.side && cur % 2 === 0)) ? "right" : "left"; full(); }
+    if (a === "rm") { if (key === "cover") $("dCover").value = ""; else if (slot != null) { const ls = H.lines(s.images); ls.splice(slot, 1); s.images = ls.join("\n"); } else s.image = ""; full(); }
+  });
+}
+/* Inline text edits on the big preview write straight back to the model. */
+function commitField(el){
+  const s = deck.slides[cur], f = el.dataset.f, md = H.runsToMd(H.domRuns(el)).trim();
+  const [k, a, b] = f.split(":");
+  if (["eyebrow", "title", "quote", "who"].includes(k)) s[k] = md;
+  else if (k === "body") { const ps = H.paras(s.body); if (md) ps[+a] = md; else ps.splice(+a, 1); s.body = ps.join("\n\n"); }
+  else if (k === "bullet") { const ls = H.lines(s.bullets); if (md) ls[+a] = md; else ls.splice(+a, 1); s.bullets = ls.join("\n"); }
+  else if (k === "statn") s.stats[+a].n = H.plainOf(el).trim();
+  else if (k === "statl") s.stats[+a].l = H.plainOf(el).trim();
+  else if (k === "cell") { const rows = H.lines(s.table).map(l => l.split("|").map(c => c.trim())); (rows[+a] = rows[+a] || [])[+b] = H.plainOf(el).trim(); s.table = rows.map(r => r.join(" | ")).join("\n"); }
+  full();
+}
+function wireView(){
+  const v = $("view"), wrap = $("vwrap");
+  v.addEventListener("click", e => {
+    const t = e.target.closest("[data-f]");
+    if (t && !t.isContentEditable) { $("imgbar").classList.remove("on"); H.editIn(t, commitField, { multiline: /^body/.test(t.dataset.f) || t.dataset.f === "quote" }); return; }
+    const im = e.target.closest("[data-img]");
+    if (im) { imgBar(im); return; }
+    $("imgbar").classList.remove("on");
+  });
+  dropZone(wrap, (refs, e) => {
+    const under = document.elementsFromPoint(e.clientX, e.clientY).find(x => x.dataset && x.dataset.img);
+    const key = under && under.dataset.img;
+    if (key === "cover") { $("dCover").value = refs[0]; full(); return; }
+    placeFiles(refs, cur, key && key.startsWith("images:") ? +key.split(":")[1] : null);
+  });
+  dropZone($("dCover"), refs => { $("dCover").value = refs[0]; full(); });
+  // Never let a stray drop navigate the embed away.
+  addEventListener("dragover", e => e.preventDefault());
+  addEventListener("drop", e => e.preventDefault());
+}
+
 /* Present: full-screen, arrow keys, Esc. */
 let showIx = 0;
 function show(on){
@@ -269,7 +439,9 @@ async function create(){
   if (!c.url || !c.key) { document.querySelector('[data-g="conn"]').classList.remove("closed"); chip("Connect the worker", "err"); return; }
   const nodes = deck.slides.flatMap((s, i) => [...(i ? [{ t: "divider" }] : []), ...toNodes(s, i)]);
   const want = $("dTitle").value || "Untitled deck";
-  const payload = { title: want, clientId: $("cPick").value, theme: $("dTheme").value, status: $("dStatus").value, cover: fixUrl($("dCover").value), nodes };
+  const payload = { title: want, clientId: $("cPick").value, theme: $("dTheme").value, status: $("dStatus").value, cover: resolve($("dCover").value), nodes };
+  const mb = JSON.stringify(payload).length / 1048576;
+  if (mb > 8) { chip("Too many dropped images", "err"); $("status").textContent = `This deck carries ${mb.toFixed(1)} MB of dropped images. Create it with fewer, then add the rest in Notion.`; return; }
   $("bGo").disabled = true; chip("Creating…");
   try { await H.post("createDeck", payload); } catch(e){ chip("Couldn't reach the worker", "err"); $("bGo").disabled = false; return; }
   $("status").textContent = "Sent. The deck lands in the Decks table and gets its client link in about a minute.";
@@ -282,6 +454,7 @@ async function create(){
 }
 
 async function boot(){
+  await mediaLoadAll();
   F = await H.loadFeed();
   if (F) $("cPick").innerHTML = `<option value="">No client (general)</option>` + F.clients.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
   let s; try { s = JSON.parse(localStorage.getItem(STORE) || "null"); } catch(e){}
@@ -298,6 +471,7 @@ async function boot(){
   $("bReset").onclick = () => { try { localStorage.removeItem(STORE); } catch(e){} deck = starter(); cur = 0; $("dTitle").value = "New deck"; full(); chip("Reset"); };
   $("bShow").onclick = () => { showIx = cur; show(true); };
   $("bGo").onclick = create;
+  wireView();
   addEventListener("resize", () => { drawPreview(); if ($("show").classList.contains("on")) show(true); });
   full();
 }
