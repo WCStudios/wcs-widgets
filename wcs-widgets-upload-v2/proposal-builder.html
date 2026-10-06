@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
 <title>Proposal Builder · WCStudios</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="builder.css?v=1">
+<link rel="stylesheet" href="builder.css?v=2">
 </head><body>
 <div class="bar">
   <div class="ttl">Proposal builder<small id="barsub">WCStudios</small></div>
@@ -77,9 +77,10 @@
     </div>
     <p class="note" id="status"></p>
   </div>
-  <div class="paper" id="paperWrap"><div class="scaler" id="scaler"><div class="doc" id="doc"></div></div></div>
+  <div class="paper" id="paperWrap" style="flex-direction:column;align-items:center;justify-content:flex-start">
+    <p class="edithint">Click any text on the proposal to edit it. Drag <b>⠇</b> to reorder lines.</p><div class="scaler" id="scaler"><div class="doc" id="doc"></div></div></div>
 </div>
-<script src="hub.js?v=1"></script>
+<script src="hub.js?v=2"></script>
 <script>
 (() => {
 const H = window.WCSHub, $ = id => document.getElementById(id), esc = H.esc;
@@ -122,27 +123,30 @@ function drawItems(){
 function nodes(){
   const N = [], R = H.parseRT, orange = (ic, t) => ({ t: "heading_3", r: [{ x: ic + " ", k: "orange" }, { x: t, b: 1, k: "orange" }] });
   N.push({ t: "heading_3", r: [{ x: "Overview", b: 1, k: "orange" }] });
-  (H.paras($("overview").value).length ? H.paras($("overview").value) : [""]).forEach(p => N.push(H.P(p)));
+  (H.paras($("overview").value).length ? H.paras($("overview").value) : ["Click to write the overview."]).forEach((p, k) => N.push(H.P(p, { ed: "overview:" + k })));
   N.push({ t: "divider" });
   N.push(orange("\u{1F4CD}", "Scope of Work"));
-  H.lines($("scope").value).forEach(l => N.push({ t: "bulleted_list_item", r: R(l) }));
+  H.lines($("scope").value).forEach((l, k) => N.push({ t: "bulleted_list_item", r: R(l), ed: "scope:" + k, mv: "scope:" + k }));
   const dl = H.lines($("deliv").value);
-  if (dl.length) N.push({ t: "bulleted_list_item", r: [{ x: "Deliverables", b: 1 }], ch: dl.map(l => ({ t: "bulleted_list_item", r: R(l) })) });
+  if (dl.length) N.push({ t: "bulleted_list_item", r: [{ x: "Deliverables", b: 1 }], ch: dl.map((l, k) => ({ t: "bulleted_list_item", r: R(l), ed: "deliv:" + k, mv: "deliv:" + k })) });
   N.push({ t: "divider" });
   N.push(orange("\u{1F3AC}", "Production Plan"));
-  [["Pre-production", "pre"], ["Production", "prod"], ["Post-production", "post"]].forEach(([k, id]) => { if ($(id).value.trim()) N.push({ t: "bulleted_list_item", r: [{ x: k + ": ", b: 1 }, ...R($(id).value)] }); });
+  [["Pre-production", "pre"], ["Production", "prod"], ["Post-production", "post"]].forEach(([k, id]) => { if ($(id).value.trim()) N.push({ t: "bulleted_list_item", r: [{ x: k + ": ", b: 1 }, ...R($(id).value)], ed: id }); });
   if ($("delivery").value) N.push({ t: "bulleted_list_item", r: [{ x: "Final delivery deadline: " }, { x: "by " + H.fmtLong($("delivery").value), b: 1 }] });
   N.push({ t: "divider" });
   N.push({ t: "heading_3", r: [{ x: "\u{1F4B0} " }, { x: "Proposal Breakdown", b: 1, k: "orange" }] });
-  const rows = [[[{ x: "Item" }], [{ x: "Hours", b: 1 }], [{ x: "Rate", b: 1 }], [{ x: "Total", b: 1 }]]];
-  for (const s of SECTIONS) {
-    const its = items.filter(i => i.sec === s); if (!its.length) continue;
-    const r = [[{ x: s, b: 1 }], [], [], [{ x: usd(secTotal(s)), b: 1 }]]; r.cls = "grp"; rows.push(r);
-    its.forEach(i => rows.push([R(i.desc || ""), i.hours ? [{ x: String(i.hours) }] : [], i.rate ? [{ x: usd(i.rate) + "/hr" }] : [], i.flat ? [{ x: usd(i.flat) }] : []]));
+  const rows = [[[{ x: "Item" }], [{ x: "Hours", b: 1 }], [{ x: "Rate", b: 1 }], [{ x: "Total", b: 1 }]]], edc = [null], mvr = [null], cls = [""];
+  for (const sec of SECTIONS) {
+    const its = items.map((it, k) => [it, k]).filter(([i]) => i.sec === sec); if (!its.length) continue;
+    rows.push([[{ x: sec, b: 1 }], [], [], [{ x: usd(secTotal(sec)), b: 1 }]]); edc.push(null); mvr.push(null); cls.push("grp");
+    its.forEach(([i, k]) => {
+      rows.push([R(i.desc || "New line"), i.hours ? [{ x: String(i.hours) }] : [], i.rate ? [{ x: usd(i.rate) + "/hr" }] : [], i.flat ? [{ x: usd(i.flat) }] : []]);
+      edc.push([`item:${k}:desc`, `item:${k}:hours`, `item:${k}:rate`, `item:${k}:flat`]); mvr.push(`item:${k}`); cls.push("");
+    });
   }
-  rows.push([[], [], [], []]);
-  const tr = [[{ x: "Total", b: 1 }], [], [], [{ x: usd(total()), b: 1 }]]; tr.cls = "tot"; rows.push(tr);
-  N.push({ t: "table", hdr: 1, num: 1, rows });
+  rows.push([[], [], [], []]); edc.push(null); mvr.push(null); cls.push("");
+  rows.push([[{ x: "Total", b: 1 }], [], [], [{ x: usd(total()), b: 1 }]]); edc.push(null); mvr.push(null); cls.push("tot");
+  N.push({ t: "table", hdr: 1, num: 1, rows, edc, mvr, cls });
   N.push({ t: "divider" });
   N.push({ t: "heading_3", r: [{ x: "\u{1F4DD} " }, { x: "Payment Terms", b: 1, k: "orange" }] });
   const dep = $("deposit").value;
@@ -170,9 +174,14 @@ function render(){
   $("sumItems").textContent = total() ? usd(total()) : "";
   $("sumTerms").textContent = $("deposit").selectedOptions[0].text.split(",")[0];
   $("barsub").textContent = total() ? `${$("company").value || "New proposal"} · ${usd(total())}` : "WCStudios";
-  const props = [["Company", $("company").value], ["Client", $("contact").value], ["Date", H.fmtLong($("date").value)]].filter(p => p[1]);
+  const props = [["Company", $("company").value || "Company", "company"], ["Client", $("contact").value || "Client contact", "contact"], ["Date", H.fmtLong($("date").value)]].filter(p => p[1]);
   $("doc").innerHTML = `<div class="cover"><div class="wm"><b>WCS</b>TUDIOS</div><div class="tag">A video &amp; post production company</div></div>
-    <div class="pg"><h1 class="t">${esc($("title").value)}</h1><div class="props">${props.map(([k, x]) => `<span>${k}</span><b>${esc(x)}</b>`).join("")}</div>${H.docHTML(nodes())}</div>`;
+    <div class="pg"><h1 class="t" data-ed="title">${esc($("title").value)}</h1><div class="props">${props.map(([k, x, ed]) => `<span>${k}</span><b${ed ? ` data-ed="${ed}"` : ""}>${esc(x)}</b>`).join("")}</div>${H.docHTML(nodes())}</div>`;
+  H.sortable($("doc"), (g, a, b) => {
+    if (g === "scope" || g === "deliv") { const id = g === "scope" ? "scope" : "deliv"; const ls = H.lines($(id).value); H.moveIn(ls, a, b); $(id).value = ls.join("\n"); }
+    if (g === "item") { const sec = items[b].sec; H.moveIn(items, a, b); items[b].sec = sec; drawItems(); }
+    render();
+  });
   H.fitPaper($("paperWrap"), $("scaler"), $("doc"));
   clearTimeout(saveT); saveT = setTimeout(save, 400);
 }
@@ -203,6 +212,24 @@ async function create(){
     $("status").innerHTML = `Ready: <a href="#" id="open">${esc(want)}</a>`; $("open").onclick = e => { e.preventDefault(); H.openUrl(hit.url); };
   }, () => { chip("Still waiting", "err"); $("bGo").disabled = false; $("status").textContent = "Not in the feed yet. Check the proposals table; if nothing arrived, the worker needs its latest deploy."; });
 }
+/* Click anything on the paper to edit it; changes flow back to the panel. */
+function commitEd(el){
+  const ed = el.dataset.ed, md = H.runsToMd(H.domRuns(el)).trim(), plain = H.plainOf(el).trim();
+  const [k, a, f] = ed.split(":");
+  const setLine = (id, i, v) => { const ls = H.lines($(id).value); if (v) ls[i] = v; else ls.splice(i, 1); $(id).value = ls.join("\n"); };
+  if (k === "title") { $("title").value = plain; titleTyped = true; }
+  else if (k === "company" || k === "contact") $(k).value = plain;
+  else if (k === "overview") { const ps = H.paras($("overview").value); if (md && md !== "Click to write the overview.") ps[+a] = md; else ps.splice(+a, 1); $("overview").value = ps.join("\n\n"); }
+  else if (k === "scope") setLine("scope", +a, md);
+  else if (k === "deliv") setLine("deliv", +a, md);
+  else if (["pre", "prod", "post"].includes(k)) $(k).value = plain.replace(/^(Pre-production|Production|Post-production):\s*/i, "");
+  else if (k === "item") {
+    const it = items[+a], num = plain.replace(/[^0-9.]/g, "");
+    if (f === "desc") it.desc = md; else it[f] = num;
+    drawItems();
+  }
+  render();
+}
 async function boot(){
   F = await H.loadFeed();
   if (F) $("cPick").innerHTML = `<option value="">New client</option>` + F.clients.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
@@ -220,6 +247,11 @@ async function boot(){
   $("bReset").onclick = () => { try { localStorage.removeItem(STORE); } catch(e){} $("cPick").value = ""; defaults(); drawItems(); render(); chip("Reset"); };
   $("bPrint").onclick = () => window.print();
   $("bGo").onclick = create;
+  $("doc").addEventListener("click", e => {
+    const t = e.target.closest("[data-ed]"); if (!t || t.isContentEditable) return;
+    if (t.tagName === "A" || e.target.closest("a")) e.preventDefault();
+    H.editIn(t, commitEd, { multiline: /^overview/.test(t.dataset.ed), select: /^item:\d+:(hours|rate|flat)/.test(t.dataset.ed) });
+  });
   addEventListener("resize", () => H.fitPaper($("paperWrap"), $("scaler"), $("doc")));
   render();
 }
