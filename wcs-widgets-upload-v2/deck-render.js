@@ -141,7 +141,9 @@ function render(s, i, total, deck){
       body = `<div class="pad">${eyeH}${title ? `<div class="h2 rise d2">${rt(title.r)}</div>` : ""}${bodyHTML(rest)}</div>`;
       break;
     case "split": {
-      const flip = i % 2 === 0;
+      // "layout: split left|right" on the image caption pins the side.
+      const sm = N.filter(n => n.t === "image").map(n => (n.cap || []).map(r => r.x).join("")).join(" ").match(/layout:\s*split\s+(left|right)/i);
+      const flip = sm ? sm[1].toLowerCase() === "left" : i % 2 === 0;
       if (flip) el.classList.add("flip");
       body = `<div class="pic" data-bg="${esc(img.u)}"></div><div class="txt">${eyeH}${title ? `<div class="h2 rise d2">${rt(title.r)}</div>` : ""}${bodyHTML(rest)}</div>`;
       break;
