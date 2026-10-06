@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-06T16:33:42.041Z",
+ "updated": "2026-10-06T16:33:46.688Z",
  "source": "worker",
  "ar": [
   {
@@ -253,24 +253,6 @@
    "pdfSource": "live"
   },
   {
-   "notionPageId": "3c8421ef-c766-814d-b950-dc6ec2be9deb",
-   "name": "Pulltab Sports - Invoice 0180",
-   "client": "Pulltab Sports",
-   "project": null,
-   "terms": "Due on receipt",
-   "items": [],
-   "threaded": false,
-   "amount": 2500,
-   "status": "Sent",
-   "invoiceDate": "2026-07-28",
-   "dueDate": "2026-07-07",
-   "daysOverdue": 91,
-   "bucket": "90+ days",
-   "notionUrl": "https://app.notion.com/3c8421efc766814db950dc6ec2be9deb",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
    "notionPageId": "3e2421ef-c766-8119-98b1-e4b23a86c3c7",
    "name": "Pulltab Sports - Invoice 186 - HF Golf Tourney Recap",
    "client": "Pulltab Sports",
@@ -300,24 +282,6 @@
    "daysOverdue": 0,
    "bucket": "Not yet due",
    "notionUrl": "https://app.notion.com/3e2421efc766811998b1e4b23a86c3c7",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
-   "notionPageId": "3c8421ef-c766-8100-858e-e648ca204b3d",
-   "name": "Pulltab Sports - Invoice 0175",
-   "client": "Pulltab Sports",
-   "project": null,
-   "terms": "Due on receipt",
-   "items": [],
-   "threaded": false,
-   "amount": 2000,
-   "status": "Sent",
-   "invoiceDate": "2026-07-07",
-   "dueDate": "2026-07-07",
-   "daysOverdue": 91,
-   "bucket": "90+ days",
-   "notionUrl": "https://app.notion.com/3c8421efc7668100858ee648ca204b3d",
    "pdfUrl": null,
    "pdfSource": "live"
   }
@@ -702,24 +666,20 @@
   {
    "bucket": "31-60 days",
    "amount": 12116
-  },
-  {
-   "bucket": "90+ days",
-   "amount": 4500
   }
  ],
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 34366
+   "amount": 29866
   }
  ],
  "summary": {
-  "arTotal": 34366,
-  "arSent": 26366,
+  "arTotal": 29866,
+  "arSent": 21866,
   "arDraft": 8000,
-  "arOverdue": 16616,
-  "arCount": 11,
+  "arOverdue": 12116,
+  "arCount": 9,
   "arDraftCount": 2,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
