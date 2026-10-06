@@ -356,6 +356,8 @@ function wireGenerator(F){
       clientId: cl ? cl.id : "", start: $("pStart").value, end: $("pEnd").value, monthly: $("pMonthly").value,
       term: $("pTerm").value, deliverables: $("pDel").value, hours: $("pHours").value,
       total: $("pMonthly").value && $("pTerm").value ? Number($("pMonthly").value) * Number($("pTerm").value) : "" } };
+    if (payload.title === t.name && payload.props.party) payload.title = t.name.replace(/^WCS\s+/, "") + " - " + payload.props.party;
+    const want = payload.title;
     $("gGo").disabled = true; $("gS").textContent = "Creating…";
     try {
       await fetch(c.url, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ key: c.key, action: "createContract", payload }) });
@@ -363,8 +365,8 @@ function wireGenerator(F){
     $("gS").textContent = "Sent. Watching for the new draft…";
     const t0 = Date.now();
     const tick = setInterval(async () => {
-      const f = await load(); const hit = f && f.contracts.find(x => x.name === ttl);
-      if (hit) { clearInterval(tick); $("gS").innerHTML = `Draft ready: <a href="#" id="gOpen">open ${esc(ttl)}</a>`; document.getElementById("gOpen").onclick = e => { e.preventDefault(); openUrl(hit.url); }; $("gGo").disabled = false; }
+      const f = await load(); const hit = f && f.contracts.find(x => x.name === want);
+      if (hit) { clearInterval(tick); $("gS").innerHTML = `Draft ready: <a href="#" id="gOpen">open ${esc(want)}</a>`; document.getElementById("gOpen").onclick = e => { e.preventDefault(); openUrl(hit.url); }; $("gGo").disabled = false; }
       else if (Date.now() - t0 > 150000) { clearInterval(tick); $("gS").textContent = "Not showing yet. Check Contracts in Notion; the worker may still be running or need a redeploy."; $("gGo").disabled = false; }
     }, 10000);
   };
