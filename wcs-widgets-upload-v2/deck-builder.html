@@ -1,0 +1,306 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
+<title>Deck Builder · WCStudios</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="builder.css?v=1">
+<link rel="stylesheet" href="deck.css?v=2">
+<style>
+.paper{flex-direction:column;align-items:stretch;justify-content:flex-start;gap:16px}
+.view{position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;box-shadow:0 2px 18px rgba(0,0,0,.18);background:#000;flex:0 0 auto}
+.view .wcs-stage{position:absolute;left:0;top:0;transform-origin:0 0}
+.view .slide{opacity:1;visibility:visible;transition:none}
+.strip{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;flex:0 0 auto}
+.th{position:relative;flex:0 0 168px;aspect-ratio:16/9;border-radius:7px;overflow:hidden;cursor:pointer;border:1px solid var(--line);background:#000}
+.th.cur{outline:2px solid var(--accent);outline-offset:2px}
+.th .wcs-stage{position:absolute;left:0;top:0;transform:scale(.0875);transform-origin:0 0;pointer-events:none}
+.th .slide{opacity:1;visibility:visible;transition:none}
+.th .slide .rise{animation:none!important}
+.th span{position:absolute;left:6px;bottom:5px;font:700 9.5px Inter;color:#fff;background:rgba(0,0,0,.6);padding:2px 6px;border-radius:5px;z-index:9}
+.th.addth{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:22px;background:var(--soft);border-style:dashed}
+.slist .srow{display:flex;align-items:center;gap:6px;padding:6px 7px;border-radius:7px;cursor:pointer;font-size:11.5px}
+.slist .srow:hover{background:var(--soft)}
+.slist .srow.cur{background:var(--soft);box-shadow:inset 2px 0 0 var(--accent)}
+.slist .srow .n{width:18px;color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums;font-size:10px}
+.slist .srow .tt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.slist .srow .ly{font-size:9px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.slist .srow button{padding:2px 6px;font-size:11px;border:none;background:transparent;color:var(--muted)}
+.slist .srow button:hover{color:var(--text)}
+.layouts{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:8px 0 4px}
+.layouts button{padding:6px 2px;font-size:9.5px;font-weight:700;border-radius:7px}
+.layouts button.on{border-color:var(--accent);color:var(--accent)}
+.stat{display:flex;gap:6px;margin-bottom:6px}.stat input:first-child{flex:0 0 34%}
+#show{position:fixed;inset:0;background:#000;z-index:50;display:none;align-items:center;justify-content:center}
+#show.on{display:flex}
+#show .wcs-stage{transform-origin:center center;flex:0 0 auto}
+#show .slide{opacity:0;visibility:hidden}
+#show .slide.on{opacity:1;visibility:visible}
+#show .x{position:fixed;top:14px;right:14px;z-index:51;background:rgba(30,30,30,.8);color:#fff;border-color:rgba(255,255,255,.2)}
+#show .ct{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);color:#aaa;font:600 12px Inter;z-index:51}
+</style>
+</head><body>
+<div class="bar">
+  <div class="ttl">Deck builder<small id="barsub">WCStudios</small></div>
+  <span class="chip" id="chip"></span>
+  <button id="bReset">Reset</button>
+  <button id="bShow">Present</button>
+  <button class="primary" id="bGo">Create deck</button>
+</div>
+<div class="split">
+  <div class="form">
+    <div class="pick"><label>Client</label><select id="cPick"><option value="">No client (general)</option></select></div>
+    <div class="grp" data-g="deck">
+      <div class="lbl" data-toggle>Deck <span class="sum" id="sumDeck"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="f"><label>Deck name</label><input id="dTitle" placeholder="Walser 2027 Content Plan"></div>
+        <div class="f"><label>Cover image URL <span class="hint">(title slide background)</span></label><input id="dCover" placeholder="https://…"></div>
+        <div class="r2"><div class="f"><label>Theme</label><select id="dTheme"><option value="dark">Dark</option><option value="light">Light</option></select></div>
+          <div class="f"><label>Status</label><select id="dStatus"><option>Draft</option><option>Ready</option></select></div></div>
+      </div>
+    </div>
+    <div class="grp" data-g="slides">
+      <div class="lbl" data-toggle>Slides <span class="sum" id="sumSlides"></span><span class="chev">›</span></div>
+      <div class="gb"><div class="slist" id="slist"></div>
+        <div class="lab" style="margin-top:10px">Add a slide</div><div class="layouts" id="addLayouts"></div></div>
+    </div>
+    <div class="grp" data-g="slide">
+      <div class="lbl" data-toggle>Slide <span id="curN"></span> <span class="sum" id="sumSlide"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="lab">Layout</div><div class="layouts" id="layouts"></div>
+        <div id="fields" style="margin-top:10px"></div>
+      </div>
+    </div>
+    <div class="grp closed" data-g="conn">
+      <div class="lbl" data-toggle>Worker connection <span class="sum" id="sumConn"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="f"><label>widgetAction webhook URL</label><input id="cU"></div>
+        <div class="f"><label>Widget key</label><input id="cK"></div>
+        <button id="cSave">Save connection</button>
+      </div>
+    </div>
+    <p class="note" id="status"></p>
+  </div>
+  <div class="paper" id="paper">
+    <div class="view" id="view"></div>
+    <div class="strip" id="strip"></div>
+    <p class="note">Images: paste any public image link (your site, Squarespace, a Dropbox share link). After the deck is created you can keep editing it as a normal Notion page.</p>
+  </div>
+</div>
+<div id="show"><button class="x" id="showX">Close (Esc)</button><div class="ct" id="showCt"></div></div>
+<script src="hub.js?v=1"></script>
+<script src="deck-render.js?v=2"></script>
+<script>
+(() => {
+const H = window.WCSHub, W = window.WCSDeck, $ = id => document.getElementById(id), esc = H.esc;
+const STORE = "wcsDeckBuilder.v1";
+const LAY = { cover: "Cover", text: "Text", split: "Split", full: "Full image", stats: "Stats", quote: "Quote", table: "Table", video: "Video", gallery: "Gallery" };
+/* Which fields each layout uses. */
+const FIELDS = {
+  cover: ["eyebrow", "title", "body", "image"],
+  text: ["eyebrow", "title", "body", "bullets", "numbered"],
+  split: ["eyebrow", "title", "body", "bullets", "image"],
+  full: ["eyebrow", "title", "body", "image"],
+  stats: ["eyebrow", "title", "stats"],
+  quote: ["quote", "who", "image"],
+  table: ["eyebrow", "title", "table"],
+  video: ["eyebrow", "title", "video"],
+  gallery: ["eyebrow", "title", "images"],
+};
+const NEW = {
+  cover: () => ({ layout: "cover", title: "Title of the deck", body: "A video and post production company out of the Upper Midwest." }),
+  text: () => ({ layout: "text", eyebrow: "Section", title: "Slide title", bullets: "First point\nSecond point\nThird point" }),
+  split: () => ({ layout: "split", eyebrow: "Section", title: "Slide title", body: "A short paragraph next to the image.", image: "" }),
+  full: () => ({ layout: "full", title: "One line that lands.", image: "" }),
+  stats: () => ({ layout: "stats", eyebrow: "By the numbers", title: "Slide title", stats: [{ n: "12", l: "months of held crew days" }, { n: "2 weeks", l: "typical turnaround" }, { n: "1 team", l: "shoot through finish" }] }),
+  quote: () => ({ layout: "quote", quote: "What the client said.", who: "Name, Company", image: "" }),
+  table: () => ({ layout: "table", eyebrow: "Options", title: "How it compares", table: " | Option A | Option B\nScope | ... | ...\nPrice | ... | ..." }),
+  video: () => ({ layout: "video", eyebrow: "Reel", title: "Recent work", video: "https://vimeo.com/" }),
+  gallery: () => ({ layout: "gallery", eyebrow: "Work", title: "Selected stills", images: "" }),
+};
+let F = null, deck = null, cur = 0, saveT;
+const chip = (t, c = "") => { $("chip").textContent = t; $("chip").className = "chip on " + c; };
+const fixUrl = u => (u || "").trim().replace(/^(https:\/\/www\.dropbox\.com\/[^?]+)\?.*$/, "$1?raw=1");
+const client = () => F && F.clients.find(c => c.id === $("cPick").value);
+
+/* One builder slide -> the node list a Notion page holds (and the player renders). */
+function toNodes(s, i){
+  const N = [], R = H.parseRT, add = n => N.push(n);
+  const img = (u, pin) => ({ t: "image", u: fixUrl(u), cap: pin ? [{ x: "layout: " + pin }] : [] });
+  const head = () => { if (s.eyebrow) add({ t: "heading_3", r: R(s.eyebrow) }); if (s.title) add({ t: "heading_2", r: R(s.title) }); };
+  const body = () => H.paras(s.body).forEach(p => add(H.P(p)));
+  const bullets = () => H.lines(s.bullets).forEach(l => add({ t: s.numbered ? "numbered_list_item" : "bulleted_list_item", r: R(l) }));
+  switch (s.layout) {
+    case "cover": if (s.eyebrow) add({ t: "heading_3", r: R(s.eyebrow) }); add({ t: "heading_1", r: R(s.title || "") }); body(); if (s.image) add(img(s.image)); break;
+    case "text": head(); body(); bullets(); break;
+    case "split": head(); body(); bullets(); if (s.image) add(img(s.image, "split")); break;
+    case "full": head(); body(); if (s.image) add(img(s.image, "full")); break;
+    case "stats": head(); (s.stats || []).filter(x => x.n || x.l).forEach(x => add({ t: "callout", r: [{ x: x.n, b: 1 }, { x: " " + (x.l || "") }] })); break;
+    case "quote": add({ t: "quote", r: R(s.quote || "") }); if (s.who) add(H.P(s.who)); if (s.image) add(img(s.image)); break;
+    case "table": {
+      head();
+      const rows = H.lines(s.table).map(l => l.split("|").map(c => R(c.trim())));
+      if (rows.length) add({ t: "table", hdr: 1, rows });
+      break;
+    }
+    case "video": head(); if (s.video) add({ t: "embed", u: s.video.trim() }); break;
+    case "gallery": head(); H.lines(s.images).forEach((u, k) => add(img(u, k === 0 ? "gallery" : null))); break;
+  }
+  if (s.notes && s.notes.trim()) add({ t: "toggle", r: [{ x: "Notes" }], ch: H.paras(s.notes).map(p => H.P(p)) });
+  return N;
+}
+const meta = () => ({ title: $("dTitle").value || "Untitled deck", client: client() ? client().name : "", theme: $("dTheme").value, cover: fixUrl($("dCover").value) || null });
+
+function slideEl(s, i){
+  const nodes = toNodes(s, i).filter(n => !(n.t === "toggle" && /^notes$/i.test(W.txt(n))));
+  const c = { ix: i, nodes: nodes.length ? nodes : [{ t: "heading_2", r: [{ x: " " }] }] };
+  c.layout = W.classify(c, i === 0);
+  const el = W.render(c, i, deck.slides.length, meta());
+  el.classList.add("on");
+  el.querySelectorAll("[data-bg]").forEach(x => { x.style.backgroundImage = `url("${x.dataset.bg}")`; x.removeAttribute("data-bg"); });
+  el.querySelectorAll("img[data-src]").forEach(x => { x.src = x.dataset.src; x.removeAttribute("data-src"); });
+  el.querySelectorAll("iframe[data-src]").forEach(x => { x.src = x.dataset.src; x.removeAttribute("data-src"); });
+  return el;
+}
+function stageWith(el){
+  const st = document.createElement("div");
+  st.className = "wcs-stage" + ($("dTheme").value === "light" ? " light" : "");
+  if ($("dTheme").value === "light") st.style.setProperty("--acc", "#d4551f");
+  st.appendChild(el); return st;
+}
+function drawPreview(){
+  const v = $("view"); v.innerHTML = "";
+  const st = stageWith(slideEl(deck.slides[cur], cur));
+  v.appendChild(st);
+  st.style.transform = `scale(${v.clientWidth / 1920})`;
+}
+function drawStrip(){
+  const s = $("strip"); s.innerHTML = "";
+  deck.slides.forEach((sl, i) => {
+    const th = document.createElement("div"); th.className = "th" + (i === cur ? " cur" : "");
+    const el = slideEl(sl, i); el.querySelectorAll("iframe").forEach(f => f.remove());
+    th.appendChild(stageWith(el)); th.insertAdjacentHTML("beforeend", `<span>${i + 1}</span>`);
+    th.onclick = () => select(i); s.appendChild(th);
+  });
+  const add = document.createElement("div"); add.className = "th addth"; add.textContent = "+"; add.title = "Add a text slide";
+  add.onclick = () => addSlide("text"); s.appendChild(add);
+}
+function drawList(){
+  $("slist").innerHTML = deck.slides.map((s, i) => `<div class="srow ${i === cur ? "cur" : ""}" data-i="${i}"><span class="n">${i + 1}</span>
+    <span class="tt">${esc(s.title || s.quote || "Untitled")}</span><span class="ly">${LAY[s.layout]}</span>
+    <button data-up="${i}" title="Move up">↑</button><button data-dn="${i}" title="Move down">↓</button><button data-rm="${i}" title="Delete">×</button></div>`).join("");
+  $("slist").querySelectorAll(".srow").forEach(r => r.onclick = e => { if (e.target.closest("button")) return; select(+r.dataset.i); });
+  $("slist").querySelectorAll("[data-up]").forEach(b => b.onclick = () => move(+b.dataset.up, -1));
+  $("slist").querySelectorAll("[data-dn]").forEach(b => b.onclick = () => move(+b.dataset.dn, 1));
+  $("slist").querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { if (deck.slides.length < 2) return; deck.slides.splice(+b.dataset.rm, 1); cur = Math.min(cur, deck.slides.length - 1); full(); });
+  $("sumSlides").textContent = deck.slides.length + " slides";
+}
+function move(i, d){ const j = i + d; if (j < 0 || j >= deck.slides.length) return; [deck.slides[i], deck.slides[j]] = [deck.slides[j], deck.slides[i]]; cur = j; full(); }
+function addSlide(ly){ deck.slides.splice(cur + 1, 0, NEW[ly]()); cur++; full(); }
+function drawFields(){
+  const s = deck.slides[cur];
+  $("curN").textContent = cur + 1;
+  $("layouts").innerHTML = Object.entries(LAY).map(([k, l]) => `<button data-ly="${k}" class="${s.layout === k ? "on" : ""}">${l}</button>`).join("");
+  $("layouts").querySelectorAll("[data-ly]").forEach(b => b.onclick = () => { s.layout = b.dataset.ly; if (s.layout === "stats" && !s.stats) s.stats = NEW.stats().stats; full(); });
+  const f = FIELDS[s.layout], h = [];
+  const inp = (k, label, ph = "", hint = "") => `<div class="f"><label>${label}${hint ? ` <span class="hint">${hint}</span>` : ""}</label><input data-k="${k}" value="${esc(s[k] || "")}" placeholder="${esc(ph)}"></div>`;
+  const ta = (k, label, rows, hint = "", ph = "") => `<div class="f"><label>${label}${hint ? ` <span class="hint">${hint}</span>` : ""}</label><textarea data-k="${k}" rows="${rows}" placeholder="${esc(ph)}">${esc(s[k] || "")}</textarea></div>`;
+  if (f.includes("eyebrow")) h.push(inp("eyebrow", "Small orange label", "Optional"));
+  if (f.includes("title")) h.push(inp("title", s.layout === "cover" ? "Big title" : "Title"));
+  if (f.includes("quote")) h.push(ta("quote", "Quote", 3));
+  if (f.includes("who")) h.push(inp("who", "Who said it", "Name, Company"));
+  if (f.includes("body")) h.push(ta("body", "Text", 3, "(**bold**, blank line = new paragraph)"));
+  if (f.includes("bullets")) h.push(ta("bullets", "Bullets", 4, "(one per line)"));
+  if (f.includes("numbered")) h.push(`<div class="f"><label><input type="checkbox" data-k="numbered" ${s.numbered ? "checked" : ""}>Numbered list</label></div>`);
+  if (f.includes("image")) h.push(inp("image", "Image URL", "https://…", s.layout === "cover" && cur === 0 ? "(blank uses the deck cover)" : ""));
+  if (f.includes("images")) h.push(ta("images", "Image URLs", 4, "(one per line)"));
+  if (f.includes("video")) h.push(inp("video", "Vimeo or YouTube link"));
+  if (f.includes("table")) h.push(ta("table", "Table", 5, "(one row per line, cells split with | , first row is the header)"));
+  if (f.includes("stats")) {
+    h.push(`<div class="lab">Stat cards</div>` + (s.stats || []).map((x, k) => `<div class="stat"><input data-st="${k}" data-sf="n" value="${esc(x.n)}" placeholder="12"><input data-st="${k}" data-sf="l" value="${esc(x.l)}" placeholder="what it means"></div>`).join("")
+      + `<div class="r2" style="margin-bottom:9px"><button data-stadd>+ Card</button><button data-strm>− Card</button></div>`);
+  }
+  h.push(ta("notes", "Speaker notes", 2, "(only you see these when presenting)"));
+  $("fields").innerHTML = h.join("");
+  $("fields").querySelectorAll("[data-k]").forEach(el => el.oninput = el.onchange = () => { s[el.dataset.k] = el.type === "checkbox" ? el.checked : el.value; light(); });
+  $("fields").querySelectorAll("[data-st]").forEach(el => el.oninput = () => { s.stats[+el.dataset.st][el.dataset.sf] = el.value; light(); });
+  const sa = $("fields").querySelector("[data-stadd]"); if (sa) sa.onclick = () => { s.stats.push({ n: "", l: "" }); drawFields(); light(); };
+  const sr = $("fields").querySelector("[data-strm]"); if (sr) sr.onclick = () => { s.stats.pop(); drawFields(); light(); };
+  $("sumSlide").textContent = LAY[s.layout];
+}
+function light(){ drawPreview(); drawStrip(); drawList(); summary(); save(); }
+function full(){ drawFields(); light(); }
+function select(i){ cur = i; full(); }
+function summary(){
+  $("sumDeck").textContent = $("dTitle").value;
+  $("barsub").textContent = `${$("dTitle").value || "New deck"} · ${deck.slides.length} slides`;
+}
+function save(){ clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(STORE, JSON.stringify({ deck, cur, d: { t: $("dTitle").value, c: $("dCover").value, th: $("dTheme").value, st: $("dStatus").value, cl: $("cPick").value } })); } catch(e){} }, 300); }
+function starter(){
+  return { slides: [
+    { layout: "cover", title: "Retainer Program", body: "A video and post production company out of the Upper Midwest." },
+    { layout: "split", eyebrow: "The idea", title: "A plug-in creative team", body: "We move like we're in-house, just with bigger cameras and more expertise.", image: "https://images.squarespace-cdn.com/content/v1/630cea8f62e67026ee1c591a/1706857427763-2P85XQQ9YAHH8BKPFNK4/AV+-5.jpg?format=2500w" },
+    { layout: "text", eyebrow: "Next steps", title: "Let's see if it's a fit", bullets: "A quick call about your year\nWe scope the retainer and the calendar\nSign, and we book the first production day", numbered: true },
+  ] };
+}
+
+/* Present: full-screen, arrow keys, Esc. */
+let showIx = 0;
+function show(on){
+  const sh = $("show");
+  if (!on) { sh.classList.remove("on"); sh.querySelector(".wcs-stage")?.remove(); return; }
+  sh.querySelector(".wcs-stage")?.remove();
+  const st = document.createElement("div"); st.className = "wcs-stage" + ($("dTheme").value === "light" ? " light" : "");
+  deck.slides.forEach((s, i) => { const el = slideEl(s, i); el.classList.toggle("on", i === showIx); st.appendChild(el); });
+  sh.appendChild(st); sh.classList.add("on");
+  const fit = () => { st.style.transform = `scale(${Math.min(innerWidth / 1920, innerHeight / 1080)})`; }; fit();
+  $("showCt").textContent = `${showIx + 1} / ${deck.slides.length}`;
+}
+function step(d){ showIx = Math.max(0, Math.min(deck.slides.length - 1, showIx + d)); const els = $("show").querySelectorAll(".slide"); els.forEach((e, i) => e.classList.toggle("on", i === showIx)); $("showCt").textContent = `${showIx + 1} / ${deck.slides.length}`; }
+addEventListener("keydown", e => {
+  if (!$("show").classList.contains("on")) return;
+  if (e.key === "Escape") show(false);
+  else if (["ArrowRight", " ", "PageDown"].includes(e.key)) { e.preventDefault(); step(1); }
+  else if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); step(-1); }
+});
+$("show").onclick = e => { if (e.target.id === "showX") return show(false); step(e.clientX > innerWidth / 3 ? 1 : -1); };
+
+async function create(){
+  const c = H.conn();
+  if (!c.url || !c.key) { document.querySelector('[data-g="conn"]').classList.remove("closed"); chip("Connect the worker", "err"); return; }
+  const nodes = deck.slides.flatMap((s, i) => [...(i ? [{ t: "divider" }] : []), ...toNodes(s, i)]);
+  const want = $("dTitle").value || "Untitled deck";
+  const payload = { title: want, clientId: $("cPick").value, theme: $("dTheme").value, status: $("dStatus").value, cover: fixUrl($("dCover").value), nodes };
+  $("bGo").disabled = true; chip("Creating…");
+  try { await H.post("createDeck", payload); } catch(e){ chip("Couldn't reach the worker", "err"); $("bGo").disabled = false; return; }
+  $("status").textContent = "Sent. The deck lands in the Decks table and gets its client link in about a minute.";
+  H.watch(f => f.decks.find(d => d.name === want && d.slides), hit => {
+    chip("Deck created", "saved"); $("bGo").disabled = false;
+    $("status").innerHTML = `Ready: <a href="#" id="op">open in Notion</a> · <a href="#" id="pr">present</a>`;
+    $("op").onclick = e => { e.preventDefault(); H.openUrl(hit.url); };
+    $("pr").onclick = e => { e.preventDefault(); window.open(hit.present, "_blank", "noopener"); };
+  }, () => { chip("Still waiting", "err"); $("bGo").disabled = false; $("status").textContent = "Not in the feed yet. Check the Decks table; if nothing arrived, the worker needs its latest deploy."; });
+}
+
+async function boot(){
+  F = await H.loadFeed();
+  if (F) $("cPick").innerHTML = `<option value="">No client (general)</option>` + F.clients.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
+  let s; try { s = JSON.parse(localStorage.getItem(STORE) || "null"); } catch(e){}
+  if (s && s.deck && s.deck.slides && s.deck.slides.length) { deck = s.deck; cur = Math.min(s.cur || 0, deck.slides.length - 1);
+    $("dTitle").value = s.d.t || ""; $("dCover").value = s.d.c || ""; $("dTheme").value = s.d.th || "dark"; $("dStatus").value = s.d.st || "Draft"; $("cPick").value = s.d.cl || ""; }
+  else { deck = starter(); $("dTitle").value = "New deck"; $("dCover").value = "https://images.squarespace-cdn.com/content/v1/630cea8f62e67026ee1c591a/1706889413589-ZPUZZFUSEME1FNNJ259X/2023DemoInTheDirt-164.jpg?format=2500w"; }
+  $("addLayouts").innerHTML = Object.entries(LAY).map(([k, l]) => `<button data-add="${k}">${l}</button>`).join("");
+  $("addLayouts").querySelectorAll("[data-add]").forEach(b => b.onclick = () => addSlide(b.dataset.add));
+  ["dTitle","dCover","dTheme","dStatus","cPick"].forEach(k => $(k).addEventListener("input", light));
+  $("cPick").addEventListener("change", light);
+  H.wireGroups();
+  const cc = H.conn(); $("cU").value = cc.url || ""; $("cK").value = cc.key || ""; $("sumConn").textContent = cc.url ? "connected" : "not set";
+  $("cSave").onclick = () => { H.setConn($("cU").value.trim(), $("cK").value.trim()); H.toast("Connection saved"); $("sumConn").textContent = "connected"; };
+  $("bReset").onclick = () => { try { localStorage.removeItem(STORE); } catch(e){} deck = starter(); cur = 0; $("dTitle").value = "New deck"; full(); chip("Reset"); };
+  $("bShow").onclick = () => { showIx = cur; show(true); };
+  $("bGo").onclick = create;
+  addEventListener("resize", () => { drawPreview(); if ($("show").classList.contains("on")) show(true); });
+  full();
+}
+boot();
+})();
+</script>
+</body></html>
