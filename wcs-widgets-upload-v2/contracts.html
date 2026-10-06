@@ -32,7 +32,7 @@ button{font:inherit;color:inherit}
 .chip.blue{color:var(--blue);background:color-mix(in srgb,var(--blue) 14%,transparent)}
 .chip.hot{color:var(--over);background:color-mix(in srgb,var(--over) 13%,transparent)}
 .wrap{padding:18px 22px}
-.head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px}
+.head{display:flex;align-items:baseline;justify-content:space-between;gap:6px 12px;margin-bottom:14px;flex-wrap:wrap}
 .title{font-size:15px;font-weight:800;letter-spacing:-.3px}
 .note{font-size:10.5px;color:var(--faint)}
 .empty{padding:26px 0;color:var(--faint);font-size:12px}
@@ -412,7 +412,7 @@ function list(F){
     const rank = c => ({ Active: 0, Signed: 1, Sent: 2, Draft: 3, Expired: 5, Template: 6 }[c.status] ?? 4);
     return rank(a) - rank(b) || (b.start || "").localeCompare(a.start || "");
   });
-  const show = all.filter(c => f === "all" ? true : f === "clients" ? /Client/.test(c.type) : f === "crew" ? c.type === "Contractor" : f === "templates" ? c.status === "Template" : f === "review" ? c.review : true);
+  const show = all.filter(c => f === "all" ? c.status !== "Template" : f === "clients" ? /Client/.test(c.type) : f === "crew" ? c.type === "Contractor" : f === "templates" ? c.status === "Template" : f === "review" ? c.review : true);
   const act = F.contracts.filter(live), mrr = act.filter(c => c.type !== "Contractor").reduce((t, c) => t + (c.monthly || 0), 0);
   const pend = F.contracts.filter(pending).length, rev = F.contracts.filter(c => c.review && isDoc(c)).length;
   const rows = show.map(c => {
@@ -422,7 +422,7 @@ function list(F){
       <div class="mt">${esc([c.client || c.party, c.type, term].filter(Boolean).join(" \u00b7 "))}${c.review ? ` \u00b7 <span style="color:var(--over)">needs review</span>` : ""}</div></div>
       <div class="amt"><div class="a">${c.monthly ? money(c.monthly) + "<span style=\"font-size:10px;color:var(--faint)\">/mo</span>" : ""}</div>${statusChip(c.status)}</div></div>`;
   }).join("");
-  const fb = [["all","All"],["clients","Clients"],["crew","Crew"],["templates","Templates"],["review","Needs review"]].map(([k, l]) => `<button data-f="${k}" class="${f === k ? "on" : ""}">${l}</button>`).join("");
+  const fb = [["all","Agreements"],["clients","Clients"],["crew","Crew"],["templates","Templates"],["review","Needs review"]].map(([k, l]) => `<button data-f="${k}" class="${f === k ? "on" : ""}">${l}</button>`).join("");
   return `<div class="wrap"><div class="trk-head"><div><div class="title">Contract Tracker</div><div class="note">Every agreement in Contracts \u00b7 live \u00b7 ${F.updated ? fmt(F.updated.slice(0, 10)) : ""}</div></div>
     <div class="bigr"><div class="k">Under contract / mo</div><div class="big">${money(mrr)}</div></div></div>
     <div class="trk-meta"><div><div class="k">Active</div><div class="v">${act.length}</div></div><div><div class="k">Out for signature</div><div class="v">${pend}</div></div><div><div class="k">Needs review</div><div class="v" style="color:${rev ? "var(--over)" : "inherit"}">${rev}</div></div></div>
@@ -437,10 +437,11 @@ function dstrip(F){
   return `<div class="strip">
    <div class="panel"><div class="inner"><div class="k">Decks</div><div class="body"><div class="big">${D.length}</div>
     <div class="sub"><b>${D.filter(d => d.status === "Ready").length}</b> ready &middot; <b>${D.filter(d => d.status === "Sent").length}</b> sent</div></div></div></div>
-   <div class="panel"><div class="inner"><div class="k">Proposals ${yr}</div><div class="body"><div class="big">${pY.length}</div>
-    <div class="sub"><b>${money(pY.reduce((t, p) => t + (p.total || 0), 0))}</b> quoted &middot; ${P.length} all time</div></div></div></div>
-   <div class="panel"><div class="inner"><div class="k">Awaiting acceptance</div><div class="body"><div class="big">${money(open.reduce((t, p) => t + (p.total || 0), 0))}</div>
-    <div class="sub"><b>${open.length}</b> open proposal${open.length === 1 ? "" : "s"}</div></div></div></div>
+   <div class="panel"><div class="inner"><div class="k">Proposals</div><div class="body"><div class="big">${P.length}</div>
+    <div class="sub"><b>${money(P.reduce((t, p) => t + (p.total || 0), 0))}</b> quoted all time</div></div></div></div>
+   <div class="panel"><div class="inner"><div class="k">Latest proposal</div><div class="body">
+    ${P[0] ? `<div class="big">${P[0].total ? money(P[0].total) : "&mdash;"}</div><div class="row" data-u="${esc(P[0].url)}"><span class="rn">${esc(P[0].name.replace(/^Project Proposal\s*[-\u2013]\s*/, ""))}</span><span class="chip gray">${P[0].date ? fmt(P[0].date) : ""}</span></div>` : `<div class="big">&mdash;</div>`}
+   </div></div></div>
    <div class="panel"><div class="inner"><div class="k">Last touched</div><div class="body">
     ${latest ? `<div class="big" style="letter-spacing:-1.3px">${fmt(latest.e.slice(0, 10))}</div><div class="row" data-u="${esc(latest.u)}"><span class="rn">${esc(latest.n)}</span><span class="chip gray">${latest.k}</span></div>` : `<div class="big">&mdash;</div>`}
    </div></div></div></div>`;
