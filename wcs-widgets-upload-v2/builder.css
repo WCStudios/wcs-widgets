@@ -24,7 +24,7 @@ button:disabled{opacity:.5;cursor:default}
 .paper{flex:1;min-width:0;overflow:auto;background:var(--plane);padding:20px;display:flex;justify-content:center}
 @media(max-width:820px){.split{flex-direction:column}.form{width:100%;border-right:none;border-bottom:1px solid var(--line);max-height:46%}}
 .pick{margin-bottom:16px}
-.pick label,.lab{display:block;font-size:9px;letter-spacing:.9px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:5px}
+.pick label,.flab{display:block;font-size:9px;letter-spacing:.9px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:5px}
 .grp{margin-bottom:14px}
 .grp>.lbl{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;font-size:9px;letter-spacing:.9px;text-transform:uppercase;color:var(--muted);font-weight:700;padding-bottom:7px;border-bottom:1px solid var(--line);margin-bottom:10px}
 .grp>.lbl:hover{color:var(--text)}
