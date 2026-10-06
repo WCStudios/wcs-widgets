@@ -19,7 +19,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .spark{height:32px;margin-top:8px}
 .tp{display:flex;gap:14px;align-items:flex-start}.thumb{width:clamp(76px,7vw,108px);aspect-ratio:1;border-radius:12px;object-fit:cover;background:var(--soft);flex:0 0 auto}
 .cap{font-size:11.5px;line-height:1.35;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.bars{display:flex;align-items:flex-end;gap:2px;height:clamp(34px,4vw,52px);margin-top:12px}.bar{flex:1;background:var(--soft);border-radius:2px 2px 0 0;min-height:2px}.bar.peak{background:var(--accent)}
+.bars{display:flex;align-items:flex-end;gap:2px;height:clamp(34px,4vw,52px);margin-top:12px;overflow:hidden;border-bottom:1px solid var(--line)}
+.bar{flex:1;background:var(--soft);border-radius:2px 2px 0 0;min-height:2px;transition:height .3s ease}
+@media (prefers-color-scheme:dark){.bar{background:#2e2e2e}}
+.bar.near{background:color-mix(in srgb,var(--accent) 38%,var(--soft))}
+.bar.peak{background:var(--accent)}
 .axis{display:flex;justify-content:space-between;font-size:8px;color:var(--muted);margin-top:4px}
 .hint{position:absolute;top:12px;right:14px;font-size:9px;color:var(--muted)}
 </style></head><body>
@@ -96,8 +100,16 @@ function render(){if(!data)return;const a=accts[ai],d=data[a]||{},m=META[a]||{av
  }else{likes.textContent="—";tpsub.textContent="likes";cap.textContent="No recent posts";thumb.style.display="none";}
  // best time
  best.textContent=d.bestHour!=null?fmtH(d.bestHour):"Collecting…";
+ // Raw hourly engagement is spiky (one viral post owns an hour) and isn't on
+ // a 0-100 scale, which pushed bars out the top of the panel. Smooth across
+ // neighbouring hours, then scale to the tallest bar so nothing can overflow.
  const hourly=d.hourly||[],peak=d.bestHour,H=document.getElementById('bars').clientHeight||46;
- bars.innerHTML=Array.from({length:24},(_,h)=>'<div class="bar '+(h===peak?'peak':'')+'" style="height:'+Math.max(2,(hourly[h]||0)/100*H)+'px"></div>').join('');
+ const raw=Array.from({length:24},(_,h)=>Math.max(0,Number(hourly[h])||0));
+ const sm=raw.map((v,h)=>.25*raw[(h+23)%24]+.5*v+.25*raw[(h+1)%24]);
+ const mx=Math.max(...sm,1e-9);
+ bars.innerHTML=sm.map((v,h)=>{const cls=h===peak?'peak':(peak!=null&&Math.abs(h-peak)===1?'near':'');
+  const ht=Math.round(Math.max(2,(v/mx)*(H-2)));
+  return '<div class="bar '+cls+'" style="height:'+ht+'px" title="'+fmtH(h)+'"></div>';}).join('');
  sub4.textContent=d.bestHour!=null?"Central time · recent posts":"Needs a few posts";}
 function setR(e,x){e&&e.stopPropagation();ri=x;render();}
 function cycleAcct(){if(accts.length>1){ai=(ai+1)%accts.length;render();}}
