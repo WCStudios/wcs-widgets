@@ -124,6 +124,26 @@ input::placeholder{color:var(--faint)}
 .mini.pri{background:var(--accent);border-color:var(--accent);color:#fff}
 .how{margin-top:14px;font-size:10.5px;color:var(--faint);line-height:1.6}
 .how b{color:var(--muted)}
+
+/* ── trackers (list / proplist) ── */
+.trk-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:16px}
+.trk-head .title{font-size:19px;letter-spacing:-.5px}
+.trk-head .bigr{text-align:right}
+.trk-head .bigr .big{color:var(--accent)}
+.trk-meta{display:flex;gap:22px;margin-bottom:14px}
+.trk-meta .v{font-size:14px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums}
+.filters{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.filters button{background:none;border:1px solid var(--line);border-radius:14px;padding:4px 10px;font-size:10.5px;font-weight:700;color:var(--muted);cursor:pointer}
+.filters button.on{border-color:var(--accent);color:var(--accent)}
+.trow{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:10px;padding:11px 14px;margin-bottom:7px;cursor:pointer;background:var(--card);transition:border-color .12s}
+.trow:hover{border-color:var(--faint)}
+.trow.alert{box-shadow:inset 3px 0 0 var(--over)}
+.trow .grow{flex:1;min-width:0}
+.trow .nm{font-size:12.5px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trow .mt{font-size:10px;color:var(--faint);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trow .amt{text-align:right;flex:0 0 auto}
+.trow .amt .a{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.trow .amt .chip{margin-top:4px}
 #toast{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:11px;font-weight:700;padding:7px 12px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none}
 #toast.on{opacity:1}
 </style></head><body>
@@ -380,21 +400,70 @@ function decks(F){
       <button class="mini pri" data-open="${esc(d.present)}">Present</button>
       <button class="mini" data-copy="${esc(d.share)}">Copy client link</button>
       <button class="mini" data-u="${esc(d.url)}">Edit</button></div>`).join("");
-  return `<div class="wrap"><div class="head"><div class="title">Decks</div><button class="mini" data-u="${DECKS_DB}">+ New deck</button></div>
+  return `<div class="wrap"><div class="trk-head"><div><div class="title">Deck Library</div><div class="note">Present opens your copy with speaker notes. Copy client link gives them the deck only.</div></div></div>
     <div class="decks">${rows || `<div class="empty">No decks yet.</div>`}</div>
     <div class="how"><b>Writing a deck:</b> one Notion page per deck, slides split with dividers. <b>H1</b> makes a cover. <b>H3</b> above an <b>H2</b> is the small orange label. An image with a short title goes full bleed; with text it splits the slide. Two or more <b>callouts</b> become stat cards (bold the number). A <b>quote</b> is a testimonial, a <b>table</b> is a comparison, a Vimeo link plays inline. A toggle named <b>Notes</b> is speaker notes: visible from Present, never on the client link.</div></div>`;
 }
 
+
+function list(F){
+  const f = window.__f || "all";
+  const all = F.contracts.slice().sort((a, b) => {
+    const rank = c => ({ Active: 0, Signed: 1, Sent: 2, Draft: 3, Expired: 5, Template: 6 }[c.status] ?? 4);
+    return rank(a) - rank(b) || (b.start || "").localeCompare(a.start || "");
+  });
+  const show = all.filter(c => f === "all" ? true : f === "clients" ? /Client/.test(c.type) : f === "crew" ? c.type === "Contractor" : f === "templates" ? c.status === "Template" : f === "review" ? c.review : true);
+  const act = F.contracts.filter(live), mrr = act.filter(c => c.type !== "Contractor").reduce((t, c) => t + (c.monthly || 0), 0);
+  const pend = F.contracts.filter(pending).length, rev = F.contracts.filter(c => c.review && isDoc(c)).length;
+  const rows = show.map(c => {
+    const e = endOf(c), soon = e && live(c) && days(TODAY, d0(e)) <= 60 && d0(e) >= TODAY;
+    const term = c.start ? `${fmtY(c.start)} \u2192 ${e ? fmtY(e) : "open"}` : (c.status === "Template" ? "Template" : "No dates");
+    return `<div class="trow ${soon ? "alert" : ""}" data-u="${esc(c.url)}"><div class="grow"><div class="nm">${esc(c.name)}</div>
+      <div class="mt">${esc([c.client || c.party, c.type, term].filter(Boolean).join(" \u00b7 "))}${c.review ? ` \u00b7 <span style="color:var(--over)">needs review</span>` : ""}</div></div>
+      <div class="amt"><div class="a">${c.monthly ? money(c.monthly) + "<span style=\"font-size:10px;color:var(--faint)\">/mo</span>" : ""}</div>${statusChip(c.status)}</div></div>`;
+  }).join("");
+  const fb = [["all","All"],["clients","Clients"],["crew","Crew"],["templates","Templates"],["review","Needs review"]].map(([k, l]) => `<button data-f="${k}" class="${f === k ? "on" : ""}">${l}</button>`).join("");
+  return `<div class="wrap"><div class="trk-head"><div><div class="title">Contract Tracker</div><div class="note">Every agreement in Contracts \u00b7 live \u00b7 ${F.updated ? fmt(F.updated.slice(0, 10)) : ""}</div></div>
+    <div class="bigr"><div class="k">Under contract / mo</div><div class="big">${money(mrr)}</div></div></div>
+    <div class="trk-meta"><div><div class="k">Active</div><div class="v">${act.length}</div></div><div><div class="k">Out for signature</div><div class="v">${pend}</div></div><div><div class="k">Needs review</div><div class="v" style="color:${rev ? "var(--over)" : "inherit"}">${rev}</div></div></div>
+    <div class="filters">${fb}</div>${rows || `<div class="empty">Nothing here.</div>`}</div>`;
+}
+function dstrip(F){
+  const D = F.decks, P = F.proposals || [];
+  const yr = String(TODAY.getFullYear());
+  const pY = P.filter(p => (p.date || "").startsWith(yr) || (p.edited || "").startsWith(yr));
+  const open = P.filter(p => !p.accepted);
+  const latest = [...D.map(d => ({ n: d.name, e: d.edited, u: d.url, k: "Deck" })), ...P.map(p => ({ n: p.name, e: p.edited, u: p.url, k: "Proposal" }))].sort((a, b) => (b.e || "").localeCompare(a.e || ""))[0];
+  return `<div class="strip">
+   <div class="panel"><div class="inner"><div class="k">Decks</div><div class="body"><div class="big">${D.length}</div>
+    <div class="sub"><b>${D.filter(d => d.status === "Ready").length}</b> ready &middot; <b>${D.filter(d => d.status === "Sent").length}</b> sent</div></div></div></div>
+   <div class="panel"><div class="inner"><div class="k">Proposals ${yr}</div><div class="body"><div class="big">${pY.length}</div>
+    <div class="sub"><b>${money(pY.reduce((t, p) => t + (p.total || 0), 0))}</b> quoted &middot; ${P.length} all time</div></div></div></div>
+   <div class="panel"><div class="inner"><div class="k">Awaiting acceptance</div><div class="body"><div class="big">${money(open.reduce((t, p) => t + (p.total || 0), 0))}</div>
+    <div class="sub"><b>${open.length}</b> open proposal${open.length === 1 ? "" : "s"}</div></div></div></div>
+   <div class="panel"><div class="inner"><div class="k">Last touched</div><div class="body">
+    ${latest ? `<div class="big" style="letter-spacing:-1.3px">${fmt(latest.e.slice(0, 10))}</div><div class="row" data-u="${esc(latest.u)}"><span class="rn">${esc(latest.n)}</span><span class="chip gray">${latest.k}</span></div>` : `<div class="big">&mdash;</div>`}
+   </div></div></div></div>`;
+}
+function proplist(F){
+  const P = F.proposals || [];
+  const rows = P.map(p => `<div class="trow" data-u="${esc(p.url)}"><div class="grow"><div class="nm">${esc(p.name.replace(/^Project Proposal\s*[-\u2013]\s*/, ""))}</div>
+      <div class="mt">${esc([p.client, p.date ? fmtY(p.date) : ""].filter(Boolean).join(" \u00b7 "))}</div></div>
+      <div class="amt"><div class="a">${p.total ? money(p.total) : ""}</div><span class="chip ${p.accepted ? "good" : "gray"}">${p.accepted ? "Accepted" : "Open"}</span></div></div>`).join("");
+  return `<div class="wrap"><div class="trk-head"><div><div class="title">Proposals</div><div class="note">WCS Project Proposals \u00b7 live</div></div></div>${rows || `<div class="empty">No proposals yet.</div>`}</div>`;
+}
 /* ── boot ── */
 async function render(){
   const F = await load();
   if (!F) { app.innerHTML = `<div class="wrap"><div class="empty">Couldn't read the contracts feed. If this keeps happening, the key in this embed link is wrong.</div></div>`; return; }
   const was = VIEW === "generator" && document.getElementById("gT");
   if (was) return; // never clobber a form someone is filling in
-  app.innerHTML = ({ strip, timeline, scope, generator, decks }[VIEW] || strip)(F);
+  app.innerHTML = ({ strip, timeline, scope, generator, decks, list, dstrip, proplist }[VIEW] || strip)(F);
+  window.__F = F;
   if (VIEW === "generator") wireGenerator(F);
 }
 document.addEventListener("click", e => {
+  const fb = e.target.closest(".filters [data-f]"); if (fb) { window.__f = fb.dataset.f; app.innerHTML = list(window.__F); return; }
   const u = e.target.closest("[data-u]"); if (u && !e.target.closest("button[data-copy],button[data-open]")) { openUrl(u.dataset.u); return; }
   const c = e.target.closest("[data-copy]"); if (c) { copy(c.dataset.copy); return; }
   const o = e.target.closest("[data-open]"); if (o) window.open(o.dataset.open, "_blank", "noopener");
