@@ -268,7 +268,7 @@ function scope(F){
       <div class="verdict">${verdict}</div>
       ${tasks ? `<div class="tasks">${tasks}</div>` : ""}</div>`;
   }).join("");
-  return `<div class="wrap"><div class="head"><div class="title">Retainer scope</div><div class="note">Delivered vs. contracted, from Tasks inside each term. The black tick is where you should be today.</div></div><div class="scope">${cards}</div></div>`;
+  return `<div class="wrap"><div class="head"><div class="title">Retainer scope</div><div class="note">Delivered vs. contracted, from Tasks inside each term. The tick marks where you should be today.</div></div><div class="scope">${cards}</div></div>`;
 }
 
 /* generator */
@@ -277,7 +277,8 @@ function isDefault(tok){ return /\d|\$/.test(tok) || (/^[a-z]/.test(tok) && !/@|
 function generator(F){
   const T = F.templates;
   if (!T.length) return `<div class="wrap"><div class="title">Contract generator</div><div class="empty">No templates yet. Mark a Contracts row as Status = Template and give it a Template Key.</div></div>`;
-  const opts = T.map(t => `<option value="${t.id}">${esc(t.name.replace(/\[.*?\]\s*/g, "").trim() || t.name)}</option>`).join("");
+  const label = t => /\[/.test(t.name) ? t.key.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) : t.name;
+  const opts = T.map(t => `<option value="${t.id}">${esc(label(t))}</option>`).join("");
   const cls = F.clients.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
   return `<div class="wrap"><div class="head"><div class="title">Contract generator</div><div class="note">Fills a template and drops a Draft into Contracts.</div></div>
     <div class="grid2"><div><label>Template</label><select id="gT">${opts}</select></div>
@@ -318,15 +319,29 @@ function wireGenerator(F){
     $("pTerm").value = t.term ?? ""; $("pMonthly").value = t.monthly ?? ""; $("pHours").value = t.hours ?? "";
     if (!$("pStart").value) $("pStart").value = iso(TODAY);
     syncEnd(); preview();
-    $("gF").querySelectorAll("input").forEach(i => i.oninput = preview);
+    $("gF").querySelectorAll("input").forEach(i => i.oninput = () => { i.dataset.typed = 1; preview(); });
   }
-  function syncEnd(){ if ($("pStart").value && $("pTerm").value) $("pEnd").value = addMonths($("pStart").value, Number($("pTerm").value)); }
+  function syncEnd(){ if ($("pStart").value && $("pTerm").value) $("pEnd").value = addMonths($("pStart").value, Number($("pTerm").value)); linkTokens(); }
+  /* Record fields feed the matching blanks, unless someone typed their own. */
+  function linkTokens(){
+    const m = Number($("pMonthly").value), t = Number($("pTerm").value);
+    const map = [[/monthly (rate|value|fee)/i, m ? money(m) : ""], [/annual total|total value/i, m && t ? money(m * t) : ""], [/term months|^term$/i, t ? String(t) : ""],
+                 [/term label/i, $("pStart").value && $("pEnd").value ? `${d0($("pStart").value).getFullYear() % 100}/${d0($("pEnd").value).getFullYear() % 100} Season` : ""],
+                 [/deliverables summary/i, $("pDel").value ? `${$("pDel").value} high quality video projects throughout the term` : ""],
+                 [/^end date$/i, $("pEnd").value ? fmtY($("pEnd").value) : ""]];
+    $("gF").querySelectorAll("input").forEach(i => {
+      if (i.dataset.typed) return;
+      const hit = map.find(([re]) => re.test(i.dataset.tok));
+      if (hit && hit[1]) i.value = hit[1];
+    });
+    preview();
+  }
   function values(){ const o = {}; $("gF").querySelectorAll("input").forEach(i => { if (i.value.trim()) o[i.dataset.tok] = i.value.trim(); }); return o; }
   function title(){ const v = values(); return tpl().name.replace(/\[([^\[\]]+)\]/g, (m, k) => v[k.trim()] || m); }
   function preview(){ $("gTitle").textContent = title(); }
   $("gT").onchange = () => { try { localStorage.setItem(GEN, JSON.stringify({ t: $("gT").value })); } catch(e){} fields(); };
   $("gC").onchange = fields;
-  $("pStart").oninput = syncEnd; $("pTerm").oninput = syncEnd;
+  $("pStart").oninput = syncEnd; $("pTerm").oninput = syncEnd; $("pMonthly").oninput = linkTokens; $("pDel").oninput = linkTokens; $("pEnd").oninput = linkTokens;
   $("gConn").onclick = () => { const b = $("connBox"); b.style.display = b.style.display === "none" ? "block" : "none"; let c = {}; try { c = JSON.parse(localStorage.getItem(CONN) || "{}"); } catch(e){} $("cU").value = c.url || ""; $("cK").value = c.key || ""; };
   $("cSave").onclick = () => { try { localStorage.setItem(CONN, JSON.stringify({ url: $("cU").value.trim(), key: $("cK").value.trim() })); toast("Saved"); } catch(e){ toast("This browser blocked saving"); } };
   $("gGo").onclick = async () => {
