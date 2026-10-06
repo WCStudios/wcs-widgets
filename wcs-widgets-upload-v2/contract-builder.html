@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
 <title>Contract Builder · WCStudios</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="builder.css?v=1">
+<link rel="stylesheet" href="builder.css?v=2">
 </head><body>
 <div class="bar">
   <div class="ttl">Contract builder<small id="barsub">WCStudios</small></div>
@@ -53,16 +53,18 @@
         <p class="note" style="margin-top:8px">Shared with the invoice builder on this browser. If the invoice builder already works here, this is already set.</p>
       </div>
     </div>
+    <div class="r2" id="edits" style="display:none;align-items:center;margin-bottom:10px"><span class="note" id="editsN"></span><button id="revert" style="flex:0 0 auto">Undo page edits</button></div>
     <p class="note" id="status"></p>
   </div>
-  <div class="paper" id="paperWrap"><div class="scaler" id="scaler"><div class="doc" id="doc"></div></div></div>
+  <div class="paper" id="paperWrap" style="flex-direction:column;align-items:center;justify-content:flex-start">
+    <p class="edithint">Click an <b>orange blank</b> to fill it, or any other text on the contract to rewrite it.</p><div class="scaler" id="scaler"><div class="doc" id="doc"></div></div></div>
 </div>
-<script src="hub.js?v=1"></script>
+<script src="hub.js?v=2"></script>
 <script>
 (() => {
 const H = window.WCSHub, $ = id => document.getElementById(id), esc = H.esc;
 const STORE = "wcsContractBuilder.v1";
-let F = null, typed = {}, saveT;
+let F = null, typed = {}, saveT, overrides = {};
 const tpl = () => F.templates.find(t => t.id === $("tPick").value);
 const client = () => F.clients.find(c => c.id === $("cPick").value);
 const label = t => /\[/.test(t.name) ? t.key.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) : t.name;
@@ -132,7 +134,10 @@ function render(){
   $("doc").innerHTML = `<div class="cover"><div class="wm"><b>WCS</b>TUDIOS</div><div class="tag">A video &amp; post production company</div></div>
     <div class="pg"><h1 class="t">${H.rtHTML([{ x: $("rTitle").value }])}</h1>
     <div class="props">${props.map(([k, x]) => `<span>${k}</span><b>${esc(x)}</b>`).join("")}</div>
-    ${H.docHTML(t.nodes || [], v)}</div>`;
+    ${H.docHTML(t.nodes || [], v, { paths: true, overrides })}</div>`;
+  const nEd = Object.keys(overrides).length;
+  $("edits").style.display = nEd ? "flex" : "none";
+  $("editsN").textContent = `${nEd} block${nEd === 1 ? "" : "s"} edited on the page`;
   H.fitPaper($("paperWrap"), $("scaler"), $("doc"));
   clearTimeout(saveT); saveT = setTimeout(save, 400);
 }
@@ -140,7 +145,7 @@ function save(){
   try {
     const blanks = {}; $("blanks").querySelectorAll("input").forEach(i => { if (typed[i.dataset.tok]) blanks[i.dataset.tok] = i.value; });
     localStorage.setItem(STORE, JSON.stringify({ t: $("tPick").value, c: $("cPick").value, blanks,
-      f: Object.fromEntries(["pStart","pTerm","pEnd","pMonthly","pTotal","pDel","pHours","rTitle","rParty","rStatus","rEmail"].map(k => [k, $(k).value])), typed }));
+      overrides, f: Object.fromEntries(["pStart","pTerm","pEnd","pMonthly","pTotal","pDel","pHours","rTitle","rParty","rStatus","rEmail"].map(k => [k, $(k).value])), typed }));
   } catch(e){}
 }
 function restore(){
@@ -149,7 +154,7 @@ function restore(){
   if (s.t && F.templates.some(t => t.id === s.t)) $("tPick").value = s.t;
   if (s.c) $("cPick").value = s.c;
   buildBlanks();
-  typed = s.typed || {};
+  typed = s.typed || {}; overrides = s.overrides || {};
   for (const [k, v] of Object.entries(s.f || {})) if ($(k)) $(k).value = v;
   $("blanks").querySelectorAll("input").forEach(i => { if (s.blanks && i.dataset.tok in s.blanks) i.value = s.blanks[i.dataset.tok]; });
   return true;
@@ -165,7 +170,7 @@ async function create(){
   if (!c.url || !c.key) { document.querySelector('[data-g="conn"]').classList.remove("closed"); chip("Connect the worker", "err"); return; }
   const t = tpl(), v = values(), cl = client();
   const total = $("pTotal").value || ($("pMonthly").value && $("pTerm").value ? Number($("pMonthly").value) * Number($("pTerm").value) : "");
-  const payload = { templateId: t.id, title: $("rTitle").value, values: v, props: {
+  const payload = { templateId: t.id, title: $("rTitle").value, values: v, edits: overrides, props: {
     party: $("rParty").value, email: $("rEmail").value, clientId: cl ? cl.id : "", status: $("rStatus").value,
     start: $("pStart").value, end: $("pEnd").value, monthly: $("pMonthly").value, total, term: $("pTerm").value,
     deliverables: $("pDel").value, hours: $("pHours").value } };
@@ -188,15 +193,28 @@ async function boot(){
   if (!restore()) { buildBlanks(); applyTemplateDefaults(); }
   const cc = H.conn(); $("cU").value = cc.url || ""; $("cK").value = cc.key || ""; $("sumConn").textContent = cc.url ? "connected" : "not set";
   H.wireGroups();
-  $("tPick").onchange = () => { typed = {}; buildBlanks(); applyTemplateDefaults(); render(); };
+  $("tPick").onchange = () => { typed = {}; overrides = {}; buildBlanks(); applyTemplateDefaults(); render(); };
   $("cPick").onchange = render;
   ["pStart","pTerm","pMonthly","pTotal","pDel","pHours","rStatus"].forEach(k => $(k).addEventListener("input", render));
   $("pEnd").addEventListener("input", () => { typed._end = 1; render(); });
   [["rTitle","_title"],["rParty","_party"],["rEmail","_email"]].forEach(([k, f]) => $(k).addEventListener("input", () => { typed[f] = 1; render(); }));
   $("cSave").onclick = () => { H.setConn($("cU").value.trim(), $("cK").value.trim()) ? H.toast("Connection saved") : H.toast("This browser blocked saving"); $("sumConn").textContent = "connected"; };
-  $("bReset").onclick = () => { try { localStorage.removeItem(STORE); } catch(e){} typed = {}; ["pStart","pEnd","pTotal","pDel","rTitle","rParty","rEmail"].forEach(k => $(k).value = ""); buildBlanks(); applyTemplateDefaults(); render(); chip("Reset"); };
+  $("bReset").onclick = () => { try { localStorage.removeItem(STORE); } catch(e){} typed = {}; overrides = {}; ["pStart","pEnd","pTotal","pDel","rTitle","rParty","rEmail"].forEach(k => $(k).value = ""); buildBlanks(); applyTemplateDefaults(); render(); chip("Reset"); };
   $("bPrint").onclick = () => window.print();
   $("bGo").onclick = create;
+  $("revert").onclick = () => { overrides = {}; render(); chip("Page edits cleared"); };
+  /* Click a highlighted blank to fill it; click any other text to rewrite that block. */
+  $("doc").addEventListener("click", e => {
+    if (e.target.closest("a")) e.preventDefault();
+    const mk = e.target.closest("mark[data-tok]"), blk = e.target.closest("[data-path]");
+    if (mk && !(blk && blk.isContentEditable)) {
+      const tok = mk.dataset.tok, inp = [...$("blanks").querySelectorAll("input")].find(i => i.dataset.tok === tok);
+      if (mk.classList.contains("empty")) mk.textContent = "";
+      H.editIn(mk, el => { const v = H.plainOf(el).trim(); if (inp) { inp.value = v; typed[tok] = 1; } render(); }, { select: true });
+      return;
+    }
+    if (blk && !blk.isContentEditable) H.editIn(blk, el => { overrides[el.dataset.path] = H.domRuns(el); render(); }, { multiline: true });
+  });
   addEventListener("resize", () => H.fitPaper($("paperWrap"), $("scaler"), $("doc")));
   render();
 }
