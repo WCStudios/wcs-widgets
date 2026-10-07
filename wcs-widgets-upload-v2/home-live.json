@@ -1,9 +1,9 @@
 {
- "updated": "2026-10-07T22:05:10.498Z",
+ "updated": "2026-10-07T22:10:12.932Z",
  "source": "worker",
  "tasks": {
-  "open": 32,
-  "inPost": 13,
+  "open": 34,
+  "inPost": 14,
   "overdue": 10
  },
  "mostOverdue": {
@@ -38,9 +38,9 @@
   }
  ],
  "nextShoot": {
-  "name": "Walser - 2026 Valleyfair Event Recap",
-  "id": "3d7421efc766818daf9bca3a543053f2",
-  "date": "2026-10-11",
-  "time": "11:30 AM"
+  "name": "TC - 2026 Insight Trip Video (Zimbabwe)",
+  "id": "3f2421efc76681ac84cce98f7d8323b9",
+  "date": "2026-10-09",
+  "time": "1:30 PM"
  }
 }
