@@ -1,15 +1,15 @@
 {
- "updated": "2026-10-08T17:08:03.851Z",
+ "updated": "2026-10-08T17:13:02.548Z",
  "source": "worker",
  "tasks": {
   "open": 34,
   "inPost": 15,
-  "overdue": 12
+  "overdue": 6
  },
  "mostOverdue": {
-  "name": "MN Wild - SIF Pilot Program Spotlights (Saint Paul Capitals)",
-  "id": "329421efc766803f9c95fa146f213c8b",
-  "days": 146
+  "name": "RTH - 2026 Neighborhood Drone Shoots",
+  "id": "4bd2b506ce2c4cd3b1c4c1efaa817029",
+  "days": 73
  },
  "pings": [
   {
