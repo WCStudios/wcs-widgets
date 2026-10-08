@@ -1,10 +1,10 @@
 {
- "updated": "2026-10-08T21:38:35.514Z",
+ "updated": "2026-10-08T21:43:37.778Z",
  "source": "worker",
  "tasks": {
-  "open": 34,
-  "inPost": 15,
-  "overdue": 6
+  "open": 32,
+  "inPost": 14,
+  "overdue": 5
  },
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
@@ -13,9 +13,9 @@
  },
  "pings": [
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Walser Automotive",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "Walser - 2026 Honda Culture Video",
    "id": "3c9421efc76681f7a307cbe27367c80e",
    "ago": "today"
