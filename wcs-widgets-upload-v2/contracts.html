@@ -2,10 +2,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
-<title>WCStudios Contracts</title>
+<title>WCStudios DocsOS</title>
 <style>
-/* Contracts & Decks hub widgets. One file, five views:
-     ?view=strip | timeline | scope | generator | decks
+/* DocsOS widgets (contracts, decks, proposals). One file, many views:
+     ?view=docstrip | strip | dstrip | list | proplist | timeline | scope | generator | decks
    Data is contracts-live.json, sealed with AES-GCM by the invoice worker. The
    key sits in the #fragment of the embed URL inside the private Notion page,
    so the public repo only ever holds ciphertext. */
@@ -447,6 +447,24 @@ function dstrip(F){
     ${latest ? `<div class="big" style="letter-spacing:-1.3px">${fmt(latest.e.slice(0, 10))}</div><div class="row" data-u="${esc(latest.u)}"><span class="rn">${esc(latest.n)}</span><span class="chip gray">${latest.k}</span></div>` : `<div class="big">&mdash;</div>`}
    </div></div></div></div>`;
 }
+function docstrip(F){
+  const C = F.contracts, D = F.decks || [], P = F.proposals || [];
+  const act = C.filter(live), pend = C.filter(pending);
+  const clients = act.filter(c => c.type !== "Contractor"), crew = act.filter(c => c.type === "Contractor");
+  const mrr = clients.reduce((t, c) => t + (c.monthly || 0), 0);
+  const review = C.filter(c => c.review && isDoc(c)).length;
+  const pendTop = [...pend].sort((a, b) => (b.edited || "").localeCompare(a.edited || ""))[0];
+  const openP = P.filter(p => !p.accepted).length;
+  return `<div class="strip">
+   <div class="panel"><div class="inner"><div class="k">Under contract / mo</div><div class="body"><div class="big">${money(mrr)}</div>
+    <div class="sub"><b>${act.length}</b> active &middot; <b>${clients.length}</b> client &middot; <b>${crew.length}</b> crew${review ? ` &middot; <span class="chip hot">${review} to review</span>` : ""}</div></div></div></div>
+   <div class="panel"><div class="inner"><div class="k">Awaiting signature</div><div class="body"><div class="big">${pend.length}</div>
+    ${pendTop ? `<div class="row" data-u="${esc(pendTop.url)}"><span class="rn">${esc(pendTop.name)}</span>${pendTop.monthly ? `<span class="chip">${money(pendTop.monthly)}/mo</span>` : statusChip(pendTop.status)}</div>` : `<div class="sub">Nothing out for signature</div>`}</div></div></div>
+   <div class="panel"><div class="inner"><div class="k">Proposals</div><div class="body"><div class="big">${P.length}</div>
+    <div class="sub"><b>${money(P.reduce((t, p) => t + (p.total || 0), 0))}</b> quoted &middot; <b>${openP}</b> open</div></div></div></div>
+   <div class="panel"><div class="inner"><div class="k">Decks</div><div class="body"><div class="big">${D.length}</div>
+    <div class="sub"><b>${D.filter(d => d.status === "Ready").length}</b> ready &middot; <b>${D.filter(d => d.status === "Sent").length}</b> sent</div></div></div></div></div>`;
+}
 function proplist(F){
   const P = F.proposals || [];
   const rows = P.map(p => `<div class="trow" data-u="${esc(p.url)}"><div class="grow"><div class="nm">${esc(p.name.replace(/^Project Proposal\s*[-\u2013]\s*/, ""))}</div>
@@ -460,7 +478,7 @@ async function render(){
   if (!F) { app.innerHTML = `<div class="wrap"><div class="empty">Couldn't read the contracts feed. If this keeps happening, the key in this embed link is wrong.</div></div>`; return; }
   const was = VIEW === "generator" && document.getElementById("gT");
   if (was) return; // never clobber a form someone is filling in
-  app.innerHTML = ({ strip, timeline, scope, generator, decks, list, dstrip, proplist }[VIEW] || strip)(F);
+  app.innerHTML = ({ strip, timeline, scope, generator, decks, list, dstrip, docstrip, proplist }[VIEW] || strip)(F);
   window.__F = F;
   if (VIEW === "generator") wireGenerator(F);
 }
