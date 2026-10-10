@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-10T04:58:07.719Z",
+ "updated": "2026-10-10T05:03:07.120Z",
  "source": "worker",
  "tasks": {
   "open": 35,
@@ -9,7 +9,7 @@
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
   "id": "4bd2b506ce2c4cd3b1c4c1efaa817029",
-  "days": 74
+  "days": 75
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "left revisions",
    "task": "Walser - 2026 Honda Culture Video",
    "id": "3c9421efc76681f7a307cbe27367c80e",
-   "ago": "1d"
+   "ago": "2d"
   },
   {
    "kind": "del",
@@ -26,7 +26,7 @@
    "what": "delivered",
    "task": "Cascade CBX - 2026 Andrew Fisher Spot",
    "id": "3ce421efc766804a93b7d2e963df2a04",
-   "ago": "10d"
+   "ago": "11d"
   },
   {
    "kind": "del",
@@ -34,13 +34,13 @@
    "what": "delivered",
    "task": "RVM - 2026 Demo In The Dirt",
    "id": "3c3421efc766814eb4bdd5048741e2f1",
-   "ago": "11d"
+   "ago": "12d"
   }
  ],
  "nextShoot": {
-  "name": "TC - 2026 Insight Trip Video (Zimbabwe)",
-  "id": "3f2421efc76681ac84cce98f7d8323b9",
-  "date": "2026-10-09",
-  "time": "1:30 PM"
+  "name": "Walser - 2026 Valleyfair Event Recap",
+  "id": "3d7421efc766818daf9bca3a543053f2",
+  "date": "2026-10-11",
+  "time": "11:30 AM"
  }
 }
