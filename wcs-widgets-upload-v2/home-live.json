@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-12T17:32:07.258Z",
+ "updated": "2026-10-12T17:37:11.666Z",
  "source": "worker",
  "tasks": {
   "open": 35,
@@ -13,12 +13,20 @@
  },
  "pings": [
   {
+   "kind": "del",
+   "who": "Walser Automotive",
+   "what": "delivered",
+   "task": "Walser - 2026 Honda OTT + CM Spots",
+   "id": "3a5421efc766817d8024c961be3728db",
+   "ago": "today"
+  },
+  {
    "kind": "rev",
    "who": "Walser Automotive",
    "what": "left revisions",
    "task": "Walser - 2026 Honda Culture Video",
    "id": "3c9421efc76681f7a307cbe27367c80e",
-   "ago": "4d"
+   "ago": "today"
   },
   {
    "kind": "del",
@@ -27,14 +35,6 @@
    "task": "Cascade CBX - 2026 Andrew Fisher Spot",
    "id": "3ce421efc766804a93b7d2e963df2a04",
    "ago": "13d"
-  },
-  {
-   "kind": "del",
-   "who": "River Valley Marine",
-   "what": "delivered",
-   "task": "RVM - 2026 Demo In The Dirt",
-   "id": "3c3421efc766814eb4bdd5048741e2f1",
-   "ago": "14d"
   }
  ],
  "nextShoot": {
