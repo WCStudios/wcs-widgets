@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-13T23:21:38.212Z",
+ "updated": "2026-10-13T23:26:37.028Z",
  "source": "worker",
  "tasks": {
   "open": 34,
@@ -12,6 +12,14 @@
   "days": 78
  },
  "pings": [
+  {
+   "kind": "rev",
+   "who": "Minnesota Wild",
+   "what": "left revisions",
+   "task": "MN Wild - 2026 Hockey Fights Cancer Feature",
+   "id": "3ef421efc7668185ae9fc5ccbc716fd7",
+   "ago": "today"
+  },
   {
    "kind": "del",
    "who": "Walser Automotive",
@@ -27,14 +35,6 @@
    "task": "Walser - 2026 Honda Culture Video",
    "id": "3c9421efc76681f7a307cbe27367c80e",
    "ago": "1d"
-  },
-  {
-   "kind": "del",
-   "who": "Cascade CBX Sport",
-   "what": "delivered",
-   "task": "Cascade CBX - 2026 Andrew Fisher Spot",
-   "id": "3ce421efc766804a93b7d2e963df2a04",
-   "ago": "14d"
   }
  ],
  "nextShoot": {
