@@ -147,7 +147,7 @@ textarea{resize:vertical;min-height:56px;line-height:1.5}
 .inv tbody td{padding:9px 10px 9px 0;border-bottom:1px solid var(--hair);font-size:9.5pt;
  vertical-align:top;color:var(--ink2)}
 .inv tbody td.desc{color:var(--ink);font-weight:600}
-.inv tbody td.desc .sm{display:block;font-weight:400;color:var(--gray);font-size:8.5pt;margin-top:3px;line-height:1.45}
+.inv tbody td.desc .sm{display:block;font-weight:400;color:var(--gray);font-size:8.5pt;margin-top:3px;line-height:1.45;white-space:pre-line}
 .inv tbody td.r,.inv tbody td.c{font-variant-numeric:tabular-nums}
 .inv tbody td.money{font-weight:700;color:var(--ink)}
 .inv .tot{display:flex;justify-content:flex-end;margin-top:16px}
@@ -196,6 +196,48 @@ button:disabled{opacity:.4;cursor:not-allowed}
  border-radius:6px;background:var(--bg);color:var(--text)}
 .conna{display:flex;align-items:center;gap:8px;padding-left:106px}
 .connn{font-size:11px;color:var(--muted)}
+
+/* Open-invoice picker. Same panel language as the connection tray, but it
+   floats over the preview: the rail is too narrow to scan a list of invoices
+   in, and the list is something you dismiss rather than live beside. */
+.pickbd{position:fixed;inset:0;background:rgba(0,0,0,.34);z-index:40}
+.pickbd[hidden]{display:none}
+.pick{position:fixed;z-index:41;top:58px;left:clamp(12px,1.4vw,18px);
+ width:min(560px,calc(100vw - 24px));max-height:min(70vh,560px);
+ display:flex;flex-direction:column;background:var(--bg);
+ border:1px solid var(--line);border-radius:12px;
+ box-shadow:0 18px 44px rgba(0,0,0,.26);overflow:hidden}
+.pick[hidden]{display:none}
+.pickh{display:flex;gap:8px;padding:10px;border-bottom:1px solid var(--line);background:var(--soft)}
+.pickh input{flex:1;min-width:0;font:inherit;font-size:12.5px;padding:8px 10px;
+ border:1px solid var(--fieldline);border-radius:7px;background:var(--field);color:var(--text)}
+.pickh input:focus{outline:none;border-color:var(--accent)}
+.pickh button{flex:0 0 auto;width:32px;border:1px solid var(--line);border-radius:7px;
+ background:var(--bg);color:var(--muted);cursor:pointer;font:inherit;font-size:12px}
+.pickh button:hover{color:var(--text);border-color:var(--fieldline)}
+.pickl{flex:1;min-height:0;overflow:auto;padding:6px}
+.pickg{font-size:9px;letter-spacing:.9px;text-transform:uppercase;color:var(--muted);
+ font-weight:800;padding:10px 8px 5px}
+.pickr{display:flex;align-items:center;gap:10px;width:100%;text-align:left;cursor:pointer;
+ padding:9px;border:1px solid transparent;border-radius:8px;background:transparent;
+ font:inherit;color:var(--text)}
+.pickr:hover{background:var(--soft);border-color:var(--line)}
+.pickr.on{border-color:var(--accent-line);background:var(--soft)}
+.pickr .pn{flex:0 0 40px;font-weight:800;font-size:11px;color:var(--muted);
+ font-variant-numeric:tabular-nums}
+.pickr .pc{flex:1 1 auto;min-width:0}
+.pickr .pc b{display:block;font-size:12.5px;font-weight:700;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pickr .pc i{display:block;font-style:normal;font-size:10.5px;color:var(--muted);
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pickr .pa{flex:0 0 auto;font-weight:800;font-size:12.5px;font-variant-numeric:tabular-nums}
+.pickf{padding:8px 12px;border-top:1px solid var(--line);background:var(--soft);
+ font-size:10.5px;color:var(--muted)}
+.pickempty{padding:22px 10px;text-align:center;font-size:12px;color:var(--muted)}
+
+/* A detail line can now be a short bulleted outline, so it needs room to breathe
+   without taking as much as the Notes box. */
+.item textarea{min-height:46px;font-size:12px}
 .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-left:6px;vertical-align:middle}
 .dot.on{background:#0ca30c}.dot.off{background:var(--muted)}
 
@@ -222,12 +264,23 @@ button:disabled{opacity:.4;cursor:not-allowed}
        top-right corner on hover, and they land squarely on whatever sits
        there. Send invoice was disappearing underneath them. -->
   <button id="bReset">New invoice</button>
+  <button id="bOpen">Open invoice</button>
   <button id="bPrint">Save PDF</button>
   <button id="bConn" title="Worker connection">&#9881;</button>
   <button id="bCreate">Create invoice</button>
   <button class="primary" id="bSend">Send invoice</button>
   <span class="chip" id="chip"></span>
   <span class="grow"></span>
+</div>
+
+<div class="pickbd" id="pickBack" hidden></div>
+<div class="pick" id="pickPanel" hidden>
+  <div class="pickh">
+    <input id="pickQ" placeholder="Search by number, client or project" spellcheck="false">
+    <button id="pickX" title="Close">&#10005;</button>
+  </div>
+  <div class="pickl" id="pickList"></div>
+  <div class="pickf" id="pickFoot"></div>
 </div>
 
 <div class="conn" id="connPanel" hidden>
@@ -499,7 +552,7 @@ function drawItems(){
         <button class="x" data-del="${i}" title="Remove">✕</button>
       </div>
       <div class="f"><label>Description</label><input data-i="${i}" data-k="description" value="${esc(it.description)}"></div>
-      <div class="f"><label>Detail (optional second line)</label><input data-i="${i}" data-k="detail" value="${esc(it.detail)}"></div>
+      <div class="f"><label>Detail (optional — Enter for a new line)</label><textarea data-i="${i}" data-k="detail" rows="2" placeholder="A second line, or a few bullets:&#10;• what this covers&#10;• what it does not">${esc(it.detail || "")}</textarea></div>
       <div class="r3">
         <div class="f"><label>Qty</label><input data-i="${i}" data-k="qty" type="number" step="any" value="${it.qty}"></div>
         <div class="f"><label>Unit</label><input data-i="${i}" data-k="unit" value="${esc(it.unit)}" placeholder="mo"></div>
@@ -507,7 +560,7 @@ function drawItems(){
       </div>
     </div>`).join("");
 
-  $("items").querySelectorAll("input").forEach(el => el.addEventListener("input", e => {
+  $("items").querySelectorAll("input, textarea").forEach(el => el.addEventListener("input", e => {
     const i = +e.target.dataset.i, k = e.target.dataset.k;
     items[i][k] = (k === "qty" || k === "rate") ? parseFloat(e.target.value || 0) : e.target.value;
     persist();
@@ -1209,10 +1262,18 @@ function loadHandoff(){
 
   // Stale handoffs are ignored; this should only ever be seconds old.
   if(!h || !h.invoice || Date.now() - (h.at || 0) > 600000) return;
-  const inv = h.invoice;
+  adoptInvoice(h.invoice, "Editing");
+}
 
-  editingAdopted = false;      // the tracker asked for this one by name
-  const num = (/invoice\s+#?(\d+)/i.exec(inv.name || "") || [])[1];
+/** The invoice number carried in a tracker row's name. */
+function invNum(r){ return (/invoice\s+#?(\d+)/i.exec((r && r.name) || "") || [])[1] || ""; }
+
+/* One path for "load this invoice into the builder". The tracker's handoff and
+   the picker below both come through here, so the two can never drift. */
+function adoptInvoice(inv, how){
+  if(!inv) return;
+  editingAdopted = false;      // this row was asked for by name, never guessed
+  const num = invNum(inv);
   if(num) $("iNum").value = num;
   $("cName").value = inv.client || "";
   $("cPick").value = (clients || []).some(c => c.name === inv.client) ? inv.client : "";
@@ -1230,15 +1291,83 @@ function loadHandoff(){
   }
 
   items = Array.isArray(inv.items) && inv.items.length
-    ? JSON.parse(JSON.stringify(inv.items))
+    ? JSON.parse(JSON.stringify(inv.items)).map(it => ({...it, detail: it.detail || ""}))
     : [{description: inv.name || "", detail: "", qty: 1, unit: "", rate: inv.amount || 0}];
 
   setEditing(inv);
   drawItems(); syncDue(); paint(); persist();
   // A fresh invoice starts on Bill to; the accordion keeps the rest folded.
   setOpen("client", true);
-  flag("Editing invoice " + (num || "") + (inv.threaded ? " \u00b7 already sent" : ""), "saved");
+  flag((how || "Editing") + " invoice " + (num || "")
+       + (inv.threaded ? " \u00b7 already sent" : ""), "saved");
 }
+
+/* ── Open invoice ─────────────────────────────────────────────
+   The tracker could already hand an invoice over, but only from its own page.
+   This is the same list, here: drafts and sent invoices read straight from the
+   live AR feed, which carries every line item, so what loads is the whole
+   invoice rather than a stub. Paid invoices are deliberately absent from that
+   feed, so they are not on offer — the footer says so rather than leaving you
+   hunting for one. */
+function pickGroups(){
+  const q = $("pickQ").value.trim().toLowerCase();
+  const hit = r => !q || [invNum(r), r.name, r.client, r.project]
+                          .filter(Boolean).join(" ").toLowerCase().includes(q);
+  const live = (arRows || []).filter(r => r && r.notionPageId && hit(r));
+  const newest = (a, b) => (parseInt(invNum(b), 10) || 0) - (parseInt(invNum(a), 10) || 0);
+  return {
+    draft: live.filter(r => String(r.status || "") === "Draft").sort(newest),
+    sent:  live.filter(r => String(r.status || "") !== "Draft").sort(newest)
+  };
+}
+
+function drawPick(){
+  const g = pickGroups();
+  const sub = r => r.project
+    || String(r.name || "").replace(/^.*?invoice\s+\S+\s*-\s*/i, "")
+    || "\u2014";
+  const row = r => '<button class="pickr' + (r.notionPageId === editingPageId ? " on" : "")
+    + '" data-pid="' + esc(r.notionPageId) + '">'
+    + '<span class="pn">' + esc(invNum(r) || "\u2014") + '</span>'
+    + '<span class="pc"><b>' + esc(r.client || "\u2014") + '</b>'
+    +   '<i>' + esc(sub(r)) + '</i></span>'
+    + '<span class="pa">' + usd(r.amount || 0) + '</span></button>';
+  const group = (label, rows) => rows.length
+    ? '<div class="pickg">' + label + " \u00b7 " + rows.length + '</div>' + rows.map(row).join("")
+    : "";
+  const html = group("Drafts", g.draft) + group("Sent", g.sent);
+  $("pickList").innerHTML = html || ((arRows || []).length
+    ? '<div class="pickempty">Nothing matches that.</div>'
+    : '<div class="pickempty">Waiting on the live feed\u2026</div>');
+  $("pickList").querySelectorAll("[data-pid]").forEach(b =>
+    b.addEventListener("click", () => {
+      const r = (arRows || []).find(x => x.notionPageId === b.dataset.pid);
+      if(!r) return;
+      adoptInvoice(r, "Opened");
+      closePick();
+    }));
+}
+
+function openPick(){
+  $("pickPanel").hidden = false;
+  $("pickBack").hidden = false;
+  $("pickQ").value = "";
+  $("pickFoot").textContent =
+    "Drafts and sent invoices. Paid ones leave this list once the feed catches up.";
+  drawPick();
+  setTimeout(() => { try { $("pickQ").focus(); } catch(e){} }, 30);
+  // Refresh in the background so a just-created invoice shows up.
+  Promise.resolve(loadAr()).then(drawPick).catch(() => {});
+}
+function closePick(){ $("pickPanel").hidden = true; $("pickBack").hidden = true; }
+
+$("bOpen").addEventListener("click", () => $("pickPanel").hidden ? openPick() : closePick());
+$("pickX").addEventListener("click", closePick);
+$("pickBack").addEventListener("click", closePick);
+$("pickQ").addEventListener("input", drawPick);
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape" && !$("pickPanel").hidden) closePick();
+});
 
 /* The builder is normally already open inside Notion when the tracker hands an
    invoice across, and navigating to its page does NOT reload an embed Notion
