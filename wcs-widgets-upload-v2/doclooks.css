@@ -1,0 +1,228 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=EB+Garamond:ital,wght@0,400..700;1,400&display=swap");
+/* DocsOS looks. Four ways to dress a contract or proposal for the client.
+   doclooks.js moves the title block into a header and tags sections, then puts
+   one lk-* class on #doc; everything visual lives here. The Notion page the
+   builder creates is untouched: these only style the preview and Save PDF. */
+
+/* ── Look picker, top of the form ─────────────────────────────────────────── */
+.lookpick .looks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.lookpick button{display:flex;flex-direction:column;align-items:stretch;gap:5px;padding:6px 6px 7px;
+ font-size:10px;font-weight:700;border-radius:9px;background:var(--field)}
+.lookpick button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.lookpick button span{text-align:center;white-space:nowrap}
+.lookpick .th{display:block;position:relative;aspect-ratio:8.5/11;border-radius:3px;overflow:hidden;
+ border:1px solid rgba(127,127,127,.25);background:#fff}
+.lookpick .th s{position:absolute;display:block;height:2px;border-radius:1px;background:#d6d6d3}
+.th-studio{background:linear-gradient(#000 0 21%,#e8622c 21% 24%,#fff 24%)!important}
+.th-studio s:nth-child(1){left:12%;top:34%;width:44%;height:4px;background:#111}
+.th-studio s:nth-child(2){right:10%;top:34%;width:28%;background:#cfcfcc}
+.th-studio s:nth-child(3){left:12%;right:10%;top:58%;height:1.5px;background:#111}
+.th-midnight{background:radial-gradient(130% 70% at 0% 100%,rgba(232,98,44,.45),transparent 60%),#0b0b0b!important}
+.th-midnight s:nth-child(1){left:12%;top:52%;width:20%;background:#e8622c}
+.th-midnight s:nth-child(2){left:12%;top:60%;width:66%;height:6px;background:#fff}
+.th-midnight s:nth-child(3){left:12%;top:72%;width:46%;height:5px;background:#fff}
+.th-editorial s:nth-child(1){left:12%;top:20%;width:70%;height:6px;background:#111}
+.th-editorial s:nth-child(2){left:12%;top:50%;width:6%;height:3px;background:#e8622c}
+.th-editorial s:nth-child(3){left:32%;right:12%;top:50%;height:2px}
+.th-classic s:nth-child(1){left:38%;width:24%;top:12%;background:#111}
+.th-classic s:nth-child(2){left:16%;right:16%;top:20%;height:1px;background:#e8622c}
+.th-classic s:nth-child(3){left:26%;right:26%;top:32%;height:3px;background:#111}
+
+/* ── Shared frame for every look ───────────────────────────────────────────── */
+/* :where() keeps these at the weight of a single class, so each look's own rules
+   below override them by order alone (a look's .sigs or .lg must be able to win). */
+.doc:where([class*="lk-"]){display:flex;flex-direction:column;color:#3a3a3a;--acc:#e8622c;--ink:#111;--ink2:#4a4a4a;
+ --gray:#8a8a8a;--hair:#e6e6e6;--wash:#f6f6f5}
+.doc:where([class*="lk-"]) .head{position:relative}
+.doc:where([class*="lk-"]) .cover{height:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
+.doc:where([class*="lk-"]) .cover .tag{position:static;text-align:left}
+.doc:where([class*="lk-"]) .brandbox{display:flex;flex-direction:column;flex:0 0 auto}
+.doc:where([class*="lk-"]) .lg{display:none;height:.26in;width:auto;max-width:none;border-radius:0;align-self:flex-start}
+.doc:where([class*="lk-"]) .kd{text-align:right;flex:0 0 auto}
+.doc:where([class*="lk-"]) .hero h1.t{margin:0}
+.doc:where([class*="lk-"]) .pg{flex:1 0 auto}
+.doc:where([class*="lk-"]) .emo,.doc:where([class*="lk-"]) .callout .ic{display:none}
+.doc:where([class*="lk-"]) .sec strong{font-weight:inherit}
+.doc:where([class*="lk-"]) .sec [class^="c-"]{color:inherit}
+.doc:where([class*="lk-"]) .seccall{background:none!important;padding:0;border-radius:0;display:block}
+.doc:where([class*="lk-"]) .seccall .cb>p:empty{display:none}
+.doc:where([class*="lk-"]) .callout.bg-gray_background{background:none;padding:0;display:block}
+.doc:where([class*="lk-"]) .parties{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 .12in}
+.doc:where([class*="lk-"]) .parties .callout{margin:0;display:block}
+.doc:where([class*="lk-"]) .parties .cb>p:empty{display:none}
+.doc:where([class*="lk-"]) li::marker{color:var(--acc)}
+.doc:where([class*="lk-"]) details>summary::before{color:var(--gray)}
+.doc:where([class*="lk-"]) .sigs{display:none}
+.doc:where([class*="lk-"]) .dfoot{display:flex;justify-content:space-between;gap:20px}
+.doc:where([class*="lk-"]) .sec{break-after:avoid;page-break-after:avoid;break-inside:avoid;page-break-inside:avoid}
+.doc:where([class*="lk-"]) tr,.doc:where([class*="lk-"]) .parties,.doc:where([class*="lk-"]) .sigs{break-inside:avoid;page-break-inside:avoid}
+/* Paper only: short tables print whole, and the closing block, signatures and footer stay together. */
+.doc:where([class*="lk-"]) table.keep,.doc:where([class*="lk-"]) .tail{break-inside:avoid;page-break-inside:avoid}
+
+/* ══ STUDIO: the invoice ═══════════════════════════════════════════════════
+   Black band with the logo, the document type on the right, a 3px orange
+   rule, then a hairline facts table and tracked small-caps section labels. */
+.doc.lk-studio{font-size:10pt;line-height:1.6}
+.lk-studio .cover{background:#000;padding:.36in .62in .32in;border-bottom:3px solid var(--acc)}
+.lk-studio .lg{display:block}
+.lk-studio .cover .wm{display:none}
+.lk-studio .cover .tag{font-size:7.5pt;letter-spacing:1.6px;color:rgba(255,255,255,.5);margin-top:9px}
+.lk-studio .kw{font-family:Archivo,-apple-system,sans-serif;font-variation-settings:"wdth" 112;font-size:20pt;
+ font-weight:800;letter-spacing:-.4px;line-height:1;color:#fff;text-transform:uppercase}
+.lk-studio .kn{font-size:8.5pt;color:rgba(255,255,255,.62);margin-top:7px}
+.lk-studio .hero{display:grid;grid-template-columns:minmax(0,1fr) 2.7in;gap:.5in;align-items:start;padding:.38in .62in .06in}
+.lk-studio .hero h1.t{font-size:21pt;font-weight:800;letter-spacing:-.6px;line-height:1.15;color:var(--ink)}
+.lk-studio .props{display:grid;grid-template-columns:auto minmax(0,1fr);margin:0;font-size:9.5pt;gap:0}
+.lk-studio .props>*{padding:5px 0;border-bottom:1px solid var(--hair)}
+.lk-studio .props>span{color:var(--gray);padding-right:18px}
+.lk-studio .props>b{font-weight:700;color:var(--ink);text-align:right}
+.lk-studio .pg{padding:.2in .62in .5in}
+.lk-studio .pg>hr{display:none}
+.lk-studio .sec{font-size:7.5pt;letter-spacing:1.3px;text-transform:uppercase;color:var(--gray);
+ font-weight:700;padding:0 0 8px;border-bottom:1.5px solid var(--ink);margin:.3in 0 .1in}
+.lk-studio p,.lk-studio li{color:var(--ink2)}
+.lk-studio .parties .callout{background:none;padding:0}
+.lk-studio .parties .callout:first-child .cb::before,.lk-studio .parties .callout:nth-child(2) .cb::before{
+ display:block;font-size:7pt;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray);font-weight:700;margin-bottom:6px}
+.lk-studio .parties .callout:first-child .cb::before{content:"From"}
+.lk-studio .parties .callout:nth-child(2) .cb::before{content:"Prepared for"}
+.lk-studio .parties p{color:var(--ink);font-size:9.5pt;margin:0}
+.lk-studio table{margin-top:.12in}
+.lk-studio td{border:0;border-bottom:1px solid var(--hair);padding:9px 10px 9px 0;color:var(--ink2)}
+.lk-studio td.num{padding-right:0}
+.lk-studio tr.hdr td{background:none;font-size:7pt;letter-spacing:1.1px;text-transform:uppercase;color:var(--gray);
+ font-weight:700;border-bottom:1.5px solid var(--ink);padding-bottom:8px}
+.lk-studio tr.grp td{background:none;color:var(--ink);font-weight:700;padding-top:14px}
+.lk-studio tr.tot td{background:var(--wash);color:var(--ink);font-size:12pt;font-weight:800;border-bottom:0;padding:11px 12px}
+.lk-studio tr.tot td:first-child{border-left:3px solid var(--acc)}
+.lk-studio .todo .box{border-color:var(--acc)}
+.lk-studio .dfoot{margin-top:.45in;padding-top:.18in;border-top:1px solid var(--hair);font-size:8pt;color:var(--gray)}
+.lk-studio .dfoot b{color:var(--ink)}
+
+/* ══ MIDNIGHT: the decks ═══════════════════════════════════════════════════
+   A full dark cover page, wide Archivo display title, orange kicker. The pages
+   after it are clean white with display-type section heads. */
+.doc.lk-midnight{font-size:10pt;line-height:1.62}
+.lk-midnight .head{background:radial-gradient(120% 75% at 0% 100%,rgba(232,98,44,.22),transparent 58%),#0b0b0b;
+ color:#fff;min-height:11in;display:flex;flex-direction:column;break-after:page;page-break-after:always}
+.lk-midnight .cover{background:none;padding:.6in .7in 0;align-items:flex-start}
+.lk-midnight .cover .wm{font-size:12pt;letter-spacing:.3px}
+.lk-midnight .cover .tag{font-size:6.5pt;letter-spacing:2.2px;color:rgba(255,255,255,.45);margin-top:8px}
+.lk-midnight .kn{display:none}
+.lk-midnight .kw{display:none}
+.lk-midnight .hero{margin-top:auto;padding:0 .7in .75in}
+.lk-midnight .hero::before{content:attr(data-kind);display:block;color:var(--acc);font-size:8.5pt;font-weight:800;
+ letter-spacing:3px;text-transform:uppercase;margin-bottom:.18in;padding-left:30px;
+ background:linear-gradient(var(--acc),var(--acc)) 0 50%/20px 2px no-repeat}
+.lk-midnight .hero h1.t{font-family:Archivo,-apple-system,sans-serif;font-variation-settings:"wdth" 125;
+ font-weight:900;font-size:40pt;line-height:.98;letter-spacing:-.4px;text-transform:uppercase;color:#fff;
+ margin-bottom:.45in;overflow-wrap:anywhere}
+.lk-midnight .hero[data-len="l"] h1.t{font-size:32pt}
+.lk-midnight .hero[data-len="xl"] h1.t{font-size:25pt}
+.lk-editorial .hero[data-len="xl"] h1.t{font-size:32pt}
+.lk-midnight .props{display:grid;grid-template-rows:auto auto;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);
+ gap:6px 26px;margin:0;padding-top:.2in;border-top:1px solid rgba(255,255,255,.18)}
+.lk-midnight .props>span{font-size:6.5pt;letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,255,255,.5);font-weight:700}
+.lk-midnight .props>b{font-size:10.5pt;color:#fff;font-weight:600}
+.lk-midnight .pg{padding:.7in .7in .5in}
+.lk-midnight .pg>hr{border-top-color:var(--hair);margin:.22in 0}
+.lk-midnight .sec{font-family:Archivo,-apple-system,sans-serif;font-variation-settings:"wdth" 118;
+ font-weight:800;font-size:14pt;letter-spacing:-.1px;text-transform:uppercase;color:var(--ink);margin:.3in 0 .1in;line-height:1.15}
+.lk-midnight .sec::before{content:"";display:block;width:22px;height:3px;background:var(--acc);margin-bottom:9px}
+.lk-midnight p,.lk-midnight li{color:#3d3d3d}
+.lk-midnight .parties .callout{background:#0b0b0b;color:#fff;border-radius:8px;padding:14px 16px}
+.lk-midnight .parties p,.lk-midnight .parties a{color:#fff}
+.lk-midnight td{border:0;border-bottom:1px solid var(--hair);padding:9px 10px 9px 0}
+.lk-midnight tr.hdr td{background:none;font-size:7pt;letter-spacing:1.3px;text-transform:uppercase;color:var(--gray);font-weight:700}
+.lk-midnight tr.grp td{background:none;color:var(--ink);font-weight:800}
+.lk-midnight tr.tot td{background:#0b0b0b;color:#fff;font-size:12pt;font-weight:800;padding:12px;border:0}
+.lk-midnight tr.tot td:last-child{color:var(--acc)}
+.lk-midnight .dfoot{margin-top:.45in;padding-top:.18in;border-top:1px solid var(--hair);font-size:8pt;color:var(--gray)}
+.lk-midnight .dfoot b{color:var(--ink)}
+
+/* ══ EDITORIAL: bigger pitches ═════════════════════════════════════════════
+   Serif display, a wide left margin with section numbers hanging in it, a
+   larger opening paragraph. */
+.doc.lk-editorial{font-size:10pt;line-height:1.7}
+.lk-editorial .cover{background:none;padding:.55in .8in 0;align-items:baseline}
+.lk-editorial .cover .wm{font-size:10.5pt;color:var(--ink)}
+.lk-editorial .cover .tag{display:none}
+.lk-editorial .kw{font-size:7.5pt;letter-spacing:2.6px;text-transform:uppercase;color:var(--gray);font-weight:700}
+.lk-editorial .kn{display:none}
+.lk-editorial .hero{padding:1.05in .8in .35in}
+.lk-editorial .hero::before{content:attr(data-kind);display:block;color:var(--acc);font-size:8pt;font-weight:700;
+ letter-spacing:3px;text-transform:uppercase;margin-bottom:.16in}
+.lk-editorial .hero h1.t{font-family:Fraunces,Georgia,serif;font-optical-sizing:auto;font-weight:400;font-size:40pt;
+ line-height:1.04;letter-spacing:-1.2px;color:var(--ink);margin-bottom:.42in}
+.lk-editorial .props{display:grid;grid-template-rows:auto auto;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);
+ gap:4px 24px;margin:0;padding-top:.14in;border-top:1px solid var(--ink)}
+.lk-editorial .props>span{font-size:6.5pt;letter-spacing:1.6px;text-transform:uppercase;color:var(--gray);font-weight:700}
+.lk-editorial .props>b{font-size:10pt;color:var(--ink);font-weight:500}
+.lk-editorial .pg{padding:.25in .8in .6in 2.05in;counter-reset:sec}
+.lk-editorial .pg>hr{display:none}
+.lk-editorial .sec{position:relative;counter-increment:sec;font-family:Fraunces,Georgia,serif;
+ font-weight:400;font-size:19pt;letter-spacing:-.4px;line-height:1.2;color:var(--ink);margin:.42in 0 .12in;
+ padding-top:.16in;border-top:1px solid var(--hair)}
+.lk-editorial .sec::before{content:counter(sec,decimal-leading-zero);position:absolute;
+ left:-1.25in;top:.2in;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:8pt;font-weight:700;
+ letter-spacing:2px;color:var(--acc)}
+.lk-editorial .pg>.sec:first-of-type+p{
+ font-family:Fraunces,Georgia,serif;font-size:13.5pt;line-height:1.5;color:var(--ink)}
+.lk-editorial p,.lk-editorial li{color:#404040}
+.lk-editorial .parties{margin-left:-1.25in}
+.lk-editorial .parties .callout{background:none;padding:0 0 0 14px;border-left:2px solid var(--acc)}
+.lk-editorial .parties p{color:var(--ink);margin:0}
+.lk-editorial td{border:0;border-bottom:1px solid var(--hair);padding:8px 10px 8px 0}
+.lk-editorial tr.hdr td{background:none;font-size:6.5pt;letter-spacing:1.6px;text-transform:uppercase;color:var(--gray);font-weight:700;border-bottom-color:var(--ink)}
+.lk-editorial tr.grp td{background:none;font-family:Fraunces,Georgia,serif;font-size:11.5pt;color:var(--ink);padding-top:14px}
+.lk-editorial tr.tot td{background:none;font-family:Fraunces,Georgia,serif;font-size:16pt;font-weight:500;color:var(--ink);
+ border-top:1px solid var(--ink);border-bottom:0;padding-top:12px}
+.lk-editorial .dfoot{margin:.5in 0 0 -1.25in;padding-top:.18in;border-top:1px solid var(--ink);font-size:7.5pt;
+ letter-spacing:.4px;color:var(--gray)}
+.lk-editorial .dfoot b{color:var(--ink)}
+
+/* ══ CLASSIC: formal, for legal-weight contracts ═══════════════════════════
+   Garamond, centered head, numbered clauses, thin rules, signature lines. */
+.doc.lk-classic{font-family:"EB Garamond",Garamond,Georgia,serif;font-size:11.5pt;line-height:1.55;color:#222}
+.lk-classic .cover{background:none;flex-direction:column;align-items:center;gap:0;padding:.6in .9in .2in;
+ margin:0 .9in;border-bottom:1px solid var(--acc)}
+.lk-classic .brandbox{align-items:center}
+.lk-classic .cover .wm{font-size:10.5pt;letter-spacing:2.4px;color:var(--ink)}
+.lk-classic .cover .wm b{color:var(--ink)}
+.lk-classic .cover .tag{text-align:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:6pt;
+ letter-spacing:2.4px;color:var(--gray);margin-top:7px}
+.lk-classic .kd{display:none}
+.lk-classic .hero{text-align:center;padding:.4in 1.1in .2in}
+.lk-classic .hero::before{content:attr(data-kind);display:block;font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+ font-size:7pt;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin-bottom:.14in}
+.lk-classic .hero h1.t{font-family:inherit;font-weight:500;font-size:24pt;line-height:1.2;letter-spacing:0;color:var(--ink);margin-bottom:.22in}
+.lk-classic .props{display:grid;grid-template-columns:auto auto;justify-content:center;gap:2px 14px;margin:0;font-size:10.5pt}
+.lk-classic .props>span{text-align:right;font-variant:small-caps;letter-spacing:.8px;color:var(--gray)}
+.lk-classic .props>b{text-align:left;font-weight:500;color:var(--ink)}
+.lk-classic .pg{padding:.25in .9in .5in;counter-reset:sec}
+.lk-classic .pg>hr{display:none}
+.lk-classic .sec{counter-increment:sec;font-family:inherit;font-size:11pt;font-weight:600;
+ font-variant:small-caps;letter-spacing:1.4px;text-transform:lowercase;color:var(--ink);margin:.3in 0 .08in;
+ padding-top:.1in;border-top:1px solid #d9d9d6}
+.lk-classic .sec::before{content:counter(sec) ".\2002"}
+.lk-classic .parties .callout{background:none;padding:0;text-align:center}
+.lk-classic .parties p{margin:0}
+.lk-classic td{border:0;border-bottom:1px solid #d9d9d6;padding:6px 8px 6px 0}
+.lk-classic tr.hdr td{background:none;font-variant:small-caps;letter-spacing:1px;color:var(--gray);border-bottom:1px solid var(--ink)}
+.lk-classic tr.grp td{background:none;font-weight:600;color:var(--ink)}
+.lk-classic tr.tot td{background:none;font-weight:700;color:var(--ink);border-top:1px solid var(--ink);border-bottom:3px double var(--ink)}
+.lk-classic .todo .box{border-color:var(--ink);border-width:1px}
+.lk-classic .sigs{display:block;margin-top:.45in}
+.lk-classic .sigs .sk{font-variant:small-caps;letter-spacing:1.4px;font-weight:600;color:var(--ink);text-align:center;margin-bottom:.32in}
+.lk-classic .sigs .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:.6in}
+.lk-classic .sigs .ln{border-bottom:1px solid var(--ink);height:.42in;margin-bottom:6px}
+.lk-classic .sigs .ln.d{height:.32in;width:55%;margin-top:.16in}
+.lk-classic .sigs b{display:block;font-weight:600;color:var(--ink)}
+.lk-classic .sigs span{display:block;font-size:9.5pt;color:var(--gray)}
+.lk-classic .dfoot{margin-top:.45in;padding-top:.16in;border-top:1px solid #d9d9d6;font-size:8.5pt;color:var(--gray);
+ justify-content:center;gap:10px}
+.lk-classic .dfoot b{color:var(--ink);font-weight:600}
+
+/* Print: let the white looks start flush; the cover band and dark page carry
+   their own colour (builder.css already turns on exact colour printing). */
+@media print{.lookpick{display:none}}
