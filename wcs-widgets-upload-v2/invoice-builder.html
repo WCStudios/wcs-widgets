@@ -29,7 +29,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .bar{display:flex;align-items:center;gap:10px;padding:11px clamp(12px,1.4vw,18px);
  border-bottom:1px solid var(--line);flex:0 0 auto}
 .bar .grow{flex:1}
-.bar{overflow-x:auto}
+/* Wordmark and group dividers, matching WebsiteOS's top bar so the two tools
+   read as one system. The buttons scroll inside .barl on a narrow rail while
+   the gear stays pinned to the right, held 44px off the corner: Notion floats
+   its own embed controls over the top-right on hover and they land on
+   whatever is sitting there. */
+.bar{overflow:visible}
+.barl{display:flex;align-items:center;gap:10px;flex:1 1 auto;min-width:0;overflow-x:auto}
+.bar .brand{flex:0 0 auto;font-weight:800;letter-spacing:-.02em;font-size:13.5px;
+ white-space:nowrap;color:var(--text)}
+.bar .brand b{color:var(--accent)}
+.bar .sep{flex:0 0 auto;width:1px;height:20px;background:var(--line);margin:0 2px}
+.bar #bConn{flex:0 0 auto;margin-right:44px}
+/* On a narrow rail the buttons matter more than the branding. */
+@media (max-width:800px){ .bar .brand,.bar .sep{display:none} }
 .chip{font-size:9px;letter-spacing:.4px;text-transform:uppercase;font-weight:700;padding:4px 9px;
  border-radius:11px;background:var(--soft);color:var(--muted);white-space:nowrap;opacity:0;transition:opacity .2s}
 .chip.on{opacity:1}
@@ -260,17 +273,22 @@ button:disabled{opacity:.4;cursor:not-allowed}
 </style></head><body>
 
 <div class="bar">
-  <!-- Left-aligned on purpose: Notion floats its own embed controls over the
-       top-right corner on hover, and they land squarely on whatever sits
-       there. Send invoice was disappearing underneath them. -->
-  <button id="bReset">New invoice</button>
-  <button id="bOpen">Open invoice</button>
-  <button id="bPrint">Save PDF</button>
+  <!-- Three groups, left to right: which invoice am I on, what do I do with it,
+       then the commit. The gear is the only thing on the right. -->
+  <div class="barl">
+    <div class="brand">FINANCE<b>OS</b></div>
+    <span class="sep"></span>
+    <button id="bReset">New invoice</button>
+    <button id="bOpen">Open invoice</button>
+    <span class="sep"></span>
+    <button id="bPrint">Save PDF</button>
+    <span class="sep"></span>
+    <button id="bCreate">Create invoice</button>
+    <button class="primary" id="bSend">Send invoice</button>
+    <span class="chip" id="chip"></span>
+    <span class="grow"></span>
+  </div>
   <button id="bConn" title="Worker connection">&#9881;</button>
-  <button id="bCreate">Create invoice</button>
-  <button class="primary" id="bSend">Send invoice</button>
-  <span class="chip" id="chip"></span>
-  <span class="grow"></span>
 </div>
 
 <div class="pickbd" id="pickBack" hidden></div>
