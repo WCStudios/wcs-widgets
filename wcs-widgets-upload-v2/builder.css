@@ -121,6 +121,41 @@ textarea{resize:vertical;min-height:56px;line-height:1.5}
   .doc,.doc *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 
+/* ── DocsOS bar, same system as WebsiteOS and FinanceOS ─────────────────────
+   Wordmark, then the tool, then grouped actions with dividers. The settings
+   gear is the only thing on the right, held clear of the corner: Notion floats
+   its own View original button over the top-right of an embed on hover, and it
+   lands on whatever sits there. --safe matches the gap WebsiteOS leaves. */
+:root{--accent-ink:#c9501f;--accent-line:rgba(232,98,44,.30);--safe:106px}
+@media (prefers-color-scheme:dark){:root{--accent-ink:#e8622c;--accent-line:rgba(232,98,44,.34)}}
+.bar{overflow:visible}
+.barl{display:flex;align-items:center;gap:10px;flex:1 1 auto;min-width:0;overflow-x:auto}
+.bar .brand{flex:0 0 auto;font-weight:800;letter-spacing:-.02em;font-size:13.5px;white-space:nowrap;color:var(--text)}
+.bar .brand b{color:var(--accent)}
+.bar .sep{flex:0 0 auto;width:1px;height:20px;background:var(--line);margin:0 2px}
+.bar .ttl{flex:0 0 auto}
+.bar #bConn{flex:0 0 auto;margin-right:var(--safe)}
+.bar #bConn.on{border-color:var(--accent)}
+.cdot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-left:6px;vertical-align:middle}
+.cdot.on{background:var(--up)}.cdot.off{background:var(--muted)}
+/* On a narrow rail the buttons matter more than the branding. */
+@media (max-width:800px){.bar .brand,.bar .sep{display:none}}
+
+/* Section labels in the FinanceOS accent, so the three suites read as one. */
+.grp>.lbl{color:var(--accent-ink);border-bottom-color:var(--accent-line)}
+.grp>.lbl:hover{color:var(--accent-ink);border-bottom-color:var(--accent)}
+
+/* Worker connection, behind the gear instead of at the bottom of the form. */
+.connpop{position:fixed;z-index:60;top:54px;right:calc(clamp(12px,1.4vw,18px) + var(--safe));
+ width:min(320px,calc(100vw - 24px));background:var(--bg);border:1px solid var(--fieldline);
+ border-radius:12px;padding:14px;box-shadow:0 18px 44px rgba(0,0,0,.26)}
+.connpop[hidden]{display:none}
+.connpop .connh{font-size:9px;letter-spacing:.9px;text-transform:uppercase;color:var(--accent-ink);font-weight:700;margin-bottom:10px}
+.connpop .grp{margin:0}
+.connpop .grp>.lbl{display:none}
+.connpop .grp.closed>.gb{display:block}
+@media print{.connpop{display:none!important}}
+
 /* ── no scroll chrome: panels still scroll, the bars just never draw ── */
 *{scrollbar-width:none}
 *::-webkit-scrollbar{display:none;width:0;height:0}
