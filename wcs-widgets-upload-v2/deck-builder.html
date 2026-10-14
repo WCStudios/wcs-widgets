@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
 <title>Deck Builder · WCStudios</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="builder.css?v=2">
+<link rel="stylesheet" href="builder.css?v=3">
 <link rel="stylesheet" href="deck.css?v=3">
 <style>
 .paper{flex-direction:column;align-items:stretch;justify-content:flex-start;gap:16px}
@@ -58,11 +58,29 @@
 </style>
 </head><body>
 <div class="bar">
-  <div class="ttl">Deck builder<small id="barsub">WCStudios</small></div>
-  <span class="chip" id="chip"></span>
-  <button id="bReset">Reset</button>
-  <button id="bShow">Present</button>
-  <button class="primary" id="bGo">Create deck</button>
+  <div class="barl">
+    <div class="brand">DOCS<b>OS</b></div>
+    <span class="sep"></span>
+    <div class="ttl">Deck builder<small id="barsub">WCStudios</small></div>
+    <span class="sep"></span>
+    <button id="bReset">New deck</button>
+    <button id="bShow">Present</button>
+    <span class="sep"></span>
+    <button class="primary" id="bGo">Create deck</button>
+    <span class="chip" id="chip"></span>
+  </div>
+  <button id="bConn" title="Worker connection">&#9881;<span class="cdot off" id="connDot"></span></button>
+</div>
+<div class="connpop" id="connPop" hidden>
+  <div class="connh">Worker connection</div>
+  <div class="grp closed" data-g="conn">
+      <div class="lbl" data-toggle>Worker connection <span class="sum" id="sumConn"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="f"><label>widgetAction webhook URL</label><input id="cU"></div>
+        <div class="f"><label>Widget key</label><input id="cK"></div>
+        <button id="cSave">Save connection</button>
+      </div>
+    </div>
 </div>
 <div class="split">
   <div class="form">
@@ -86,14 +104,6 @@
       <div class="gb">
         <div class="flab">Layout</div><div class="layouts" id="layouts"></div>
         <div id="fields" style="margin-top:10px"></div>
-      </div>
-    </div>
-    <div class="grp closed" data-g="conn">
-      <div class="lbl" data-toggle>Worker connection <span class="sum" id="sumConn"></span><span class="chev">›</span></div>
-      <div class="gb">
-        <div class="f"><label>widgetAction webhook URL</label><input id="cU"></div>
-        <div class="f"><label>Widget key</label><input id="cK"></div>
-        <button id="cSave">Save connection</button>
       </div>
     </div>
     <p class="note" id="status"></p>
@@ -468,7 +478,7 @@ async function boot(){
   H.wireGroups();
   const cc = H.conn(); $("cU").value = cc.url || ""; $("cK").value = cc.key || ""; $("sumConn").textContent = cc.url ? "connected" : "not set";
   $("cSave").onclick = () => { H.setConn($("cU").value.trim(), $("cK").value.trim()); H.toast("Connection saved"); $("sumConn").textContent = "connected"; };
-  $("bReset").onclick = () => { try { localStorage.removeItem(STORE); } catch(e){} deck = starter(); cur = 0; $("dTitle").value = "New deck"; full(); chip("Reset"); };
+  $("bReset").onclick = () => { try { localStorage.removeItem(STORE); } catch(e){} deck = starter(); cur = 0; $("dTitle").value = "New deck"; full(); chip("Started fresh"); };
   $("bShow").onclick = () => { showIx = cur; show(true); };
   $("bGo").onclick = create;
   wireView();
@@ -476,6 +486,31 @@ async function boot(){
   full();
 }
 boot();
+})();
+</script>
+<script>
+/* Settings gear: the worker connection lives behind it, as in FinanceOS. The
+   inputs keep their ids, so the code above that reads and saves them is
+   unchanged. When Create finds no connection it opens the old section; that
+   now opens this panel instead. */
+(function(){
+  const pop = document.getElementById("connPop"), btn = document.getElementById("bConn");
+  const grp = pop.querySelector('[data-g="conn"]'), sum = document.getElementById("sumConn");
+  const dot = document.getElementById("connDot");
+  const show = on => { pop.hidden = !on; btn.classList.toggle("on", on); };
+  btn.addEventListener("click", e => { e.stopPropagation(); show(pop.hidden); });
+  /* pointerdown, not click: Create opens this panel from inside its own click,
+     and a click listener here would see that same click and shut it again. */
+  document.addEventListener("pointerdown", e => {
+    if(!pop.hidden && !pop.contains(e.target) && !btn.contains(e.target)) show(false);
+  });
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && !pop.hidden) show(false); });
+  new MutationObserver(() => {
+    if(!grp.classList.contains("closed")){ grp.classList.add("closed"); show(true); }
+  }).observe(grp, { attributes:true, attributeFilter:["class"] });
+  const paint = () => { dot.className = "cdot " + (/^connected/i.test(sum.textContent.trim()) ? "on" : "off"); };
+  new MutationObserver(paint).observe(sum, { childList:true, characterData:true, subtree:true });
+  paint();
 })();
 </script>
 </body></html>
