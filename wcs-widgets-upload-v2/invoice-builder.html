@@ -305,6 +305,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
         </div>
         <div class="pzrule"></div>
         <div class="f"><label>Name</label><input id="cName" placeholder="Pulltab Sports"></div>
+        <div class="f" id="cPersonRow" hidden><label>Who to bill <span style="opacity:.6">(from the client directory)</span></label><select id="cPerson"></select></div>
         <div class="f"><label>Contact <span style="opacity:.6">(autofills from Notion)</span></label><input id="cCompany" placeholder="Accounts Payable"></div>
         <div class="f"><label>Email</label><input id="cEmail" type="email" placeholder="billing@client.com"></div>
         <div class="f"><label>Address</label><input id="cAddress" placeholder="optional"></div>
@@ -966,6 +967,7 @@ $("cPick").addEventListener("change", () => {
   const pick = $("cPick").value;
   if(!pick){                       // "— new client —": clear and let them type
     ["cName","cCompany","cEmail","cAddress","cCity"].forEach(id => $(id).value = "");
+    fillPeople("");
     setOpen("client", true, true); paint(); persist();
     return;
   }
@@ -977,6 +979,11 @@ $("cPick").addEventListener("change", () => {
   $("cCompany").value = c.contact || "";
   $("cEmail").value = c.email || "";
   // The Clients database has no address, so those two stay as typed.
+  const lead = fillPeople(c.name);
+  if(lead){
+    $("cCompany").value = lead.name || $("cCompany").value;
+    $("cEmail").value = lead.email || $("cEmail").value;
+  }
 
   // A retainer client with an empty sheet gets its monthly line for free.
   if(!items.length && c.retainer){
@@ -1204,7 +1211,43 @@ function fillClients(){
   $("cPick").innerHTML = '<option value="">\u2014 new client \u2014</option>'
     + (ret.length ? '<optgroup label="Retainer">' + ret.map(opt).join("") + '</optgroup>' : "")
     + (rest.length ? '<optgroup label="Other clients">' + rest.map(opt).join("") + '</optgroup>' : "");
+  // The feed arrives after first paint, so refresh the people for whoever is
+  // already in Bill To rather than waiting for the client to be re-picked.
+  try { fillPeople($("cName").value, $("cEmail").value); } catch(e){}
 }
+
+/* The people at a client, from the Client Directory by way of the live feed.
+   The worker sorts whoever holds an Accounting role to the front, so "the first
+   one" is the right default here without this file having to know the role
+   list — add a role there and the rule still holds. */
+function fillPeople(clientName, keepEmail){
+  const c = (clients || []).find(x => x.name === clientName);
+  const people = (c && Array.isArray(c.contacts)) ? c.contacts : [];
+  const row = $("cPersonRow"), sel = $("cPerson");
+  if(!people.length){ row.hidden = true; sel.innerHTML = ""; return null; }
+  row.hidden = false;
+  sel.innerHTML = people.map((p, i) =>
+      '<option value="' + i + '">' + esc(p.name)
+      + (p.role ? " \u00b7 " + esc(p.role) : "") + '</option>').join("")
+    + '<option value="-1">\u2014 someone else \u2014</option>';
+  /* Whoever the invoice is already addressed to stays selected. Reopening a
+     sent invoice must not quietly re-address it to the accounting contact. */
+  const at = keepEmail
+    ? people.findIndex(p => p.email && p.email.toLowerCase() === String(keepEmail).toLowerCase())
+    : -1;
+  sel.value = at >= 0 ? String(at) : "0";
+  return at >= 0 ? people[at] : people[0];
+}
+
+$("cPerson").addEventListener("change", () => {
+  const c = (clients || []).find(x => x.name === $("cName").value);
+  const people = (c && c.contacts) || [];
+  const i = parseInt($("cPerson").value, 10);
+  if(!(i >= 0) || !people[i]) return;      // "someone else" leaves the fields alone
+  $("cCompany").value = people[i].name || "";
+  $("cEmail").value = people[i].email || "";
+  paint(); persist();
+});
 
 async function loadAr(){
   const bust = "?t=" + Date.now();
@@ -1293,6 +1336,13 @@ function adoptInvoice(inv, how){
   items = Array.isArray(inv.items) && inv.items.length
     ? JSON.parse(JSON.stringify(inv.items)).map(it => ({...it, detail: it.detail || ""}))
     : [{description: inv.name || "", detail: "", qty: 1, unit: "", rate: inv.amount || 0}];
+
+  /* Keep the Contact name in step with whoever the dropdown lands on, or a
+     reopened invoice reads "Steven Gapinski" above Dani Duffey's address. */
+  const who = fillPeople(inv.client || "", $("cEmail").value);
+  if(who && who.email && who.email.toLowerCase() === String($("cEmail").value).toLowerCase()){
+    $("cCompany").value = who.name || $("cCompany").value;
+  }
 
   setEditing(inv);
   drawItems(); syncDue(); paint(); persist();
