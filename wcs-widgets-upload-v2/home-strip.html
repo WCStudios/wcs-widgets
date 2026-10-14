@@ -55,6 +55,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .dot{width:5px;height:5px;border-radius:50%;flex:0 0 auto}
 .d-rev{background:var(--accent)}.d-del{background:var(--good)}.d-over{background:var(--over)}
+/* Out with the client: nothing for us to do yet, so it stays quiet. */
+.d-review{background:var(--faint)}
 .chip{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
  color:var(--accent);background:var(--track);padding:3px 7px;border-radius:5px;white-space:nowrap}
 .chip.unit{text-transform:none;letter-spacing:.2px}
@@ -272,12 +274,20 @@ function paint(D){
     overdue.style.display = "none";
   }
 
-  document.getElementById("pings").innerHTML = (D.pings || []).map(p =>
-    '<a class="ping" data-peek="'+esc(p.id)+'">'
-    + '<span class="dot d-'+(p.kind === "del" ? "del" : "rev")+'"></span>'
-    + '<span class="pt"><span class="pw">'+esc(p.who)+' '+esc(p.what)+'</span>'
-    +   '<span class="pm">'+esc(p.task)+'</span></span>'
-    + '<span class="pa">'+esc(p.ago)+'</span></a>').join("");
+  /* The Revisions status means a cut went out and the client has it. Nothing
+     in a task records when they actually reply, so older feeds that called
+     this "left revisions" were firing the moment the cut was sent. Read those
+     as what they are: the client is reviewing. */
+  document.getElementById("pings").innerHTML = (D.pings || []).map(p => {
+    const review = p.kind === "review" || (p.kind === "rev" && p.what === "left revisions");
+    const kind = p.kind === "del" ? "del" : review ? "review" : "rev";
+    const what = review ? "is reviewing" : p.what;
+    return '<a class="ping" data-peek="'+esc(p.id)+'">'
+      + '<span class="dot d-'+kind+'"></span>'
+      + '<span class="pt"><span class="pw">'+esc(p.who)+' '+esc(what)+'</span>'
+      +   '<span class="pm">'+esc(p.task)+'</span></span>'
+      + '<span class="pa">'+esc(p.ago)+'</span></a>';
+  }).join("");
   bindAll(document.getElementById("pings"));
 
   if(s.date){
