@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-14T00:26:46.421Z",
+ "updated": "2026-10-14T00:31:47.274Z",
  "source": "worker",
  "tasks": {
   "open": 34,
@@ -14,6 +14,14 @@
  "pings": [
   {
    "kind": "rev",
+   "who": "Tradition Companies",
+   "what": "left revisions",
+   "task": "TC - 2026 All Employee Event",
+   "id": "3e2421efc7668164a9ebd519cc775b25",
+   "ago": "today"
+  },
+  {
+   "kind": "rev",
    "who": "Minnesota Wild",
    "what": "left revisions",
    "task": "MN Wild - 2026 Hockey Fights Cancer Feature",
@@ -26,14 +34,6 @@
    "what": "delivered",
    "task": "Walser - 2026 Honda OTT + CM Spots",
    "id": "3a5421efc766817d8024c961be3728db",
-   "ago": "1d"
-  },
-  {
-   "kind": "del",
-   "who": "Walser Automotive",
-   "what": "delivered",
-   "task": "Walser - 2026 Honda Culture Video",
-   "id": "3c9421efc76681f7a307cbe27367c80e",
    "ago": "1d"
   }
  ],
