@@ -2,14 +2,33 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
 <title>Contract Builder · WCStudios</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="builder.css?v=2">
+<link rel="stylesheet" href="builder.css?v=3">
 </head><body>
 <div class="bar">
-  <div class="ttl">Contract builder<small id="barsub">WCStudios</small></div>
-  <span class="chip" id="chip"></span>
-  <button id="bReset">Reset</button>
-  <button id="bPrint">Save PDF</button>
-  <button class="primary" id="bGo">Create draft</button>
+  <div class="barl">
+    <div class="brand">DOCS<b>OS</b></div>
+    <span class="sep"></span>
+    <div class="ttl">Contract builder<small id="barsub">WCStudios</small></div>
+    <span class="sep"></span>
+    <button id="bReset">New contract</button>
+    <button id="bPrint">Save PDF</button>
+    <span class="sep"></span>
+    <button class="primary" id="bGo">Create draft</button>
+    <span class="chip" id="chip"></span>
+  </div>
+  <button id="bConn" title="Worker connection">&#9881;<span class="cdot off" id="connDot"></span></button>
+</div>
+<div class="connpop" id="connPop" hidden>
+  <div class="connh">Worker connection</div>
+  <div class="grp closed" data-g="conn">
+      <div class="lbl" data-toggle>Worker connection <span class="sum" id="sumConn"></span><span class="chev">›</span></div>
+      <div class="gb">
+        <div class="f"><label>widgetAction webhook URL</label><input id="cU"></div>
+        <div class="f"><label>Widget key</label><input id="cK"></div>
+        <button id="cSave">Save connection</button>
+        <p class="note" style="margin-top:8px">Shared with the invoice builder on this browser. If the invoice builder already works here, this is already set.</p>
+      </div>
+    </div>
 </div>
 <div class="split">
   <div class="form" id="form">
@@ -44,15 +63,6 @@
       </div>
     </div>
 
-    <div class="grp closed" data-g="conn">
-      <div class="lbl" data-toggle>Worker connection <span class="sum" id="sumConn"></span><span class="chev">›</span></div>
-      <div class="gb">
-        <div class="f"><label>widgetAction webhook URL</label><input id="cU"></div>
-        <div class="f"><label>Widget key</label><input id="cK"></div>
-        <button id="cSave">Save connection</button>
-        <p class="note" style="margin-top:8px">Shared with the invoice builder on this browser. If the invoice builder already works here, this is already set.</p>
-      </div>
-    </div>
     <div class="r2" id="edits" style="display:none;align-items:center;margin-bottom:10px"><span class="note" id="editsN"></span><button id="revert" style="flex:0 0 auto">Undo page edits</button></div>
     <p class="note" id="status"></p>
   </div>
@@ -199,7 +209,7 @@ async function boot(){
   $("pEnd").addEventListener("input", () => { typed._end = 1; render(); });
   [["rTitle","_title"],["rParty","_party"],["rEmail","_email"]].forEach(([k, f]) => $(k).addEventListener("input", () => { typed[f] = 1; render(); }));
   $("cSave").onclick = () => { H.setConn($("cU").value.trim(), $("cK").value.trim()) ? H.toast("Connection saved") : H.toast("This browser blocked saving"); $("sumConn").textContent = "connected"; };
-  $("bReset").onclick = () => { try { localStorage.removeItem(STORE); } catch(e){} typed = {}; overrides = {}; ["pStart","pEnd","pTotal","pDel","rTitle","rParty","rEmail"].forEach(k => $(k).value = ""); buildBlanks(); applyTemplateDefaults(); render(); chip("Reset"); };
+  $("bReset").onclick = () => { try { localStorage.removeItem(STORE); } catch(e){} typed = {}; overrides = {}; ["pStart","pEnd","pTotal","pDel","rTitle","rParty","rEmail"].forEach(k => $(k).value = ""); buildBlanks(); applyTemplateDefaults(); render(); chip("Started fresh"); };
   $("bPrint").onclick = () => window.print();
   $("bGo").onclick = create;
   $("revert").onclick = () => { overrides = {}; render(); chip("Page edits cleared"); };
@@ -219,6 +229,31 @@ async function boot(){
   render();
 }
 boot();
+})();
+</script>
+<script>
+/* Settings gear: the worker connection lives behind it, as in FinanceOS. The
+   inputs keep their ids, so the code above that reads and saves them is
+   unchanged. When Create finds no connection it opens the old section; that
+   now opens this panel instead. */
+(function(){
+  const pop = document.getElementById("connPop"), btn = document.getElementById("bConn");
+  const grp = pop.querySelector('[data-g="conn"]'), sum = document.getElementById("sumConn");
+  const dot = document.getElementById("connDot");
+  const show = on => { pop.hidden = !on; btn.classList.toggle("on", on); };
+  btn.addEventListener("click", e => { e.stopPropagation(); show(pop.hidden); });
+  /* pointerdown, not click: Create opens this panel from inside its own click,
+     and a click listener here would see that same click and shut it again. */
+  document.addEventListener("pointerdown", e => {
+    if(!pop.hidden && !pop.contains(e.target) && !btn.contains(e.target)) show(false);
+  });
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && !pop.hidden) show(false); });
+  new MutationObserver(() => {
+    if(!grp.classList.contains("closed")){ grp.classList.add("closed"); show(true); }
+  }).observe(grp, { attributes:true, attributeFilter:["class"] });
+  const paint = () => { dot.className = "cdot " + (/^connected/i.test(sum.textContent.trim()) ? "on" : "off"); };
+  new MutationObserver(paint).observe(sum, { childList:true, characterData:true, subtree:true });
+  paint();
 })();
 </script>
 </body></html>
