@@ -1,10 +1,10 @@
 {
- "updated": "2026-10-15T17:48:12.843Z",
+ "updated": "2026-10-15T17:53:14.703Z",
  "source": "worker",
  "tasks": {
-  "open": 34,
-  "inPost": 17,
-  "overdue": 7
+  "open": 33,
+  "inPost": 16,
+  "overdue": 6
  },
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
@@ -21,9 +21,9 @@
    "ago": "today"
   },
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Tradition Companies",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "TC - 2026 All Employee Event",
    "id": "3e2421efc7668164a9ebd519cc775b25",
    "ago": "2d"
