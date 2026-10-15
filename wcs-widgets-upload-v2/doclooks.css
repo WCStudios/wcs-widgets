@@ -63,7 +63,7 @@
 .doc:where([class*="lk-"]) li::marker{color:var(--acc)}
 .doc:where([class*="lk-"]) details>summary::before{color:var(--gray)}
 .doc:where([class*="lk-"]) .dfoot{display:flex;justify-content:space-between;gap:20px}
-.doc:where([class*="lk-"]) .sec{break-after:avoid;page-break-after:avoid;break-inside:avoid;page-break-inside:avoid}
+.doc:where([class*="lk-"]) .sec,.doc:where([class*="lk-"]) .seccall{break-after:avoid;page-break-after:avoid;break-inside:avoid;page-break-inside:avoid}
 .doc:where([class*="lk-"]) tr,.doc:where([class*="lk-"]) .parties,.doc:where([class*="lk-"]) .sigs{break-inside:avoid;page-break-inside:avoid}
 /* Why WCStudios + Our process. Midnight gives them a dark page of their own; the white looks let them flow. */
 .doc:where([class*="lk-"]) .mods{padding:.1in 0 .2in}
@@ -370,3 +370,41 @@
 .zpill span{padding:0 4px;color:var(--muted);font-variant-numeric:tabular-nums}
 .zpill .zs{width:1px;height:16px;background:var(--line);margin:0 4px}
 @media(max-width:560px){.zpill [data-z=width],.zpill [data-z="-"],.zpill [data-z="+"],.zpill b,.zpill .zs:first-of-type{display:none}}
+
+/* ── Layers: the panel follows the document ─────────────────────────────── */
+.layers{margin-top:4px}
+.layhd{display:flex;align-items:baseline;justify-content:space-between;font-size:9px;letter-spacing:.9px;text-transform:uppercase;
+ color:var(--muted);font-weight:700;margin:4px 0 8px}
+.layhd b{font-size:10px;letter-spacing:0;text-transform:none;font-weight:600;color:var(--muted)}
+.laylist .grp{margin:0;border-bottom:1px solid var(--accent-line,rgba(232,98,44,.3))}
+.laylist .grp>.lbl{border-bottom:0;margin:0;padding:10px 0;gap:9px}
+.laylist .grp:not(.closed)>.lbl{color:var(--text)}
+.laylist .grp:not(.closed)>.gb{padding:2px 0 14px}
+.laylist .grp>.lbl .lt{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.laylist .grp>.lbl .pgno{flex:0 0 auto;min-width:18px;height:18px;padding:0 5px;border-radius:5px;background:var(--soft);color:var(--muted);
+ font-size:9.5px;letter-spacing:0;font-weight:700;display:inline-flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.laylist .grp>.lbl .pgno:empty{visibility:hidden}
+.laylist .grp:not(.closed)>.lbl .pgno{background:var(--accent);color:#fff}
+.laylist .grp.off>.lbl{opacity:.55}
+.laylist .grp.off>.lbl .pgno{text-transform:uppercase;font-size:8px;letter-spacing:.5px}
+.laylist .grp[data-layer^="x:"]>.lbl .pgno{display:none}
+.layer-hidden{display:none!important}
+.laylist .lo-row{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:11px}
+.laylist .lo-row>span{flex:0 0 76px;font-size:9.5px;color:var(--muted)}
+.laylist .lo-row select{flex:1;min-width:0}
+.laylist .lo-sw{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:600;margin:0 0 10px;cursor:pointer}
+.laylist .lo-sw input{width:auto;margin:0}
+.laylist .grp.off .lkfields,.laylist .grp.off .lkbar{display:none}
+.laylist .lkbar{margin:2px 0 6px}
+.laylist .lknote{margin-top:4px}
+.laylist .sp-link{border:0;background:none;padding:2px 0;color:var(--accent);font-size:10.5px;font-weight:700}
+.laylist .sp-link:hover{text-decoration:underline}
+.laylist .f.lk-flash,.laylist .item.lk-flash,.laylist .lk-flash{animation:lkf 1.2s ease}
+@keyframes lkf{0%,35%{box-shadow:0 0 0 2px var(--accent);border-radius:8px}100%{box-shadow:0 0 0 2px transparent}}
+.doc .lk-flash{animation:lkd 1.2s ease}
+@keyframes lkd{0%,40%{box-shadow:0 0 0 3px rgba(232,98,44,.55)}100%{box-shadow:0 0 0 3px rgba(232,98,44,0)}}
+.doc [data-lk]{cursor:text;border-radius:3px;transition:box-shadow .12s,background .12s;white-space:pre-line}
+.doc [data-lk]:hover{box-shadow:0 0 0 1px rgba(232,98,44,.45);background:rgba(232,98,44,.05)}
+.doc .hero h1.t,.doc .props>b{cursor:text}
+.doc:where([class*="lk-"]) .mod .trusted i{font-style:normal}
+@media print{.doc [data-lk]:hover{box-shadow:none;background:none}.doc .lk-flash{animation:none}}
