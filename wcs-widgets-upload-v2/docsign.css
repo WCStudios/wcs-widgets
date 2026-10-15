@@ -1,0 +1,43 @@
+/* Send to sign panel. Same panel language as the worker connection, held clear
+   of the top-right corner for the same reason (Notion's View original). */
+.signpop{position:fixed;z-index:62;top:54px;right:calc(clamp(12px,1.4vw,18px) + var(--safe,106px));
+ width:min(380px,calc(100vw - 24px));max-height:calc(100vh - 70px);display:flex;flex-direction:column;
+ background:var(--bg);border:1px solid var(--fieldline);border-radius:12px;box-shadow:0 18px 44px rgba(0,0,0,.28)}
+.signpop[hidden]{display:none}
+.bar #bSign.on{border-color:var(--accent)}
+.sp-h{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.sp-h b{font-size:12px;letter-spacing:.2px}
+.sp-h span{font-size:10.5px;color:var(--muted);flex:1}
+.sp-x{width:26px;height:26px;padding:0;border-radius:7px;color:var(--muted)}
+.sp-body{overflow:auto;padding:12px 14px 14px}
+.sp-lbl{font-size:9px;letter-spacing:.9px;text-transform:uppercase;font-weight:700;color:var(--accent-ink,#c9501f);
+ margin:14px 0 7px;padding-bottom:6px;border-bottom:1px solid var(--accent-line,rgba(232,98,44,.3))}
+.sp-f{display:block;font-size:9.5px;color:var(--muted);margin-bottom:8px}
+.sp-f span{opacity:.7}
+.sp-f input,.sp-f textarea{margin-top:3px}
+.sp-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sp-go{width:100%;margin-top:4px;padding:10px 12px}
+.sp-note{font-size:10.5px;color:var(--muted);line-height:1.5;margin:8px 0 0}
+.sp-row{font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sp-ok,.sp-bad{font-weight:700}
+.sp-ok{color:var(--up)}.sp-bad{color:var(--down)}
+.sp-link{border:0;background:none;padding:2px 0;color:var(--accent);font-size:10.5px;font-weight:700}
+.sp-link:hover{text-decoration:underline}
+.sp-sig{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border-radius:9px;padding:10px 12px;border:1px solid var(--fieldline)}
+.sp-sig img{max-height:46px;max-width:220px}
+.sp-pad{position:relative;height:110px;border:1px dashed var(--fieldline);border-radius:9px;background:#fff}
+.sp-pad canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.sp-pad span{position:absolute;left:10px;bottom:8px;font-size:9.5px;color:#9a9a96;pointer-events:none}
+.sp-padbar{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.sp-hist{list-style:none;margin:0;padding:0}
+.sp-hist li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);margin:0}
+.sp-hist li>div{min-width:0;flex:1}
+.sp-hist b{display:block;font-size:11.5px}
+.sp-hist span{display:block;font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sp-acts{display:flex;gap:12px;margin-top:3px}
+.sp-st{flex:0 0 auto;align-self:flex-start;font-size:8.5px;letter-spacing:.5px;text-transform:uppercase;font-weight:800;padding:3px 7px;border-radius:9px;background:var(--soft);color:var(--muted)}
+.sp-st.open{color:#b26b00;background:rgba(214,140,0,.13)}
+.sp-st.signed{color:var(--up);background:rgba(12,163,12,.12)}
+.sp-st.void{text-decoration:line-through}
+#spForget{margin-top:12px;color:var(--muted)}
+@media print{.signpop{display:none!important}}
