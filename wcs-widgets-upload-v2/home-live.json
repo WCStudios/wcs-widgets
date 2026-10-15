@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-15T04:56:12.524Z",
+ "updated": "2026-10-15T05:01:14.222Z",
  "source": "worker",
  "tasks": {
   "open": 34,
@@ -9,7 +9,7 @@
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
   "id": "4bd2b506ce2c4cd3b1c4c1efaa817029",
-  "days": 79
+  "days": 80
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "left revisions",
    "task": "TC - 2026 All Employee Event",
    "id": "3e2421efc7668164a9ebd519cc775b25",
-   "ago": "1d"
+   "ago": "2d"
   },
   {
    "kind": "rev",
@@ -26,7 +26,7 @@
    "what": "left revisions",
    "task": "MN Wild - 2026 Hockey Fights Cancer Feature",
    "id": "3ef421efc7668185ae9fc5ccbc716fd7",
-   "ago": "1d"
+   "ago": "2d"
   },
   {
    "kind": "del",
@@ -34,13 +34,13 @@
    "what": "delivered",
    "task": "Walser - 2026 Honda OTT + CM Spots",
    "id": "3a5421efc766817d8024c961be3728db",
-   "ago": "2d"
+   "ago": "3d"
   }
  ],
  "nextShoot": {
-  "name": "Walser - 2026 Kia “Real Talk” OTT Spots (Telluride + Sportage)",
-  "id": "3eb421efc76681bfaa96db84b96ffe1c",
-  "date": "2026-10-14",
-  "time": "11:00 AM"
+  "name": "Walser - 2026 Veterans at Walser License Plate Video",
+  "id": "3ed421efc76681479561f440651e8421",
+  "date": "2026-10-16",
+  "time": "9:00 AM"
  }
 }
