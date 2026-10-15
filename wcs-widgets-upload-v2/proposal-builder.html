@@ -3,7 +3,7 @@
 <title>Proposal Builder · WCStudios</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="builder.css?v=3">
-<link rel="stylesheet" href="doclooks.css?v=6">
+<link rel="stylesheet" href="doclooks.css?v=7">
 <link rel="stylesheet" href="docsign.css?v=1">
 </head><body>
 <div class="bar">
@@ -73,7 +73,6 @@
       <div class="lbl" data-toggle>Proposal breakdown <span class="sum" id="sumItems"></span><span class="chev">›</span></div>
       <div class="gb">
         <div class="pz" id="presets"></div>
-        <div class="pzhint">Tap to add. Lines with hours and a rate add to their section; a flat amount covers the whole line.</div>
         <div id="items"></div>
         <button class="add" id="bAdd">+ Add line</button>
       </div>
@@ -91,7 +90,7 @@
     <p class="note" id="status"></p>
   </div>
   <div class="paper" id="paperWrap" style="flex-direction:column;align-items:center;justify-content:flex-start">
-    <p class="edithint">Click any text on the proposal to edit it, on every page. Drag <b>⠇</b> to reorder lines.</p><div class="scaler" id="scaler"><div class="doc" id="doc"></div></div></div>
+    <div class="scaler" id="scaler"><div class="doc" id="doc"></div></div></div>
 </div>
 <script src="hub.js?v=2"></script>
 <script>
@@ -313,7 +312,7 @@ boot();
   paint();
 })();
 </script>
-<script src="doclooks.js?v=6" data-kind="Proposal"></script>
+<script src="doclooks.js?v=7" data-kind="Proposal"></script>
 <script src="docsign.js?v=3"></script>
 <script src="doclib.js?v=1" data-kind="proposal" data-store="wcsProposalBuilder.v1" data-keys="wcsDocLook.proposal,wcsDocLook.proposal.opts,wcsDocLook.proposal.edits" data-title="#title"></script>
 </body></html>
