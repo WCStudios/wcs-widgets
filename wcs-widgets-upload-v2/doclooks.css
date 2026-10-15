@@ -336,3 +336,37 @@
 /* Print: let the white looks start flush; the cover band and dark page carry
    their own colour (builder.css already turns on exact colour printing). */
 @media print{.lookpick{display:none}}
+
+/* ── Pages: the preview as Letter sheets, the same breaks the PDF gets ─────
+   doclooks.js puts a .pgbrk between two sheets. On screen it fills the page
+   out and leaves a gap (the .pgap bands draw it); in print it is a forced
+   break plus the next page's top margin. */
+.doc{position:relative}
+.doc .pgbrk{display:block;margin:0;padding:0;border:0;user-select:none;pointer-events:none}
+.doc .pgbrk i{display:block;font-style:normal}
+.doc tr.pgbrk{display:table-row}
+.doc tr.pgbrk>td{border:0!important;padding:0!important;background:transparent!important}
+.doc .pgov{position:absolute;left:0;right:0;top:0;height:0;z-index:5;pointer-events:none}
+.doc .pgap{position:absolute;left:-20px;right:-20px;background:var(--plane,#f3f3f1)}
+.doc .pgap::before,.doc .pgap::after{content:"";position:absolute;left:20px;right:20px;height:9px}
+.doc .pgap::before{top:0;background:linear-gradient(rgba(0,0,0,.09),rgba(0,0,0,0))}
+.doc .pgap::after{bottom:0;background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.06))}
+@media print{
+  .doc .pgov,.doc .pgbrk .pf{display:none!important}
+  .doc .pgbrk{break-before:page;page-break-before:always}
+  .doc{min-height:0!important}
+  .scaler{margin:0!important;height:auto!important}
+  .zpill{display:none!important}
+}
+
+/* Zoom and page controls, floating at the bottom of the preview */
+.zpill{position:sticky;bottom:12px;align-self:center;z-index:6;flex:0 0 auto;margin-top:16px;display:flex;align-items:center;gap:2px;
+ padding:4px;border-radius:11px;background:var(--bg);border:1px solid var(--fieldline);box-shadow:0 6px 22px rgba(0,0,0,.16);
+ font-size:10.5px;white-space:nowrap;max-width:calc(100% - 8px);overflow-x:auto}
+.zpill button{border:0;background:none;padding:5px 9px;border-radius:7px;font-size:10.5px;font-weight:700;color:var(--muted)}
+.zpill button:hover{background:var(--soft);color:var(--text)}
+.zpill button.on{background:var(--soft);color:var(--text)}
+.zpill b{min-width:38px;text-align:center;font-variant-numeric:tabular-nums;font-weight:700}
+.zpill span{padding:0 4px;color:var(--muted);font-variant-numeric:tabular-nums}
+.zpill .zs{width:1px;height:16px;background:var(--line);margin:0 4px}
+@media(max-width:560px){.zpill [data-z=width],.zpill [data-z="-"],.zpill [data-z="+"],.zpill b,.zpill .zs:first-of-type{display:none}}
