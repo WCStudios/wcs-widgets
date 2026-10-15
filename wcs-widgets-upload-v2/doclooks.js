@@ -52,17 +52,26 @@
   form.insertBefore(pick, form.firstChild);
   const lo = el("div", "lookopts",
     `<label class="lo-row"><span>Cover photo</span><select id="loCover"><option value="">None</option></select></label>` +
-    `<div class="lo-chks"><label><input type="checkbox" id="loAbout"> Why WCStudios page</label>` +
-    `<label><input type="checkbox" id="loProcess"> Our process page</label></div>` +
-    `<p class="lo-note" id="loNote">Loading photos and copy from wcstudios.pages.dev…</p>`);
-  pick.append(lo);
-  const $lo = id => lo.querySelector("#" + id);
+    `<label class="lo-sw"><input type="checkbox" id="loAbout"> Include this page</label>` +
+    `<label class="lo-sw"><input type="checkbox" id="loProcess"> Include this page</label>` +
+    `<p class="lo-note" id="loNote"></p>`);
+  const $lo = id => document.getElementById(id) || lo.querySelector("#" + id);
   $lo("loAbout").checked = !!opts.about; $lo("loProcess").checked = !!opts.process;
-  lo.addEventListener("change", () => {
+  ["loCover", "loAbout", "loProcess"].forEach(id => $lo(id).addEventListener("change", () => {
     opts = { cover: $lo("loCover").value, about: $lo("loAbout").checked, process: $lo("loProcess").checked };
     try { localStorage.setItem(OPTS_KEY, JSON.stringify(opts)); } catch (e) {}
     rerender();
-  });
+  }));
+
+  /* Text you change on the pages this script draws, for this document only. */
+  const LKEY = KEY + ".edits";
+  let ED = {};
+  try { ED = JSON.parse(localStorage.getItem(LKEY) || "{}") || {}; } catch (e) {}
+  const saveED = () => { try { localStorage.setItem(LKEY, JSON.stringify(ED)); } catch (e) {} };
+  const tx = (k, d) => (ED[k] != null && ED[k] !== "") ? ED[k] : d;
+  const DEFS = {};
+  const T = k => esc(tx(k, DEFS[k] || ""));
+  { const r = document.getElementById("bReset"); if (r) r.addEventListener("click", () => { ED = {}; saveED(); }); }
   pick.addEventListener("click", e => {
     const b = e.target.closest("button[data-look]"); if (!b) return;
     look = b.dataset.look;
@@ -174,8 +183,8 @@
       ? `<div class="sig-done preview"><img class="sig-img" alt="" src="${esc(mine.png)}"></div>`
       : `<span class="sig-wait">Your signature</span>`;
     return el("section", "sigs",
-      `<div class="sk">Accepted and agreed</div>` +
-      `<p class="sx">Signing below, both parties agree to the terms of this ${esc(KIND.toLowerCase())}.</p>` +
+      `<div class="sk" data-lk="sig.sk">${T("sig.sk")}</div>` +
+      `<p class="sx" data-lk="sig.sx">${T("sig.sx")}</p>` +
       `<div class="sgrid">` +
         `<div class="sigblock" data-party="sender"><div class="sig-area">${sender}</div>` +
           `<div class="sig-who"><b>${esc((mine && mine.name) || "Bennett Witta")}</b><span>WCStudios</span></div></div>` +
@@ -208,21 +217,35 @@
     };
   }
 
-  function aboutModule(){
+  function buildDefs(){
+    DEFS["sig.sk"] = "Accepted and agreed";
+    DEFS["sig.sx"] = `Signing below, both parties agree to the terms of this ${KIND.toLowerCase()}.`;
+    if (!SITE) return;
     const a = SITE.about;
+    Object.assign(DEFS, { "about.mk": "Why WCStudios", "about.title": a.title, "about.p1": a.p1, "about.p2": a.p2 });
+    SITE.stats.forEach((x, i) => { DEFS[`stat.${i}.n`] = x.num; DEFS[`stat.${i}.l`] = x.label; });
+    if (SITE.quote) { DEFS["quote.text"] = SITE.quote.text; DEFS["quote.who"] = `${SITE.quote.name} · ${SITE.quote.company}`; }
+    if (SITE.logos.length) DEFS["trusted"] = SITE.logos.join(" · ");
+    Object.assign(DEFS, { "proc.mk": "How it runs", "proc.title": "Our process" });
+    if (SITE.processSub) DEFS["proc.sub"] = SITE.processSub;
+    SITE.process.forEach((x, i) => { DEFS[`step.${i}.name`] = x.name; DEFS[`step.${i}.desc`] = x.desc; });
+  }
+  buildDefs();
+
+  function aboutModule(){
     return el("section", "mod about",
-      `<div class="mk">Why WCStudios</div><h2 class="mt">${esc(a.title)}</h2>` +
-      `<div class="mcols"><p>${esc(a.p1)}</p><p>${esc(a.p2)}</p></div>` +
-      (SITE.stats.length ? `<div class="stats">${SITE.stats.map(s => `<div><b>${esc(s.num)}</b><span>${esc(s.label)}</span></div>`).join("")}</div>` : "") +
-      (SITE.quote ? `<figure class="quote"><blockquote>${esc(SITE.quote.text)}</blockquote><figcaption>${esc(SITE.quote.name)} · ${esc(SITE.quote.company)}</figcaption></figure>` : "") +
-      (SITE.logos.length ? `<div class="trusted"><span>Trusted by</span>${SITE.logos.map(esc).join(" · ")}</div>` : ""));
+      `<div class="mk" data-lk="about.mk">${T("about.mk")}</div><h2 class="mt" data-lk="about.title">${T("about.title")}</h2>` +
+      `<div class="mcols"><p data-lk="about.p1">${T("about.p1")}</p><p data-lk="about.p2">${T("about.p2")}</p></div>` +
+      (SITE.stats.length ? `<div class="stats">${SITE.stats.map((x, i) => `<div><b data-lk="stat.${i}.n">${T(`stat.${i}.n`)}</b><span data-lk="stat.${i}.l">${T(`stat.${i}.l`)}</span></div>`).join("")}</div>` : "") +
+      (SITE.quote ? `<figure class="quote"><blockquote data-lk="quote.text">${T("quote.text")}</blockquote><figcaption data-lk="quote.who">${T("quote.who")}</figcaption></figure>` : "") +
+      (SITE.logos.length ? `<div class="trusted"><span>Trusted by</span><i class="tl" data-lk="trusted">${T("trusted")}</i></div>` : ""));
   }
 
   function processModule(){
     return el("section", "mod process",
-      `<div class="mk">How it runs</div><h2 class="mt">Our process</h2>` +
-      (SITE.processSub ? `<p class="msub">${esc(SITE.processSub)}</p>` : "") +
-      `<ol class="steps">${SITE.process.map((s, i) => `<li><i>${String(i + 1).padStart(2, "0")}</i><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></li>`).join("")}</ol>`);
+      `<div class="mk" data-lk="proc.mk">${T("proc.mk")}</div><h2 class="mt" data-lk="proc.title">${T("proc.title")}</h2>` +
+      (DEFS["proc.sub"] || ED["proc.sub"] ? `<p class="msub" data-lk="proc.sub">${T("proc.sub")}</p>` : "") +
+      `<ol class="steps">${SITE.process.map((x, i) => `<li><i>${String(i + 1).padStart(2, "0")}</i><b data-lk="step.${i}.name">${T(`step.${i}.name`)}</b><span data-lk="step.${i}.desc">${T(`step.${i}.desc`)}</span></li>`).join("")}</ol>`);
   }
 
   function fillOptions(){
@@ -248,9 +271,11 @@
       const r = await fetch(SITE_URL + "content.js", { cache: "no-store" });
       const t = await r.text();
       SITE = shapeSite(JSON.parse(t.slice(t.indexOf("{"), t.lastIndexOf("}") + 1)));
+      buildDefs();
       fillOptions();
-      if (opts.cover || opts.about || opts.process) rerender();
+      if (opts.cover || opts.about || opts.process) rerender(); else refit();   // the switched-off pages get their layers
     } catch (e) {
+      console.warn("doclooks: site content", e);
       $lo("loNote").textContent = "Couldn't reach the website for photos and copy. The rest of the look still works.";
       lo.querySelectorAll("select,input").forEach(x => x.disabled = true);
     }
@@ -419,11 +444,315 @@
   if (window.WCSHub) window.WCSHub.fitPaper = fitDoc;   // the builders call H.fitPaper on render and resize
 
   let pT = 0;
-  const later = () => { clearTimeout(pT); pT = setTimeout(() => { guard(paginate); fitDoc(wrap, scaler, doc); }, 300); };
+  const later = () => { clearTimeout(pT); pT = setTimeout(() => { guard(paginate); fitDoc(wrap, scaler, doc); try { paintLayers(); } catch (e) {} }, 300); };
   doc.addEventListener("input", later);
   doc.addEventListener("load", later, true);           // pictures that arrive after the layout
 
-  function refit(){ guard(paginate); fitDoc(wrap, scaler, doc); }
+  /* ── Layers ────────────────────────────────────────────────────────────
+     The panel on the left follows the document: Cover, then each section in
+     the order it prints, the Why WCStudios and Our process pages where they
+     sit, and the signatures last. One layer is open at a time. Opening one
+     scrolls the preview to it; clicking anything on the page opens its layer.
+     The builder's own groups are reused (moved, not rebuilt), so their inputs
+     and the code that reads them are unchanged. */
+  const H$ = () => window.WCSHub;
+  const OPEN_KEY = KEY + ".layer";
+  const GROUPS = KIND === "Proposal"
+    ? [[/^cover$/, "who"], [/overview/i, "overview"], [/scope/i, "scope"], [/plan/i, "plan"], [/breakdown|investment|pricing|budget/i, "items"], [/payment/i, "terms"]]
+    : [[/^cover$/, "record"]];
+  // Proposal headings carry their own key, so a renamed heading keeps its layer.
+  const ED_GROUP = { "fx:h.overview": "overview", "fx:h.scope": "scope", "fx:h.plan": "plan", "fx:h.items": "items", "fx:h.terms": "terms" };
+  const AFTER = KIND === "Proposal" ? {} : { cover: ["term"] };            // builder groups that ride along after a layer
+  const HIDE = KIND === "Proposal" ? [] : ["blanks"];                      // replaced by per-section blanks
+  // A field in the panel for each thing you can click on the page.
+  const FIELD = { title: "#title", company: "#company", contact: "#contact", overview: "#overview", scope: "#scope", deliv: "#deliv", pre: "#pre", prod: "#prod", post: "#post" };
+  const PROP_FIELD = KIND === "Proposal" ? { company: "#company", client: "#contact", date: "#date" }
+    : { party: "#rParty", status: "#rStatus", term: "#pStart", monthly: "#pMonthly", type: "#tPick" };
+
+  const box = el("div", "layers");
+  const afterPicks = [...form.children].filter(c => c.classList.contains("pick")).pop();
+  form.insertBefore(box, afterPicks ? afterPicks.nextSibling : form.firstChild);
+  box.append(el("div", "layhd", `<span>Pages</span><b id="layN"></b>`));
+  const list = el("div", "laylist"); box.append(list);
+  let layerSig = "", entries = [], openKey = null;
+  try { openKey = localStorage.getItem(OPEN_KEY); } catch (e) {}
+  const byEl = new WeakMap();
+
+  const LEADX = /^[\s‍️\p{Extended_Pictographic}\p{Emoji_Modifier}]+/u;
+  const titleOf = n => {
+    const h = n.matches(".seccall") ? n.querySelector(".sec") || n : n;
+    const c = h.cloneNode(true); c.querySelectorAll(".emo,.grip").forEach(x => x.remove());
+    return c.textContent.replace(LEADX, "").replace(/\s+/g, " ").trim().slice(0, 48) || "Section";
+  };
+  const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+  function outline(){
+    const out = [], at = {};
+    const push = (key, title, anchor, kind) => {
+      if (at[key]) { at[key].els.push(anchor); return at[key]; }
+      const e = { key, title, anchor, kind, els: [anchor], toks: [], off: false };
+      at[key] = e; out.push(e); return e;
+    };
+    const take = (e, n) => {
+      byEl.set(n, e.key);
+      const marks = n.matches("mark[data-tok]") ? [n] : [...n.querySelectorAll("mark[data-tok]")];
+      marks.forEach(m => { if (!e.toks.includes(m.dataset.tok)) e.toks.push(m.dataset.tok); });
+    };
+    const head = doc.querySelector(":scope > .head");
+    let cur = head ? push("cover", "Cover", head, "cover") : null;
+    if (head) take(cur, head);
+    const pg = doc.querySelector(":scope > .pg");
+    const visit = c => {
+      if (c.classList.contains("pgbrk") || c.classList.contains("dfoot")) return;
+      if (c.matches(".mods,.tail")) { [...c.children].forEach(visit); return; }
+      if (c.matches(".mod.about")) cur = push("about", "Why WCStudios", c, "about");
+      else if (c.matches(".mod.process")) cur = push("process", "Our process", c, "process");
+      else if (c.matches(".sigs")) cur = push("sign", "Acceptance & signatures", c, "sign");
+      else if (c.matches(".parties")) cur = push("parties", "Parties", c, "sec");
+      else if (c.matches(".sec,.seccall")) {
+        const t = titleOf(c);
+        const hed = c.matches("[data-ed]") ? c.dataset.ed : (c.querySelector(".sec[data-ed]") || {}).dataset?.ed;
+        const accept = KIND === "Proposal" && (hed === "fx:h.accept" || (!hed && /accept|agreed|sign/i.test(t)));
+        cur = accept ? push("sign", "Acceptance & signatures", c, "sign") : push(hed && ED_GROUP[hed] ? "g:" + ED_GROUP[hed] : "s:" + slug(t), t, c, "sec");
+        if (hed && ED_GROUP[hed]) cur.group = ED_GROUP[hed];
+      }
+      if (cur) take(cur, c);
+    };
+    if (pg) [...pg.children].forEach(visit);
+    // Pages that are switched off still get a layer, where they would sit, so they can be switched on.
+    if (SITE) {
+      const firstSec = out.findIndex(e => e.kind === "sec");
+      const slot = look === "midnight" || firstSec < 0 ? (head ? 1 : 0) : firstSec + 1;
+      const ins = [];
+      if (!at.about) ins.push({ key: "about", title: "Why WCStudios", kind: "about", els: [], toks: [], off: true });
+      if (!at.process) ins.push({ key: "process", title: "Our process", kind: "process", els: [], toks: [], off: true });
+      if (ins.length) {
+        // keep about before process whichever is on
+        let i = Math.min(slot, out.length);
+        if (at.about && !at.process) i = out.indexOf(at.about) + 1;
+        if (!at.about && at.process) { out.splice(out.indexOf(at.process), 0, ins.shift()); i = out.indexOf(at.process) + 1; }
+        out.splice(i, 0, ...ins);
+      }
+    }
+    // Blanks that live nowhere visible (only in the title, say) get a layer of their own.
+    if (KIND !== "Proposal") {
+      const seen = new Set(out.flatMap(e => e.toks));
+      const rest = [...document.querySelectorAll("#blanks input[data-tok]")].map(i => i.dataset.tok).filter(t => !seen.has(t));
+      if (rest.length) out.push({ key: "other", title: "Other blanks", kind: "sec", els: [], toks: rest, off: false });
+    }
+    return out;
+  }
+
+  const groupFor = e => { if (e.group) return form.querySelector(`.grp[data-g="${e.group}"]`); const hit = GROUPS.find(([re]) => re.test(e.kind === "cover" ? "cover" : e.title)); return hit ? form.querySelector(`.grp[data-g="${hit[1]}"]`) : null; };
+  const origTok = tok => [...document.querySelectorAll("#blanks input[data-tok]")].find(i => i.dataset.tok === tok);
+
+  function shell(g, e){
+    g.classList.add("layer"); g.dataset.layer = e.key;
+    const lbl = g.querySelector(":scope > .lbl");
+    lbl.removeAttribute("data-toggle"); lbl.onclick = null;
+    if (!lbl.querySelector(".pgno")) lbl.insertBefore(el("span", "pgno"), lbl.firstChild);
+    let lt = lbl.querySelector(".lt");
+    if (!lt) {                                       // the builder's label text becomes the layer title
+      lt = el("span", "lt");
+      const txt = [...lbl.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim());
+      lt.textContent = txt.map(n => n.textContent.trim()).join(" ");
+      txt.forEach(n => n.remove());
+      lbl.insertBefore(lt, lbl.querySelector(".pgno").nextSibling);
+    }
+    if (!lbl.querySelector(".sum")) lbl.insertBefore(el("span", "sum"), lbl.querySelector(".chev"));
+    return g;
+  }
+  function newLayer(e){
+    const g = el("div", "grp closed", `<div class="lbl"><span class="pgno"></span><span class="lt"></span><span class="sum"></span><span class="chev">›</span></div><div class="gb"></div>`);
+    const gb = g.querySelector(".gb");
+    if (e.kind === "sec") {
+      if (e.toks.length) e.toks.forEach(tok => {
+        const f = el("div", "f", `<label></label><input data-proxy="">`);
+        f.querySelector("label").textContent = tok; const i = f.querySelector("input"); i.dataset.proxy = tok; i.placeholder = tok;
+        i.addEventListener("input", () => { const o = origTok(tok); if (o) { o.value = i.value; o.dispatchEvent(new Event("input", { bubbles: true })); } });
+        gb.append(f);
+      });
+      else gb.append(el("p", "note", "Nothing to fill in here. Click any text on the page to rewrite it."));
+    } else if (e.kind === "about" || e.kind === "process") {
+      const sw = $lo(e.kind === "about" ? "loAbout" : "loProcess").closest("label");
+      gb.append(sw, el("div", "lkfields"));
+      const bar = el("div", "lkbar", `<button type="button" class="sp-link" data-reset="${e.kind}">Use the website copy</button>`);
+      gb.append(bar, el("p", "note lknote", "Copy comes from the website, so WebsiteOS edits show up here. Anything you change applies to this document only."));
+    } else if (e.kind === "sign") {
+      gb.append(el("div", "lkfields"));
+      gb.append(el("div", "lksig", ""));
+    }
+    return shell(g, e);
+  }
+
+  // Text fields for the pages doclooks draws (Why WCStudios, Our process, signatures).
+  const LK_LABEL = k => ({ "about.mk": "Small label", "about.title": "Headline", "about.p1": "Paragraph 1", "about.p2": "Paragraph 2",
+    "quote.text": "Quote", "quote.who": "Quote by", "trusted": "Trusted by", "proc.mk": "Small label", "proc.title": "Headline",
+    "proc.sub": "Intro", "sig.sk": "Heading", "sig.sx": "Line above the signatures" })[k] ||
+    (/^stat\.(\d)\.n$/.test(k) ? `Stat ${+k.split(".")[1] + 1}` : /^stat\.(\d)\.l$/.test(k) ? `Stat ${+k.split(".")[1] + 1} label` :
+     /^step\.(\d)\.name$/.test(k) ? `Step ${+k.split(".")[1] + 1}` : /^step\.(\d)\.desc$/.test(k) ? `Step ${+k.split(".")[1] + 1} text` : k);
+  function lkFields(g, keys){
+    const w = g.querySelector(".lkfields"); if (!w) return;
+    const have = [...w.querySelectorAll("[data-lkf]")].map(i => i.dataset.lkf).join("|");
+    if (have !== keys.join("|")) {
+      w.innerHTML = keys.map(k => {
+        const long = /\.(p1|p2|sub|desc|text)$|^sig\.sx$|^trusted$/.test(k);
+        return `<div class="f"><label>${esc(LK_LABEL(k))}</label>${long ? `<textarea rows="3" data-lkf="${k}"></textarea>` : `<input data-lkf="${k}">`}</div>`;
+      }).join("");
+      w.querySelectorAll("[data-lkf]").forEach(i => i.addEventListener("input", () => {
+        const k = i.dataset.lkf, v = i.value.trim();
+        if (!v || v === DEFS[k]) delete ED[k]; else ED[k] = v;
+        saveED(); clearTimeout(lkT); lkT = setTimeout(rerender, 250);
+      }));
+    }
+    w.querySelectorAll("[data-lkf]").forEach(i => { if (document.activeElement !== i) { i.value = tx(i.dataset.lkf, DEFS[i.dataset.lkf] || ""); i.placeholder = DEFS[i.dataset.lkf] || ""; } });
+  }
+  let lkT = 0;
+
+  function syncLayers(){
+    if (!doc.querySelector(":scope > .head")) return;
+    const es = outline();
+    const sig = es.map(e => e.key + (e.off ? "-" : "+") + e.toks.join(",")).join("|");
+    if (sig !== layerSig) {
+      layerSig = sig;
+      const keep = new Map([...list.children].map(g => [g.dataset.layer, g]));
+      [...list.children].forEach(g => { if (g.dataset.g) form.append(g); });
+      list.innerHTML = "";
+      HIDE.forEach(id => { const g = form.querySelector(`.grp[data-g="${id}"]`); if (g) g.classList.add("layer-hidden"); });
+      for (const e of es) {
+        let g = groupFor(e);
+        if (g) shell(g, e);
+        else {
+          g = keep.get(e.key);
+          const same = g && !g.dataset.g && g.dataset.toks === e.toks.join(",");
+          if (!same) g = newLayer(e);
+          g.dataset.toks = e.toks.join(",");
+        }
+        list.append(g);
+        if (e.kind === "cover") {
+          const row = $lo("loCover").closest("label");
+          const gb = g.querySelector(".gb"); if (row.parentElement !== gb) gb.insertBefore(row, gb.firstChild);
+        }
+        (AFTER[e.key] || []).forEach(id => { const x = form.querySelector(`.grp[data-g="${id}"]`); if (x) { shell(x, { key: id }); x.dataset.layer = "x:" + id; list.append(x); } });
+      }
+      // Builder groups nothing in the document points at stay usable, at the end.
+      form.querySelectorAll(":scope > .grp").forEach(g => { if (!g.classList.contains("layer-hidden")) { shell(g, { key: "x:" + g.dataset.g }); list.append(g); } });
+      entries = es;
+      list.querySelectorAll(".grp").forEach(g => g.classList.toggle("closed", g.dataset.layer !== openKey));
+    }
+    entries = es;
+    paintLayers();
+  }
+
+  function paintLayers(){
+    const top0 = doc.getBoundingClientRect().top, s = doc.getBoundingClientRect().width / doc.offsetWidth || 1;
+    let n = 0;
+    for (const e of entries) {
+      const g = list.querySelector(`.grp[data-layer="${CSS.escape(e.key)}"]`); if (!g) continue;
+      const lbl = g.querySelector(":scope > .lbl");
+      const a = e.els.find(x => x && x.isConnected && x.getClientRects().length);
+      const pno = a ? Math.floor(((a.getBoundingClientRect().top - top0) / s + 1) / (PH + G)) + 1 : 0;
+      if (pno) n = Math.max(n, pno);
+      lbl.querySelector(".pgno").textContent = e.off ? "off" : pno ? String(pno) : "";
+      g.classList.toggle("off", !!e.off);
+      lbl.querySelector(".lt").textContent = e.title;
+      const sum = lbl.querySelector(".sum");
+      if (!g.dataset.g) {
+        if (e.kind === "sec" && e.toks.length) {
+          const filled = e.toks.filter(t => { const o = origTok(t); return o && o.value.trim() && o.value.trim() !== t; }).length;
+          sum.textContent = `${filled} of ${e.toks.length} filled`;
+        } else if (e.kind === "about" || e.kind === "process") sum.textContent = e.off ? "" : Object.keys(ED).some(k => (e.kind === "about" ? /^(about|stat|quote|trusted)/ : /^(proc|step)/).test(k)) ? "edited" : "from website";
+        else if (e.kind === "sign") sum.textContent = meta.person || "";
+      }
+      g.querySelectorAll("input[data-proxy]").forEach(i => { if (document.activeElement !== i) { const o = origTok(i.dataset.proxy); if (o) i.value = o.value; } });
+      if (e.kind === "about") lkFields(g, Object.keys(DEFS).filter(k => /^(about|stat|quote|trusted)/.test(k)));
+      if (e.kind === "process") lkFields(g, Object.keys(DEFS).filter(k => /^(proc|step)/.test(k)));
+      if (e.kind === "sign") {
+        lkFields(g, ["sig.sk", "sig.sx"]);
+        const mine = (() => { try { return JSON.parse(localStorage.getItem("wcsSenderSig.v1") || "null"); } catch (x) { return null; } })();
+        const w = g.querySelector(".lksig");
+        if (w) w.innerHTML = `<p class="note">${esc(meta.person || "The client")} signs on their own copy. ${mine && mine.png ? "Your signature is saved and shows on the page." : "Draw your signature once in Send to sign and it shows on the page."}</p>` +
+          (document.getElementById("bSign") ? `<button type="button" class="sp-link" data-open-sign>Open Send to sign</button>` : "");
+      }
+    }
+    const ln = box.querySelector("#layN"); if (ln) ln.textContent = pages + (pages === 1 ? " page" : " pages");
+  }
+
+  function openLayer(g, open, how = {}){
+    if (!g) return;
+    if (open) list.querySelectorAll(".grp:not(.closed)").forEach(o => { if (o !== g) o.classList.add("closed"); });
+    g.classList.toggle("closed", !open);
+    openKey = open ? g.dataset.layer : null;
+    try { openKey ? localStorage.setItem(OPEN_KEY, openKey) : localStorage.removeItem(OPEN_KEY); } catch (e) {}
+    if (open && how.panel !== false) {
+      const top = g.offsetTop - form.offsetTop - 8;
+      if (top < form.scrollTop || top > form.scrollTop + form.clientHeight - 80) form.scrollTo({ top, behavior: "smooth" });
+    }
+    if (open && how.view) {
+      const e = entries.find(x => x.key === g.dataset.layer), a = e && e.els.find(x => x && x.isConnected);
+      if (a && wrap) {
+        const y = (a.getBoundingClientRect().top - doc.getBoundingClientRect().top) / (doc.getBoundingClientRect().width / doc.offsetWidth || 1);
+        const top = scaler.getBoundingClientRect().top - wrap.getBoundingClientRect().top + wrap.scrollTop + y * cur - 18;
+        wrap.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+        a.classList.add("lk-flash"); setTimeout(() => a.classList.remove("lk-flash"), 1200);
+      }
+    }
+  }
+  list.addEventListener("click", e => {
+    const lbl = e.target.closest(".grp > .lbl");
+    if (lbl && list.contains(lbl)) { const g = lbl.parentElement; openLayer(g, g.classList.contains("closed"), { view: true }); return; }
+    const r = e.target.closest("[data-reset]");
+    if (r) { Object.keys(ED).forEach(k => { if ((r.dataset.reset === "about" ? /^(about|stat|quote|trusted)/ : /^(proc|step)/).test(k)) delete ED[k]; }); saveED(); rerender(); return; }
+    if (e.target.closest("[data-open-sign]")) { const b = document.getElementById("bSign"); if (b) b.click(); }
+  });
+  // Opening a layer from outside (the builder's own "connect" nudges etc.) still keeps one open.
+  const flash = n => { if (!n) return; n.classList.add("lk-flash"); setTimeout(() => n.classList.remove("lk-flash"), 1200); };
+
+  // Click on the page: open the layer that holds it, and point at the field that feeds it.
+  doc.addEventListener("click", e => {
+    const t = e.target; if (!(t instanceof Element) || t.closest(".pgov")) return;
+    let n = t, key = null;
+    while (n && n !== doc && !(key = byEl.get(n))) n = n.parentElement;
+    if (!key) return;
+    const g = list.querySelector(`.grp[data-layer="${CSS.escape(key)}"]`); if (!g) return;
+    if (g.classList.contains("closed")) openLayer(g, true, { panel: true });
+    let f = null;
+    const ed = t.closest("[data-ed]"), mk = t.closest("mark[data-tok]"), lk = t.closest("[data-lk]");
+    if (mk) f = g.querySelector(`input[data-proxy="${CSS.escape(mk.dataset.tok)}"]`);
+    else if (lk) f = g.querySelector(`[data-lkf="${CSS.escape(lk.dataset.lk)}"]`);
+    else if (ed) { const [k, i] = ed.dataset.ed.split(":"); f = k === "item" ? document.querySelector(`#items .item[data-k="${i}"]`) : FIELD[k] ? document.querySelector(FIELD[k]) : null; }
+    else {
+      const prop = t.closest(".props > *");
+      if (prop) { const lab = (prop.tagName === "B" ? prop.previousElementSibling : prop); const id = PROP_FIELD[(lab && lab.textContent || "").trim().toLowerCase()]; if (id) f = document.querySelector(id); }
+    }
+    if (f) { const lay = f.closest(".grp.layer"); if (lay && lay.classList.contains("closed")) openLayer(lay, true); flash(f.closest(".f,.item") || f); }
+  });
+
+  // Page text doclooks draws (Why WCStudios, Our process, signature page) edits in place too.
+  doc.addEventListener("click", e => {
+    const t = e.target instanceof Element && e.target.closest("[data-lk]"); const H = H$();
+    if (!t || !H || t.isContentEditable) return;
+    const k = t.dataset.lk;
+    H.editIn(t, x => {
+      // textContent, not innerText: several looks set headings in capitals with CSS.
+      const c = x.cloneNode(true); c.querySelectorAll("br").forEach(b => b.replaceWith("\n"));
+      c.querySelectorAll("div,p").forEach(d => d.prepend("\n"));
+      const v = c.textContent.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+      if (!v || v === DEFS[k]) delete ED[k]; else ED[k] = v;
+      saveED(); rerender();
+    }, { multiline: /\.(p1|p2|sub|desc|text)$|^sig\.sx$/.test(k) });
+  });
+  // Contracts: the title and party in the header write back to the record.
+  if (KIND !== "Proposal") doc.addEventListener("click", e => {
+    const H = H$(); if (!H || !(e.target instanceof Element)) return;
+    const h1 = e.target.closest(".hero h1.t"), pb = e.target.closest(".props > b");
+    const id = h1 ? "rTitle" : pb && /^party$/i.test((pb.previousElementSibling || {}).textContent || "") ? "rParty" : null;
+    const inp = id && document.getElementById(id), t = h1 || pb;
+    if (!inp || t.isContentEditable) return;
+    H.editIn(t, x => { inp.value = H.plainOf(x).trim(); inp.dispatchEvent(new Event("input", { bubbles: true })); }, { select: !h1 });
+  });
+
+  function refit(){ guard(paginate); fitDoc(wrap, scaler, doc); try { syncLayers(); } catch (e) { console.warn("layers", e); } }
 
   // The builders replace #doc's children wholesale on every render; dress each new copy.
   // The page overlay coming and going is ours, not a render.
