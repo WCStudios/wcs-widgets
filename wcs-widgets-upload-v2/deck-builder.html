@@ -10,7 +10,7 @@
 .view .wcs-stage{position:absolute;left:0;top:0;transform-origin:0 0}
 .view .slide{opacity:1;visibility:visible;transition:none}
 .view .slide .rise{animation:none!important}
-.strip{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;flex:0 0 auto}
+.strip{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;flex:0 0 auto;align-self:center;max-width:100%}
 .th{position:relative;flex:0 0 168px;aspect-ratio:16/9;border-radius:7px;overflow:hidden;cursor:pointer;border:1px solid var(--line);background:#000}
 .th.cur{outline:2px solid var(--accent);outline-offset:2px}
 .th .wcs-stage{position:absolute;left:0;top:0;transform:scale(.0875);transform-origin:0 0;pointer-events:none}
@@ -42,7 +42,7 @@
 .layouts button{padding:6px 2px;font-size:9.5px;font-weight:700;border-radius:7px}
 .layouts button.on{border-color:var(--accent);color:var(--accent)}
 .statrow{display:flex;gap:6px;margin-bottom:6px}.statrow input:first-child{flex:0 0 34%}
-.vwrap{position:relative;flex:0 0 auto}
+.vwrap{position:relative;flex:0 0 auto;align-self:center;max-width:100%}
 .view .grip{font-size:46px;left:-66px;width:50px;color:rgba(255,255,255,.55)}
 .light .view .grip{color:rgba(0,0,0,.35)}
 .view .stat>.grip{left:auto;right:18px;top:16px}
@@ -202,7 +202,16 @@ function stageWith(el){
   if ($("dTheme").value === "light") st.style.setProperty("--acc", "#d4551f");
   st.appendChild(el); return st;
 }
+/* The slide takes as much room as fits with the slide cards still in view below it. */
+function fitView(){
+  const p = $("paper"), vw = $("vwrap"), hint = p.querySelector(".edithint"), cs = getComputedStyle(p);
+  const innerW = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const stripH = Math.max($("strip").offsetHeight, 106), hintH = hint ? hint.offsetHeight + 2 : 0;
+  const availH = p.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - hintH - stripH - 32;
+  vw.style.width = Math.floor(Math.max(280, Math.min(innerW, availH * 16 / 9))) + "px";
+}
 function drawPreview(){
+  fitView();
   const v = $("view"); v.innerHTML = "";
   const sl = deck.slides[cur];
   const st = stageWith(slideEl(sl, cur));
@@ -454,7 +463,13 @@ function wireView(){
 let showIx = 0;
 function show(on){
   const sh = $("show");
-  if (!on) { sh.classList.remove("on"); sh.querySelector(".wcs-stage")?.remove(); return; }
+  if (!on) {
+    sh.classList.remove("on"); sh.querySelector(".wcs-stage")?.remove();
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    return;
+  }
+  // Fill the screen, not just the embed, when Notion lets the frame go full screen.
+  if (!document.fullscreenElement && sh.requestFullscreen) sh.requestFullscreen().catch(() => {});
   sh.querySelector(".wcs-stage")?.remove();
   const st = document.createElement("div"); st.className = "wcs-stage" + ($("dTheme").value === "light" ? " light" : "");
   deck.slides.forEach((s, i) => { const el = slideEl(s, i); el.classList.toggle("on", i === showIx); st.appendChild(el); });
@@ -463,6 +478,11 @@ function show(on){
   $("showCt").textContent = `${showIx + 1} / ${deck.slides.length}`;
 }
 function step(d){ showIx = Math.max(0, Math.min(deck.slides.length - 1, showIx + d)); const els = $("show").querySelectorAll(".slide"); els.forEach((e, i) => e.classList.toggle("on", i === showIx)); $("showCt").textContent = `${showIx + 1} / ${deck.slides.length}`; }
+document.addEventListener("fullscreenchange", () => {
+  const on = $("show").classList.contains("on");
+  if (!document.fullscreenElement && on) show(false);     // Esc left full screen
+  else if (on) setTimeout(() => show(true), 60);           // re-fit at the new size
+});
 addEventListener("keydown", e => {
   if (!$("show").classList.contains("on")) return;
   if (e.key === "Escape") show(false);
