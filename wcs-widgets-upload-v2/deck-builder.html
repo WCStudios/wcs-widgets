@@ -26,6 +26,18 @@
 .slist .srow .ly{font-size:9px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);font-weight:700}
 .slist .srow button{padding:2px 6px;font-size:11px;border:none;background:transparent;color:var(--muted)}
 .slist .srow button:hover{color:var(--text)}
+.layhd{display:flex;align-items:baseline;justify-content:space-between;font-size:9px;letter-spacing:.9px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:6px 0 6px}
+.layhd b{font-size:10px;letter-spacing:0;text-transform:none;font-weight:600}
+.slist .sgrp{border-bottom:1px solid var(--accent-line,rgba(232,98,44,.3))}
+.slist .sgrp .srow{border-radius:0;padding:9px 2px}
+.slist .sgrp .srow .n{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:5px;background:var(--soft);font-size:9.5px}
+.slist .sgrp.open .srow .n{background:var(--accent);color:#fff}
+.slist .sgrp .srow .chev{flex:0 0 auto;font-size:13px;line-height:1;opacity:.6;transition:transform .15s;margin-left:2px}
+.slist .sgrp.open .srow .chev{transform:rotate(90deg)}
+.slist .sgrp.cur .srow{background:none;box-shadow:none}
+.slist .sgrp.open .srow .tt{color:var(--text)}
+.slist .sgrp .sb{padding:2px 0 14px}
+.slist .sgrp:not(.open) .sb{display:none}
 .layouts{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:8px 0 4px}
 .layouts button{padding:6px 2px;font-size:9.5px;font-weight:700;border-radius:7px}
 .layouts button.on{border-color:var(--accent);color:var(--accent)}
@@ -85,7 +97,7 @@
 <div class="split">
   <div class="form">
     <div class="pick"><label>Client</label><select id="cPick"><option value="">No client (general)</option></select></div>
-    <div class="grp" data-g="deck">
+    <div class="grp closed" data-g="deck">
       <div class="lbl" data-toggle>Deck <span class="sum" id="sumDeck"></span><span class="chev">›</span></div>
       <div class="gb">
         <div class="f"><label>Deck name</label><input id="dTitle" placeholder="Walser 2027 Content Plan"></div>
@@ -94,18 +106,11 @@
           <div class="f"><label>Status</label><select id="dStatus"><option>Draft</option><option>Ready</option></select></div></div>
       </div>
     </div>
-    <div class="grp" data-g="slides">
-      <div class="lbl" data-toggle>Slides <span class="sum" id="sumSlides"></span><span class="chev">›</span></div>
-      <div class="gb"><div class="slist" id="slist"></div>
-        <div class="flab" style="margin-top:10px">Add a slide</div><div class="layouts" id="addLayouts"></div></div>
-    </div>
-    <div class="grp" data-g="slide">
-      <div class="lbl" data-toggle>Slide <span id="curN"></span> <span class="sum" id="sumSlide"></span><span class="chev">›</span></div>
-      <div class="gb">
-        <div class="flab">Layout</div><div class="layouts" id="layouts"></div>
-        <div id="fields" style="margin-top:10px"></div>
-      </div>
-    </div>
+    <div class="layhd"><span>Slides</span><b id="sumSlides"></b></div>
+    <div class="slist" id="slist"></div>
+    <div class="flab" style="margin-top:14px">Add a slide</div><div class="layouts" id="addLayouts"></div>
+    <div id="slideHold" hidden><div id="slideBody"><div class="flab">Layout</div><div class="layouts" id="layouts"></div>
+      <div id="fields" style="margin-top:10px"></div></div><span id="curN"></span><span id="sumSlide"></span></div>
     <p class="note" id="status"></p>
   </div>
   <div class="paper" id="paper">
@@ -251,18 +256,39 @@ function drawStrip(){
   dropZone(add, files => newImageSlides(files));
   s.appendChild(add);
 }
+/* Each slide is a layer in the panel, in deck order. One is open at a time:
+   it holds that slide's layout and fields. Opening the deck settings closes it. */
+let openSlide = true, listSig = "";
+const closeDeck = () => { const g = document.querySelector('.grp[data-g="deck"]'); if (g) g.classList.add("closed"); };
 function drawList(){
-  $("slist").innerHTML = deck.slides.map((s, i) => `<div class="srow ${i === cur ? "cur" : ""}" data-i="${i}"><span class="n">${i + 1}</span>
-    <span class="tt">${esc(s.title || s.quote || "Untitled")}</span><span class="ly">${LAY[s.layout]}</span>
-    <button data-up="${i}" title="Move up">↑</button><button data-dn="${i}" title="Move down">↓</button><button data-rm="${i}" title="Delete">×</button></div>`).join("");
-  $("slist").querySelectorAll(".srow").forEach(r => r.onclick = e => { if (e.target.closest("button")) return; select(+r.dataset.i); });
-  $("slist").querySelectorAll("[data-up]").forEach(b => b.onclick = () => move(+b.dataset.up, -1));
-  $("slist").querySelectorAll("[data-dn]").forEach(b => b.onclick = () => move(+b.dataset.dn, 1));
-  $("slist").querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { if (deck.slides.length < 2) return; deck.slides.splice(+b.dataset.rm, 1); cur = Math.min(cur, deck.slides.length - 1); full(); });
+  const sig = deck.slides.length + ":" + cur + ":" + openSlide;
+  if (sig !== listSig) {
+    listSig = sig;
+    $("slideHold").append($("slideBody"));
+    $("slist").innerHTML = deck.slides.map((s, i) => `<div class="sgrp ${i === cur ? "cur" : ""} ${i === cur && openSlide ? "open" : ""}" data-i="${i}">
+      <div class="srow" data-i="${i}"><span class="n">${i + 1}</span><span class="tt"></span><span class="ly"></span>
+      <button data-up="${i}" title="Move up">↑</button><button data-dn="${i}" title="Move down">↓</button><button data-rm="${i}" title="Delete">×</button><span class="chev">›</span></div>
+      <div class="sb"></div></div>`).join("");
+    $("slist").querySelectorAll(".srow").forEach(r => r.onclick = e => {
+      if (e.target.closest("button")) return;
+      const i = +r.dataset.i;
+      if (i === cur) { openSlide = !openSlide; if (openSlide) closeDeck(); drawList(); }
+      else select(i);
+    });
+    $("slist").querySelectorAll("[data-up]").forEach(b => b.onclick = () => move(+b.dataset.up, -1));
+    $("slist").querySelectorAll("[data-dn]").forEach(b => b.onclick = () => move(+b.dataset.dn, 1));
+    $("slist").querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { if (deck.slides.length < 2) return; deck.slides.splice(+b.dataset.rm, 1); cur = Math.min(cur, deck.slides.length - 1); full(); });
+    if (openSlide) { const sb = $("slist").querySelector(`.sgrp[data-i="${cur}"] .sb`); if (sb) sb.append($("slideBody")); }
+  }
+  $("slist").querySelectorAll(".sgrp").forEach(g => {
+    const s = deck.slides[+g.dataset.i]; if (!s) return;
+    g.querySelector(".tt").textContent = s.title || s.quote || "Untitled";
+    g.querySelector(".ly").textContent = LAY[s.layout];
+  });
   $("sumSlides").textContent = deck.slides.length + " slides";
 }
 function move(i, d){ const j = i + d; if (j < 0 || j >= deck.slides.length) return; [deck.slides[i], deck.slides[j]] = [deck.slides[j], deck.slides[i]]; cur = j; full(); }
-function addSlide(ly){ deck.slides.splice(cur + 1, 0, NEW[ly]()); cur++; full(); }
+function addSlide(ly){ deck.slides.splice(cur + 1, 0, NEW[ly]()); cur++; openSlide = true; closeDeck(); full(); }
 function drawFields(){
   const s = deck.slides[cur];
   $("curN").textContent = cur + 1;
@@ -296,7 +322,7 @@ function drawFields(){
 }
 function light(){ drawPreview(); drawStrip(); drawList(); summary(); save(); }
 function full(){ drawFields(); light(); }
-function select(i){ cur = i; full(); }
+function select(i){ cur = i; openSlide = true; closeDeck(); full(); }
 function summary(){
   $("sumDeck").textContent = $("dTitle").value;
   $("barsub").textContent = `${$("dTitle").value || "New deck"} · ${deck.slides.length} slides`;
@@ -406,6 +432,7 @@ function wireView(){
   const v = $("view"), wrap = $("vwrap");
   v.addEventListener("click", e => {
     const t = e.target.closest("[data-f]");
+    if (!openSlide) { openSlide = true; closeDeck(); drawList(); }
     if (t && !t.isContentEditable) { $("imgbar").classList.remove("on"); H.editIn(t, commitField, { multiline: /^body/.test(t.dataset.f) || t.dataset.f === "quote" }); return; }
     const im = e.target.closest("[data-img]");
     if (im) { imgBar(im); return; }
@@ -476,6 +503,8 @@ async function boot(){
   ["dTitle","dCover","dTheme","dStatus","cPick"].forEach(k => $(k).addEventListener("input", light));
   $("cPick").addEventListener("change", light);
   H.wireGroups();
+  { const g = document.querySelector('.grp[data-g="deck"]');
+    g.querySelector(":scope > .lbl").onclick = () => { const open = g.classList.contains("closed"); g.classList.toggle("closed", !open); if (open) { openSlide = false; drawList(); } }; }
   const cc = H.conn(); $("cU").value = cc.url || ""; $("cK").value = cc.key || ""; $("sumConn").textContent = cc.url ? "connected" : "not set";
   $("cSave").onclick = () => { H.setConn($("cU").value.trim(), $("cK").value.trim()); H.toast("Connection saved"); $("sumConn").textContent = "connected"; };
   $("bReset").onclick = () => { try { localStorage.removeItem(STORE); } catch(e){} deck = starter(); cur = 0; $("dTitle").value = "New deck"; full(); chip("Started fresh"); };
