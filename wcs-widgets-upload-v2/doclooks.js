@@ -261,18 +261,178 @@
     pick.querySelectorAll("button[data-look]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.look === look)));
   }
 
-  function refit(){
-    const H = window.WCSHub, wrap = document.getElementById("paperWrap"), sc = document.getElementById("scaler");
-    if (H && H.fitPaper && wrap && sc) H.fitPaper(wrap, sc, doc);
+  /* ── Pages ─────────────────────────────────────────────────────────────
+     The preview is laid out as Letter sheets with a gap between them, the
+     same breaks the PDF gets. Between two sheets sits a .pgbrk spacer: on
+     screen it fills out the page and leaves the gap, in print it is a forced
+     page break plus the top margin of the next page. So what you see on page
+     3 here is page 3 of the PDF, for Save PDF and for the signed copy alike.
+     Nothing here touches the builder's state; spacers live only in #doc. */
+  const PH = 1056, G = 26, TOPM = 58, BOTM = 62;      // 11in sheet, gap, ~.6in margins on continued pages
+  const CONTENT = PH - TOPM - BOTM;
+  const pageTop = k => k * (PH + G), pageEnd = k => pageTop(k) + PH;
+  const ZKEY = "wcsDocZoom.v1";
+  let zoom = { mode: "page", pct: 1 };
+  try { Object.assign(zoom, JSON.parse(localStorage.getItem(ZKEY) || "{}")); } catch (e) {}
+  let pages = 1, scale = 1;
+  const SKIP = n => n.classList && (n.classList.contains("pgbrk") || n.classList.contains("pgov"));
+  const prevEl = n => { let s = n.previousElementSibling; while (s && SKIP(s)) s = s.previousElementSibling; return s; };
+  const nextEl = n => { let s = n.nextElementSibling; while (s && SKIP(s)) s = s.nextElementSibling; return s; };
+  const PAGEV = /^(page|always|left|right|recto|verso)$/;
+  // A forced break before an element counts if it, or an ancestor it opens, asks for one; after, likewise for closing.
+  function forced(a, prop, first){
+    for (let n = a; n && n !== doc; n = n.parentElement){
+      if (PAGEV.test(getComputedStyle(n)[prop])) return true;
+      if (first ? prevEl(n) : nextEl(n)) break;
+    }
+    return false;
+  }
+  const NOSPLIT = "img,svg,canvas,figure,video,tr,.head,.sigs,.parties,.cols,.stats,.mcols,.steps>li,.sgrid,.dfoot";
+  function atomsOf(node, out){
+    for (const c of node.children){
+      if (SKIP(c) || !c.getClientRects().length) continue;     // hidden by the look
+      const r = c.getBoundingClientRect();
+      const h = r.height / scale;
+      // Full dark pages are one sheet each; split them only if they run past it.
+      const lim = parseFloat(getComputedStyle(c).minHeight) >= PH - 4 ? PH + 4 : CONTENT;
+      if (c.matches(".pg,.mods") || (h > lim && c.children.length && !c.matches(NOSPLIT))) {
+        if (c.tagName === "TABLE") { for (const row of c.rows) out.push(row); }
+        else atomsOf(c, out);
+      } else out.push(c);
+    }
+    return out;
+  }
+  function clearPages(){
+    doc.querySelectorAll(".pgbrk").forEach(n => n.remove());
+    doc.querySelectorAll(":scope > .pgov").forEach(n => n.remove());
+    doc.style.minHeight = "";
+  }
+  function paginate(){
+    clearPages();
+    pages = 1;
+    if (!doc.querySelector(":scope > .pg") || !doc.offsetWidth) return;
+    scale = doc.getBoundingClientRect().width / doc.offsetWidth || 1;
+    const Y = n => (n.getBoundingClientRect().top - doc.getBoundingClientRect().top) / scale;
+    const B = n => (n.getBoundingClientRect().bottom - doc.getBoundingClientRect().top) / scale;
+    const pageOf = y => Math.floor(Math.max(0, y - 1) / (PH + G));
+    const breakBefore = (a, prev) => {
+      // Break as high up as the atom opens: before the section it starts, not inside its padding,
+      // so a break-after on the element before lands on the same break and never doubles up.
+      let host = a;
+      while (host.parentElement && host.parentElement !== doc && !prevEl(host)) host = host.parentElement;
+      const row = host.tagName === "TR";
+      const sp = document.createElement(row ? "tr" : "div");
+      sp.className = "pgbrk"; sp.setAttribute("aria-hidden", "true");
+      sp.innerHTML = row ? `<td colspan="99"><i class="pf"></i><i class="pt"></i></td>` : `<i class="pf"></i><i class="pt"></i>`;
+      host.parentNode.insertBefore(sp, host);
+      const y0 = Y(sp), k = pageOf(prev ? B(prev) : y0) + 1;
+      const bleed = parseFloat(getComputedStyle(a).minHeight) >= PH - 4;   // full dark pages start at the very top
+      sp.querySelector(".pf").style.height = Math.max(0, pageTop(k) - y0) + "px";
+      sp.querySelector(".pt").style.height = (bleed ? 0 : TOPM) + "px";
+    };
+    const atoms = atomsOf(doc, []);
+    let first = 0;                                     // index of the first atom on the current sheet
+    for (let i = 1; i < atoms.length; i++){
+      const a = atoms[i];
+      const y = Y(a), b = B(a);
+      if (b - y < 1 && !a.children.length) continue;
+      const k = Math.floor((y + 1) / (PH + G));
+      const hard = i > first && (forced(a, "breakBefore", true) || forced(atoms[i - 1], "breakAfter", false));
+      const over = i > first && b > pageEnd(k) - BOTM;
+      if (!hard && !over) continue;
+      let at = i;
+      // Keep a section heading with what follows it.
+      if (!hard && i - 1 > first && getComputedStyle(atoms[i - 1]).breakAfter === "avoid") at = i - 1;
+      breakBefore(atoms[at], atoms[at - 1]);
+      first = at; i = at;
+    }
+    const last = atoms[atoms.length - 1];
+    const end = Math.max(last ? B(last) : 0, Y(doc.querySelector(":scope > .pg")) + 10);
+    pages = Math.max(1, Math.floor((end - 1) / (PH + G)) + 1);
+    doc.style.minHeight = (pages * PH + (pages - 1) * G) + "px";
+    const ov = el("div", "pgov"); ov.setAttribute("aria-hidden", "true");
+    for (let j = 0; j < pages - 1; j++){
+      const g = el("div", "pgap"); g.style.top = pageEnd(j) + "px"; g.style.height = G + "px"; ov.append(g);
+    }
+    doc.append(ov);
   }
 
+  /* Zoom: fit a whole page (default), fit the width, or a set size. Replaces the
+     hub's width-only fit for these two builders; the deck builder keeps its own. */
+  const wrap = document.getElementById("paperWrap"), scaler = document.getElementById("scaler");
+  const pill = el("div", "zpill",
+    `<button type="button" data-z="page" title="Fit the whole page">Fit page</button>` +
+    `<button type="button" data-z="width" title="Fit the width">Fit width</button><i class="zs"></i>` +
+    `<button type="button" data-z="-" title="Zoom out">−</button><b id="zPct">100%</b><button type="button" data-z="+" title="Zoom in">+</button><i class="zs"></i>` +
+    `<button type="button" data-z="up" title="Previous page">‹</button><span id="zPg">Page 1 of 1</span><button type="button" data-z="dn" title="Next page">›</button>`);
+  if (wrap) wrap.append(pill);
+  const STEPS = [.4, .5, .6, .7, .8, .9, 1, 1.1, 1.25, 1.5];
+  let cur = 1;
+  function fitDoc(w, sc, inner){
+    if (!w || !sc || !inner) return;
+    const W = inner.offsetWidth, Hh = inner.offsetHeight;
+    const availW = Math.max(120, w.clientWidth - 40), availH = Math.max(160, w.clientHeight - 108);
+    const fw = Math.min(1, availW / W);
+    // Fit page: a whole sheet in view, unless the preview is so short (phone, stacked layout) that it would be unreadable.
+    const fp = availH / PH < .4 ? fw : Math.min(fw, availH / PH);
+    const s = zoom.mode === "page" ? fp : zoom.mode === "width" ? fw : Math.max(.3, Math.min(1.5, +zoom.pct || 1));
+    cur = s;
+    sc.style.transform = `scale(${s})`; sc.style.flexShrink = "0";
+    sc.style.width = W + "px"; sc.style.height = (Hh * s) + "px";
+    const m = -(W * (1 - s)) / 2 + "px";              // the box takes W*s of layout, so it centers and scrolls right
+    sc.style.marginLeft = m; sc.style.marginRight = m;
+    sc.style.alignSelf = W * s > availW ? "flex-start" : "center";
+    paintPill();
+  }
+  function curPage(){
+    if (!wrap || !scaler) return 1;
+    const top = scaler.getBoundingClientRect().top - wrap.getBoundingClientRect().top;
+    const y = (wrap.clientHeight * .35 - top) / cur;
+    return Math.min(pages, Math.max(1, Math.floor(y / (PH + G)) + 1));
+  }
+  function paintPill(){
+    pill.querySelector("#zPct").textContent = Math.round(cur * 100) + "%";
+    pill.querySelector("#zPg").textContent = `Page ${curPage()} of ${pages}`;
+    pill.querySelectorAll("[data-z=page],[data-z=width]").forEach(b => b.classList.toggle("on", b.dataset.z === zoom.mode));
+  }
+  function goPage(n){
+    n = Math.min(pages, Math.max(1, n));
+    const top = scaler.getBoundingClientRect().top - wrap.getBoundingClientRect().top + wrap.scrollTop;
+    wrap.scrollTo({ top: top + pageTop(n - 1) * cur - 12, behavior: "smooth" });
+  }
+  pill.addEventListener("click", e => {
+    const b = e.target.closest("button[data-z]"); if (!b) return;
+    const z = b.dataset.z;
+    if (z === "up" || z === "dn") return goPage(curPage() + (z === "dn" ? 1 : -1));
+    const keep = curPage();
+    if (z === "page" || z === "width") zoom = { mode: z, pct: cur };
+    else {
+      const i = STEPS.findIndex(x => x > cur + .001);
+      const next = z === "+" ? (i < 0 ? STEPS[STEPS.length - 1] : STEPS[i]) : ([...STEPS].reverse().find(x => x < cur - .001) || STEPS[0]);
+      zoom = { mode: "pct", pct: next };
+    }
+    try { localStorage.setItem(ZKEY, JSON.stringify(zoom)); } catch (err) {}
+    fitDoc(wrap, scaler, doc);
+    if (zoom.mode === "page") goPage(keep);
+  });
+  if (wrap) wrap.addEventListener("scroll", () => { pill.querySelector("#zPg").textContent = `Page ${curPage()} of ${pages}`; }, { passive: true });
+  if (window.WCSHub) window.WCSHub.fitPaper = fitDoc;   // the builders call H.fitPaper on render and resize
+
+  let pT = 0;
+  const later = () => { clearTimeout(pT); pT = setTimeout(() => { guard(paginate); fitDoc(wrap, scaler, doc); }, 300); };
+  doc.addEventListener("input", later);
+  doc.addEventListener("load", later, true);           // pictures that arrive after the layout
+
+  function refit(){ guard(paginate); fitDoc(wrap, scaler, doc); }
+
   // The builders replace #doc's children wholesale on every render; dress each new copy.
+  // The page overlay coming and going is ours, not a render.
   let busy = false;
-  const mo = new MutationObserver(() => {
-    if (busy) return;
-    busy = true;
-    try { if (!doc.querySelector(":scope > .head")) dress(); paintLook(); refit(); }
-    finally { mo.takeRecords(); busy = false; }
+  const ours = r => [...r.addedNodes, ...r.removedNodes].every(n => n.nodeType === 1 && (n.classList.contains("pgov") || n.classList.contains("pgbrk")));
+  function guard(fn){ const was = busy; busy = true; try { fn(); } finally { mo.takeRecords(); busy = was; } }
+  const mo = new MutationObserver(recs => {
+    if (busy || recs.every(ours)) return;
+    guard(() => { if (!doc.querySelector(":scope > .head")) dress(); paintLook(); refit(); setTimeout(refit, 450); });
   });
   mo.observe(doc, { childList: true });
 
@@ -283,4 +443,5 @@
   if (doc.querySelector(":scope > .cover") && !doc.querySelector(":scope > .head")) { busy = true; try { dress(); } finally { mo.takeRecords(); busy = false; } }
   refit();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
+  window.DocLooks.pages = () => pages;
 })();
