@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-15T18:18:18.805Z",
+ "updated": "2026-10-15T18:23:17.400Z",
  "source": "worker",
  "tasks": {
   "open": 33,
@@ -12,6 +12,14 @@
   "days": 80
  },
  "pings": [
+  {
+   "kind": "rev",
+   "who": "Cascade CBX Sport",
+   "what": "left revisions",
+   "task": "Cascade CBX - 2026 Henderson Resort Spot",
+   "id": "3aa421efc76680eeafded8c0400e7a25",
+   "ago": "today"
+  },
   {
    "kind": "del",
    "who": "Walser Automotive",
@@ -26,14 +34,6 @@
    "what": "delivered",
    "task": "TC - 2026 All Employee Event",
    "id": "3e2421efc7668164a9ebd519cc775b25",
-   "ago": "2d"
-  },
-  {
-   "kind": "rev",
-   "who": "Minnesota Wild",
-   "what": "left revisions",
-   "task": "MN Wild - 2026 Hockey Fights Cancer Feature",
-   "id": "3ef421efc7668185ae9fc5ccbc716fd7",
    "ago": "2d"
   }
  ],
