@@ -1,9 +1,9 @@
 {
- "updated": "2026-10-15T17:38:11.300Z",
+ "updated": "2026-10-15T17:43:13.129Z",
  "source": "worker",
  "tasks": {
-  "open": 35,
-  "inPost": 18,
+  "open": 34,
+  "inPost": 17,
   "overdue": 7
  },
  "mostOverdue": {
@@ -13,9 +13,9 @@
  },
  "pings": [
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Walser Automotive",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "Walser - 2026 ValleyFair Family Day",
    "id": "3d7421efc766818daf9bca3a543053f2",
    "ago": "today"
