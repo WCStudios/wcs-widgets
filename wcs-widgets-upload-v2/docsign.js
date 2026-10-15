@@ -183,9 +183,9 @@
     clone.querySelectorAll("mark").forEach((m) => m.replaceWith(document.createTextNode(m.textContent)));
     clone.querySelectorAll("*").forEach((n) => {
       [...n.attributes].forEach((a) => {
-        if (/^(contenteditable|draggable|spellcheck|data-(path|ed|tok|mv|edited))$/i.test(a.name) || /^on/i.test(a.name)) n.removeAttribute(a.name);
+        if (/^(contenteditable|draggable|spellcheck|data-(path|ed|tok|mv|edited|lk))$/i.test(a.name) || /^on/i.test(a.name)) n.removeAttribute(a.name);
       });
-      n.classList.remove("editing", "movable", "dragging", "dropto");
+      n.classList.remove("editing", "movable", "dragging", "dropto", "lk-flash");
       if (n.tagName === "A") n.removeAttribute("target");
     });
     clone.style.removeProperty("transform");
