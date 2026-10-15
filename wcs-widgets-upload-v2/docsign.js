@@ -208,7 +208,8 @@
       fonts.map((h) => `<link rel="stylesheet" href="${esc(h)}">`).join("") +
       css.map((t) => `<style>${t}</style>`).join("") +
       `<style>html,body{height:auto!important;overflow:visible!important;display:block!important;background:#fff!important;margin:0!important}` +
-      `.doc{box-shadow:none!important;margin:0 auto!important}</style></head><body>${clone.outerHTML}</body></html>`;
+      `.doc{box-shadow:none!important;margin:0 auto!important}` +
+      `.doc .pgap{left:0!important;right:0!important;background:#e9e9e6!important}.doc .pgap::before,.doc .pgap::after{left:0!important;right:0!important}</style></head><body>${clone.outerHTML}</body></html>`;
   }
 
   /* ── Send ───────────────────────────────────────────────────────────── */
@@ -220,8 +221,9 @@
     if (name.length < 2) return toast("Who is signing? Add their name.");
     if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) return toast("Add the signer's email.");
     if (!title) return toast("The document needs a title.");
-    if (doc.querySelector("mark.empty")) {
-      if (!confirm("Some blanks are still empty. Send it anyway?")) return;
+    if (doc.querySelector("mark.empty") && !armed("send")) {
+      $("spSendNote").innerHTML = `<span class="sp-bad">Some blanks are still empty.</span> Press Sign and send again to send it anyway.`;
+      return;
     }
     const go = $("spSend"); go.disabled = true; go.textContent = "Sending…"; $("spSendNote").textContent = "";
     try {
@@ -243,7 +245,7 @@
   function linkHtml(link) { return `<button type="button" class="sp-link" data-copy="${esc(link)}">Copy link</button>`; }
   pop.addEventListener("click", async (e) => {
     const c = e.target.closest("[data-copy]");
-    if (c) { try { await navigator.clipboard.writeText(c.dataset.copy); toast("Link copied"); } catch (x) { prompt("Copy the link:", c.dataset.copy); } return; }
+    if (c) { toast(await copyText(c.dataset.copy) ? "Link copied" : "Couldn't copy. Open the link and copy it from the address bar."); return; }
     const a = e.target.closest("[data-act]"); if (!a) return;
     const id = a.dataset.id, act = a.dataset.act;
     try {
@@ -254,11 +256,23 @@
         k.href = u; k.download = `${titleNow() || "Signed"} (signed).pdf`; k.click(); setTimeout(() => URL.revokeObjectURL(u), 4000);
         return;
       }
-      if (act === "void" && !confirm("Withdraw this? The link stops working.")) return;
+      if (act === "void" && !armed("void" + id)) { a.textContent = "Press again to withdraw"; return; }
       await api(`/envelopes/${id}/${act}`, { method: "POST", body: act === "void" ? { reason: "Replaced with an updated version." } : {} });
       toast(act === "void" ? "Withdrawn" : "Sent again"); history();
     } catch (x) { toast(x.message); }
   });
+
+  // Notion's embed frame blocks confirm() and prompt(), so a risky press asks for a second press
+  // within a few seconds, and copying falls back to a hidden field.
+  const arms = {};
+  function armed(k){ const now = Date.now(); if (arms[k] && now - arms[k] < 6000) { delete arms[k]; return true; } arms[k] = now; return false; }
+  async function copyText(t){
+    try { await navigator.clipboard.writeText(t); return true; } catch (e) {}
+    const ta = document.createElement("textarea"); ta.value = t; ta.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+    document.body.append(ta); ta.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+    ta.remove(); return ok;
+  }
 
   async function history() {
     const title = titleNow(); if (!title) return;
