@@ -154,7 +154,7 @@
     }
 
     // Paper only: a short table prints whole instead of splitting its total onto the next page.
-    pg.querySelectorAll("table").forEach(t => { if (t.offsetHeight && t.offsetHeight < 576) t.classList.add("keep"); });
+    pg.querySelectorAll("table").forEach(t => { if (t.offsetHeight && t.offsetHeight < 330) t.classList.add("keep"); });
 
     // Signature lines (Classic shows them) and a footer line, printed together with the last
     // short block so the footer never ends up alone on a page.
@@ -301,8 +301,9 @@
   try { Object.assign(zoom, JSON.parse(localStorage.getItem(ZKEY) || "{}")); } catch (e) {}
   let pages = 1, scale = 1;
   const SKIP = n => n.classList && (n.classList.contains("pgbrk") || n.classList.contains("pgov"));
-  const prevEl = n => { let s = n.previousElementSibling; while (s && SKIP(s)) s = s.previousElementSibling; return s; };
-  const nextEl = n => { let s = n.nextElementSibling; while (s && SKIP(s)) s = s.nextElementSibling; return s; };
+  const shown = n => n.getClientRects().length > 0;
+  const prevEl = n => { let s = n.previousElementSibling; while (s && (SKIP(s) || !shown(s))) s = s.previousElementSibling; return s; };
+  const nextEl = n => { let s = n.nextElementSibling; while (s && (SKIP(s) || !shown(s))) s = s.nextElementSibling; return s; };
   const PAGEV = /^(page|always|left|right|recto|verso)$/;
   // A forced break before an element counts if it, or an ancestor it opens, asks for one; after, likewise for closing.
   function forced(a, prop, first){
@@ -312,21 +313,37 @@
     }
     return false;
   }
-  const NOSPLIT = "img,svg,canvas,figure,video,tr,.head,.sigs,.parties,.cols,.stats,.mcols,.steps>li,.sgrid,.dfoot";
+  /* What can be split across pages. Like a word processor: anything that holds
+     blocks breaks between them (callouts, toggles, lists, the Why WCStudios page in
+     the white looks, the closing block); a line, a heading, a stat row, a quote,
+     a table row, the signatures stay whole. Full dark pages are one sheet each. */
+  const KEEP = "img,svg,canvas,figure,video,tr,.head,.hero,.sigs,.sgrid,.parties,.cols,.stats,.quote,.mcols,.steps>li,.dfoot," +
+    "p,h1,h2,h3,h4,h5,summary,blockquote,.todo,.sec,.seccall,.embed,table.keep,.props,.mk,.mt,.msub,.trusted";
+  const flowKids = c => [...c.children].some(k => shown(k) && !/^(inline|contents|none)/.test(getComputedStyle(k).display));
   function atomsOf(node, out){
     for (const c of node.children){
-      if (SKIP(c) || !c.getClientRects().length) continue;     // hidden by the look
-      const r = c.getBoundingClientRect();
-      const h = r.height / scale;
-      // Full dark pages are one sheet each; split them only if they run past it.
-      const lim = parseFloat(getComputedStyle(c).minHeight) >= PH - 4 ? PH + 4 : CONTENT;
-      if (c.matches(".pg,.mods") || (h > lim && c.children.length && !c.matches(NOSPLIT))) {
-        if (c.tagName === "TABLE") { for (const row of c.rows) out.push(row); }
-        else atomsOf(c, out);
-      } else out.push(c);
+      if (SKIP(c) || !shown(c)) continue;
+      const h = c.getBoundingClientRect().height / scale, cs = getComputedStyle(c);
+      const bleed = parseFloat(cs.minHeight) >= PH - 4;
+      const row = /flex|grid/.test(cs.display) && !(/flex/.test(cs.display) && /^column/.test(cs.flexDirection));
+      let split;
+      if (c.matches(".pg,.mods")) split = true;
+      else if (bleed) split = h > PH + 4;
+      else if (c.matches(KEEP)) split = h > CONTENT && flowKids(c) && !row;
+      else if (c.matches(".callout")) split = true;
+      else if (row) split = false;
+      else split = flowKids(c);
+      if (!split) { out.push(c); continue; }
+      if (c.tagName === "TABLE") { for (const r of c.rows) if (shown(r)) out.push(r); }
+      else if (c.matches(".callout")) { const cb = c.querySelector(":scope > .cb"); if (cb) atomsOf(cb, out); else out.push(c); }
+      else atomsOf(c, out);
     }
     return out;
   }
+  // Goes with whatever follows it: headings, toggle titles, a list label with its sub-list.
+  const keepNext = a => getComputedStyle(a).breakAfter === "avoid" || a.matches("summary,.sec,.seccall,.mk,.mt,.msub,.sigs,.sk,h1,h2,h3,h4") ||
+    (a.matches("li > .ln") && !!nextEl(a));
+  const trivial = a => { const r = a.getBoundingClientRect(); return r.height / scale < 3 || (!a.textContent.trim() && !a.querySelector("img,svg,canvas")); };
   function clearPages(){
     doc.querySelectorAll(".pgbrk").forEach(n => n.remove());
     doc.querySelectorAll(":scope > .pgov").forEach(n => n.remove());
@@ -345,6 +362,11 @@
       // so a break-after on the element before lands on the same break and never doubles up.
       let host = a;
       while (host.parentElement && host.parentElement !== doc && !prevEl(host)) host = host.parentElement;
+      // Never between the items of a row (a callout's icon and body, say): break before the row.
+      while (host.parentElement && host.parentElement !== doc) {
+        const ps = getComputedStyle(host.parentElement);
+        if (/flex|grid/.test(ps.display) && !(/flex/.test(ps.display) && /^column/.test(ps.flexDirection))) host = host.parentElement; else break;
+      }
       const row = host.tagName === "TR";
       const sp = document.createElement(row ? "tr" : "div");
       sp.className = "pgbrk"; sp.setAttribute("aria-hidden", "true");
@@ -366,8 +388,8 @@
       const over = i > first && b > pageEnd(k) - BOTM;
       if (!hard && !over) continue;
       let at = i;
-      // Keep a section heading with what follows it.
-      if (!hard && i - 1 > first && getComputedStyle(atoms[i - 1]).breakAfter === "avoid") at = i - 1;
+      // Keep headings (and empty spacers) with what follows them.
+      if (!hard) while (at - 1 > first && (trivial(atoms[at - 1]) || keepNext(atoms[at - 1]))) at--;
       breakBefore(atoms[at], atoms[at - 1]);
       first = at; i = at;
     }
@@ -453,6 +475,9 @@
   const later = () => { clearTimeout(pT); pT = setTimeout(() => { guard(paginate); fitDoc(wrap, scaler, doc); try { paintLayers(); } catch (e) {} schedThumbs(); }, 300); };
   doc.addEventListener("input", later);
   doc.addEventListener("load", later, true);           // pictures that arrive after the layout
+  // Classic and Editorial load their own fonts the first time you pick them; the text
+  // reflows when they land, so the page breaks are worked out again.
+  if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener("loadingdone", later);
 
   /* ── Layers ────────────────────────────────────────────────────────────
      The panel on the left follows the document: Cover, then each section in
