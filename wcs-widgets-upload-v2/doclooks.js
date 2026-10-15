@@ -6,7 +6,12 @@
    the rest. It never touches the builder's state, its render(), or what gets
    sent to Notion: only the preview and Save PDF change. Editing still works
    because the builders find their targets with closest() on #doc, and nothing
-   leaves #doc. */
+   leaves #doc.
+
+   Proposals can also carry a cover photo, a "Why WCStudios" page and an
+   "Our process" page. Those come live from the website's content.js, so what
+   WebsiteOS publishes is what clients read here. Every look ends on a
+   signature page that docsign.js fills in when the document is sent. */
 (function(){
   "use strict";
   const me = document.currentScript;
@@ -26,6 +31,14 @@
   let look = "studio";
   try { const v = localStorage.getItem(KEY); if (LOOKS.some(l => l.id === v)) look = v; } catch (e) {}
 
+  const SITE_URL = "https://wcstudios.pages.dev/";
+  const OPTS_KEY = KEY + ".opts";
+  const DEFAULTS = KIND === "Proposal" ? { cover: "", about: true, process: true } : { cover: "", about: false, process: false };
+  let opts = { ...DEFAULTS };
+  try { Object.assign(opts, JSON.parse(localStorage.getItem(OPTS_KEY) || "{}")); } catch (e) {}
+  let SITE = null;
+  let meta = { org: "", person: "", title: "" };
+
   const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
   const PICTO = /\p{Extended_Pictographic}/u;
@@ -37,11 +50,25 @@
       `<button type="button" data-look="${l.id}" title="${esc(l.note)}" aria-pressed="false">` +
       `<i class="th th-${l.id}"><s></s><s></s><s></s></i><span>${l.name}</span></button>`).join("")}</div>`);
   form.insertBefore(pick, form.firstChild);
+  const lo = el("div", "lookopts",
+    `<label class="lo-row"><span>Cover photo</span><select id="loCover"><option value="">None</option></select></label>` +
+    `<div class="lo-chks"><label><input type="checkbox" id="loAbout"> Why WCStudios page</label>` +
+    `<label><input type="checkbox" id="loProcess"> Our process page</label></div>` +
+    `<p class="lo-note" id="loNote">Loading photos and copy from wcstudios.pages.dev…</p>`);
+  pick.append(lo);
+  const $lo = id => lo.querySelector("#" + id);
+  $lo("loAbout").checked = !!opts.about; $lo("loProcess").checked = !!opts.process;
+  lo.addEventListener("change", () => {
+    opts = { cover: $lo("loCover").value, about: $lo("loAbout").checked, process: $lo("loProcess").checked };
+    try { localStorage.setItem(OPTS_KEY, JSON.stringify(opts)); } catch (e) {}
+    rerender();
+  });
   pick.addEventListener("click", e => {
     const b = e.target.closest("button[data-look]"); if (!b) return;
     look = b.dataset.look;
     try { localStorage.setItem(KEY, look); } catch (err) {}
     paintLook(); refit();
+    if (SITE && (opts.about || opts.process)) rerender();   // where the extra pages sit depends on the look
   });
 
   /* ── Dress whatever the builder just rendered ───────────────────────── */
@@ -54,6 +81,8 @@
     if (props) { const k = [...props.children]; for (let i = 0; i + 1 < k.length; i += 2) pv[k[i].textContent.trim().toLowerCase()] = k[i + 1].textContent.trim(); }
     const org = pv.company || pv.party || "";
     const person = pv.client || "";
+    meta = { org: /^(company|client)$/i.test(org) ? "" : org, person: /^client contact$/i.test(person) ? "" : person,
+             title: h1 ? h1.textContent.trim() : "" };
 
     // Header: logo + wordmark + tagline on the left, document type on the right, then the title block.
     const brand = el("div", "brandbox");
@@ -69,6 +98,7 @@
     if (h1) hero.append(h1);
     if (props) hero.append(props);
     const head = el("header", "head"); head.append(cover, hero);
+    if (opts.cover) { head.classList.add("has-photo"); head.style.setProperty("--photo", `url("${opts.cover}")`); }
     doc.insertBefore(head, pg);
 
     // Section heads: top-level headings (proposals), and the heading inside each orange callout
@@ -102,6 +132,18 @@
     for (const c of pg.children) { if (c.matches(".callout.bg-blue_background")) blues.push(c); else break; }
     if (blues.length >= 2) { const row = el("div", "parties"); pg.insertBefore(row, blues[0]); blues.forEach(b => row.append(b)); }
 
+    // Why WCStudios and Our process, from the website, between the opening section and the rest.
+    if (SITE && (opts.about || opts.process)) {
+      const mods = el("div", "mods");
+      if (opts.about) mods.append(aboutModule());
+      if (opts.process) mods.append(processModule());
+      // Midnight opens on them, right after its dark cover, the way a deck would. The white
+      // looks read the overview first and let the pages flow.
+      const heads = [...pg.children].filter(c => c.classList.contains("sec") || c.classList.contains("seccall") || c.classList.contains("parties"));
+      const at = look === "midnight" ? pg.firstElementChild : heads.find((c, i) => i > 0 && !c.classList.contains("parties"));
+      pg.insertBefore(mods, at || null);
+    }
+
     // Paper only: a short table prints whole instead of splitting its total onto the next page.
     pg.querySelectorAll("table").forEach(t => { if (t.offsetHeight && t.offsetHeight < 576) t.classList.add("keep"); });
 
@@ -114,14 +156,104 @@
       if (prev && prev.classList.contains("sec")) tail.append(prev);
       tail.append(last);
     }
-    tail.append(el("section", "sigs",
-      `<div class="sk">Accepted and agreed</div><div class="sgrid">` +
-      `<div><div class="ln"></div><b>WCStudios</b><span>Bennett Witta</span><div class="ln d"></div><span>Date</span></div>` +
-      `<div><div class="ln"></div><b>${esc(org && !/^(company|client)$/i.test(org) ? org : "Client")}</b>` +
-      `<span>${esc(person && !/^client contact$/i.test(person) ? person : "Name and title")}</span><div class="ln d"></div><span>Date</span></div></div>`));
+    tail.append(signaturePage());
     tail.append(el("footer", "dfoot", `<span><b>WCStudios</b> · A video &amp; post production company · Eden Prairie, MN</span><span>bennett@wcstudios.co</span>`));
     pg.append(tail);
     return true;
+  }
+
+  /* ── Signature page ───────────────────────────────────────────────────
+     The client's area is marked with <!--SIG:client--> ... <!--/SIG:client-->:
+     the signing service replaces exactly that region when the client signs.
+     The sender's area shows your saved signature once docsign.js has it. */
+  function signaturePage(){
+    let mine = null;
+    try { mine = JSON.parse(localStorage.getItem("wcsSenderSig.v1") || "null"); } catch (e) {}
+    const who = meta.person || "Client", org = meta.org;
+    const sender = mine && mine.png
+      ? `<div class="sig-done preview"><img class="sig-img" alt="" src="${esc(mine.png)}"></div>`
+      : `<span class="sig-wait">Your signature</span>`;
+    return el("section", "sigs",
+      `<div class="sk">Accepted and agreed</div>` +
+      `<p class="sx">Signing below, both parties agree to the terms of this ${esc(KIND.toLowerCase())}.</p>` +
+      `<div class="sgrid">` +
+        `<div class="sigblock" data-party="sender"><div class="sig-area">${sender}</div>` +
+          `<div class="sig-who"><b>${esc((mine && mine.name) || "Bennett Witta")}</b><span>WCStudios</span></div></div>` +
+        `<div class="sigblock" data-party="client"><div class="sig-area"><!--SIG:client--><span class="sig-wait">Client signature</span><!--/SIG:client--></div>` +
+          `<div class="sig-who"><b>${esc(who)}</b><span>${esc(org)}</span></div></div>` +
+      `</div>`);
+  }
+
+  /* ── Site content ─────────────────────────────────────────────────────── */
+  const plain = h => { const d = document.createElement("div"); d.innerHTML = String(h || "").replace(/<br\s*\/?>/gi, " "); return d.textContent.replace(/\s+/g, " ").trim(); };
+  const sentence = t => t === t.toUpperCase() ? t.toLowerCase().replace(/(^|[.!?]\s+)([a-z])/g, (m, a, b) => a + b.toUpperCase()) : t;
+  // Real client quotes only: the site still carries two placeholders.
+  const REAL_QUOTES = ["Minnesota Wild", "Walser Automotive", "USHL"];
+
+  function shapeSite(c){
+    const cp = c.copy || {}, g = k => plain(cp[k]);
+    const covers = (c.projects || []).filter(p => p.status === "Live" && p.cover)
+      .map(p => ({ name: (p.card && p.card.title) || p.name, src: SITE_URL + p.cover }));
+    const bts = (c.images || []).filter(i => /\.(webp|jpe?g|png)$/i.test(i.src || ""))
+      .map((i, k) => ({ name: (i.alt && i.alt.trim()) || "Behind the scenes " + (k + 1), src: SITE_URL + i.src }));
+    const quote = (c.reviews || []).find(r => r.show !== false && REAL_QUOTES.includes(r.company) && r.quote);
+    return {
+      about: { title: sentence(g("about.title")), p1: g("about.p1"), p2: g("about.p2") },
+      stats: [1, 2, 3].map(n => ({ num: g(`stats.${n}.num`).toUpperCase(), label: g(`stats.${n}.label`) })).filter(s => s.num),
+      process: [1, 2, 3, 4].map(n => ({ name: g(`process.${n}.name`), desc: g(`process.${n}.desc`) })).filter(s => s.name),
+      processSub: g("process.sub"),
+      logos: (c.logos || []).map(l => l.name || l.alt).filter(Boolean),
+      quote: quote ? { text: plain(quote.quote), name: quote.name, company: quote.company } : null,
+      covers, bts,
+    };
+  }
+
+  function aboutModule(){
+    const a = SITE.about;
+    return el("section", "mod about",
+      `<div class="mk">Why WCStudios</div><h2 class="mt">${esc(a.title)}</h2>` +
+      `<div class="mcols"><p>${esc(a.p1)}</p><p>${esc(a.p2)}</p></div>` +
+      (SITE.stats.length ? `<div class="stats">${SITE.stats.map(s => `<div><b>${esc(s.num)}</b><span>${esc(s.label)}</span></div>`).join("")}</div>` : "") +
+      (SITE.quote ? `<figure class="quote"><blockquote>${esc(SITE.quote.text)}</blockquote><figcaption>${esc(SITE.quote.name)} · ${esc(SITE.quote.company)}</figcaption></figure>` : "") +
+      (SITE.logos.length ? `<div class="trusted"><span>Trusted by</span>${SITE.logos.map(esc).join(" · ")}</div>` : ""));
+  }
+
+  function processModule(){
+    return el("section", "mod process",
+      `<div class="mk">How it runs</div><h2 class="mt">Our process</h2>` +
+      (SITE.processSub ? `<p class="msub">${esc(SITE.processSub)}</p>` : "") +
+      `<ol class="steps">${SITE.process.map((s, i) => `<li><i>${String(i + 1).padStart(2, "0")}</i><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></li>`).join("")}</ol>`);
+  }
+
+  function fillOptions(){
+    const sel = $lo("loCover");
+    const grp = (label, list) => list.length ? `<optgroup label="${esc(label)}">${list.map(x => `<option value="${esc(x.src)}">${esc(x.name)}</option>`).join("")}</optgroup>` : "";
+    // Behind-the-scenes first: several project covers carry their own title art.
+    sel.innerHTML = `<option value="">None</option>` + grp("Behind the scenes", SITE.bts) + grp("Project covers", SITE.covers);
+    sel.value = [...sel.options].some(o => o.value === opts.cover) ? opts.cover : "";
+    if (sel.value !== opts.cover) opts.cover = sel.value;
+    $lo("loNote").textContent = "Copy and photos come from the website, so WebsiteOS edits show up here.";
+  }
+
+  /* The builders keep render() private, but both redraw on an input event from a
+     field whose listener does nothing else: #company (proposals), #rStatus (contracts). */
+  function rerender(){
+    const t = document.getElementById(KIND === "Proposal" ? "company" : "rStatus");
+    if (t) { t.dispatchEvent(new Event("input", { bubbles: true })); return; }
+    paintLook(); refit();
+  }
+
+  async function loadSite(){
+    try {
+      const r = await fetch(SITE_URL + "content.js", { cache: "no-store" });
+      const t = await r.text();
+      SITE = shapeSite(JSON.parse(t.slice(t.indexOf("{"), t.lastIndexOf("}") + 1)));
+      fillOptions();
+      if (opts.cover || opts.about || opts.process) rerender();
+    } catch (e) {
+      $lo("loNote").textContent = "Couldn't reach the website for photos and copy. The rest of the look still works.";
+      lo.querySelectorAll("select,input").forEach(x => x.disabled = true);
+    }
   }
 
   function paintLook(){
@@ -143,6 +275,9 @@
     finally { mo.takeRecords(); busy = false; }
   });
   mo.observe(doc, { childList: true });
+
+  window.DocLooks = { kind: KIND, look: () => look, opts: () => ({ ...opts }), meta: () => ({ ...meta }), rerender };
+  loadSite();
 
   paintLook();
   if (doc.querySelector(":scope > .cover") && !doc.querySelector(":scope > .head")) { busy = true; try { dress(); } finally { mo.takeRecords(); busy = false; } }
