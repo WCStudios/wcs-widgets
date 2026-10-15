@@ -408,3 +408,26 @@
 .doc .hero h1.t,.doc .props>b{cursor:text}
 .doc:where([class*="lk-"]) .mod .trusted i{font-style:normal}
 @media print{.doc [data-lk]:hover{box-shadow:none;background:none}.doc .lk-flash{animation:none}}
+
+/* ── Page list on the right ─────────────────────────────────────────────── */
+.pagerail{flex:0 0 172px;display:flex;flex-direction:column;min-height:0;border-left:1px solid var(--line);background:var(--bg)}
+.pagerail[hidden]{display:none}
+.prh{display:flex;align-items:baseline;justify-content:space-between;padding:14px 16px 8px;font-size:9px;letter-spacing:.9px;
+ text-transform:uppercase;color:var(--muted);font-weight:700;flex:0 0 auto}
+.prh b{font-size:10px;letter-spacing:0;font-weight:600}
+.prl{flex:1;overflow-y:auto;padding:4px 16px 24px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.prc{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:0;border:0;background:none;cursor:pointer;width:136px;border-radius:0}
+.prc:focus-visible{outline:none}.prc:focus-visible .prp{box-shadow:0 0 0 2px var(--accent)}
+.prp{position:relative;display:block;width:128px;height:166px;margin:0 auto;overflow:hidden;background:#fff;border-radius:3px;
+ box-shadow:0 0 0 1px var(--fieldline),0 2px 8px rgba(0,0,0,.12);transition:box-shadow .12s}
+.prc:hover .prp{box-shadow:0 0 0 1px var(--muted),0 3px 12px rgba(0,0,0,.18)}
+.prc.on .prp{box-shadow:0 0 0 2px var(--accent),0 3px 12px rgba(0,0,0,.18)}
+.prs{position:absolute;left:0;top:0;width:816px;pointer-events:none;white-space:normal;text-align:left}
+.prs>.doc{position:absolute;left:0;top:0;transform-origin:0 0;box-shadow:none;margin:0}
+.prt{display:flex;gap:6px;align-items:baseline;justify-content:center;font-size:10px;color:var(--muted);line-height:1.3;padding:0 2px}
+.prt b{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
+.prt span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:104px}
+.prc.on .prt b{color:var(--accent)}
+.zpill [data-z=thumbs].on{background:var(--soft);color:var(--text)}
+@media(max-width:1000px){.pagerail{display:none!important}.zpill [data-z=thumbs]{display:none}}
+@media print{.pagerail{display:none!important}}
