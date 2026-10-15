@@ -67,7 +67,7 @@
 .doc:where([class*="lk-"]) tr,.doc:where([class*="lk-"]) .parties,.doc:where([class*="lk-"]) .sigs{break-inside:avoid;page-break-inside:avoid}
 /* Why WCStudios + Our process. Midnight gives them a dark page of their own; the white looks let them flow. */
 .doc:where([class*="lk-"]) .mods{padding:.1in 0 .2in}
-.doc:where([class*="lk-"]) .mod{break-inside:avoid;page-break-inside:avoid}
+.doc:where([class*="lk-"]) .mod .stats,.doc:where([class*="lk-"]) .mod .quote,.doc:where([class*="lk-"]) .steps>li{break-inside:avoid;page-break-inside:avoid}
 .doc:where([class*="lk-"]) .mod .mk{font-size:7.5pt;letter-spacing:2.4px;text-transform:uppercase;color:var(--acc);font-weight:800;margin-bottom:.1in}
 .doc:where([class*="lk-"]) .mod .mt{font-size:22pt;line-height:1.1;letter-spacing:-.5px;color:var(--ink);margin:0 0 .18in;font-weight:800}
 .doc:where([class*="lk-"]) .mod .mcols{display:grid;grid-template-columns:1fr 1fr;gap:.3in}
@@ -113,7 +113,7 @@
 .doc:where([class*="lk-"]) .head.has-photo>.hero{order:2}
 
 /* Paper only: short tables print whole, and the closing block, signatures and footer stay together. */
-.doc:where([class*="lk-"]) table.keep,.doc:where([class*="lk-"]) .tail{break-inside:avoid;page-break-inside:avoid}
+.doc:where([class*="lk-"]) table.keep{break-inside:avoid;page-break-inside:avoid}
 
 /* ══ STUDIO: the invoice ═══════════════════════════════════════════════════
    Black band with the logo, the document type on the right, a 3px orange
