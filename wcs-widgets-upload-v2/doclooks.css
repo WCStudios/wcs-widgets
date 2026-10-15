@@ -28,6 +28,16 @@
 .th-classic s:nth-child(2){left:16%;right:16%;top:20%;height:1px;background:#e8622c}
 .th-classic s:nth-child(3){left:26%;right:26%;top:32%;height:3px;background:#111}
 
+/* Cover photo and extra pages, under the looks. */
+.lookpick .lookopts{margin-top:10px;display:grid;gap:9px}
+.lookpick .lookopts label{display:flex;align-items:center;gap:8px;margin:0;font-size:11px;font-weight:600;
+ letter-spacing:0;text-transform:none;color:var(--text)}
+.lookpick .lo-row>span{flex:0 0 72px;font-size:9px;letter-spacing:.9px;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.lookpick .lo-row select{flex:1;min-width:0}
+.lookpick .lo-chks{display:flex;flex-wrap:wrap;gap:6px 16px}
+.lookpick .lo-chks input{width:auto;margin:0}
+.lookpick .lo-note{font-size:9.5px;color:var(--muted);line-height:1.45;margin:0}
+
 /* ── Shared frame for every look ───────────────────────────────────────────── */
 /* :where() keeps these at the weight of a single class, so each look's own rules
    below override them by order alone (a look's .sigs or .lg must be able to win). */
@@ -52,10 +62,56 @@
 .doc:where([class*="lk-"]) .parties .cb>p:empty{display:none}
 .doc:where([class*="lk-"]) li::marker{color:var(--acc)}
 .doc:where([class*="lk-"]) details>summary::before{color:var(--gray)}
-.doc:where([class*="lk-"]) .sigs{display:none}
 .doc:where([class*="lk-"]) .dfoot{display:flex;justify-content:space-between;gap:20px}
 .doc:where([class*="lk-"]) .sec{break-after:avoid;page-break-after:avoid;break-inside:avoid;page-break-inside:avoid}
 .doc:where([class*="lk-"]) tr,.doc:where([class*="lk-"]) .parties,.doc:where([class*="lk-"]) .sigs{break-inside:avoid;page-break-inside:avoid}
+/* Why WCStudios + Our process. Midnight gives them a dark page of their own; the white looks let them flow. */
+.doc:where([class*="lk-"]) .mods{padding:.1in 0 .2in}
+.doc:where([class*="lk-"]) .mod{break-inside:avoid;page-break-inside:avoid}
+.doc:where([class*="lk-"]) .mod .mk{font-size:7.5pt;letter-spacing:2.4px;text-transform:uppercase;color:var(--acc);font-weight:800;margin-bottom:.1in}
+.doc:where([class*="lk-"]) .mod .mt{font-size:22pt;line-height:1.1;letter-spacing:-.5px;color:var(--ink);margin:0 0 .18in;font-weight:800}
+.doc:where([class*="lk-"]) .mod .mcols{display:grid;grid-template-columns:1fr 1fr;gap:.3in}
+.doc:where([class*="lk-"]) .mod .mcols p{margin:0;color:var(--ink2)}
+.doc:where([class*="lk-"]) .mod .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.2in;margin:.28in 0 .24in;
+ border-top:1.5px solid var(--ink);padding-top:.16in}
+.doc:where([class*="lk-"]) .mod .stats b{display:block;font-size:26pt;font-weight:800;letter-spacing:-1px;line-height:1;color:var(--ink)}
+.doc:where([class*="lk-"]) .mod .stats span{display:block;font-size:8pt;color:var(--gray);margin-top:6px;letter-spacing:.3px}
+.doc:where([class*="lk-"]) .mod .quote{margin:0 0 .22in;padding:.14in .2in;border-left:3px solid var(--acc);background:var(--wash)}
+.doc:where([class*="lk-"]) .mod .quote blockquote{margin:0;padding:0;border:0;font-size:11.5pt;line-height:1.5;color:var(--ink)}
+.doc:where([class*="lk-"]) .mod .quote blockquote::before{content:"\201C"}
+.doc:where([class*="lk-"]) .mod .quote blockquote::after{content:"\201D"}
+.doc:where([class*="lk-"]) .mod .quote figcaption{margin-top:7px;font-size:8pt;color:var(--gray);letter-spacing:.3px}
+.doc:where([class*="lk-"]) .mod .trusted{font-size:8.5pt;color:var(--ink2);line-height:1.7}
+.doc:where([class*="lk-"]) .mod .trusted span{display:block;font-size:7pt;letter-spacing:1.6px;text-transform:uppercase;color:var(--gray);font-weight:700;margin-bottom:2px}
+.doc:where([class*="lk-"]) .mod.process{margin-top:.42in}
+.doc:where([class*="lk-"]) .mod .msub{color:var(--ink2);max-width:5.4in;margin:-.06in 0 .2in}
+.doc:where([class*="lk-"]) .mod .steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.2in .32in}
+.doc:where([class*="lk-"]) .mod .steps li{margin:0;padding-top:.12in;border-top:1px solid var(--hair)}
+.doc:where([class*="lk-"]) .mod .steps i{display:block;font-style:normal;font-size:8pt;font-weight:800;color:var(--acc);letter-spacing:1.6px;margin-bottom:5px}
+.doc:where([class*="lk-"]) .mod .steps b{display:block;font-size:11.5pt;color:var(--ink);margin-bottom:4px}
+.doc:where([class*="lk-"]) .mod .steps span{display:block;font-size:9pt;color:var(--ink2);line-height:1.55}
+
+/* Signature page, every look. The client's area is the one the signing service
+   fills in; the line under each area is where a signature sits. */
+.doc:where([class*="lk-"]) .sigs{display:block;margin-top:.5in}
+.doc:where([class*="lk-"]) .sigs .sk{font-size:7.5pt;letter-spacing:2.4px;text-transform:uppercase;color:var(--acc);font-weight:800}
+.doc:where([class*="lk-"]) .sigs .sx{color:var(--ink2);font-size:9pt;margin:.05in 0 .22in}
+.doc:where([class*="lk-"]) .sigs .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:.5in}
+.doc:where([class*="lk-"]) .sigs .sig-area{position:relative;height:.9in;display:flex;align-items:flex-end;padding-bottom:4px;border-bottom:1.5px solid var(--ink)}
+.doc:where([class*="lk-"]) .sigs .sig-wait{font-size:8pt;letter-spacing:.4px;color:#b8b8b3}
+.doc:where([class*="lk-"]) .sigs .sig-done{width:100%}
+.doc:where([class*="lk-"]) .sigs .sig-img{display:block;max-height:.72in;max-width:2.7in;width:auto;height:auto;border-radius:0}
+.doc:where([class*="lk-"]) .sigs .sig-name{display:none}
+.doc:where([class*="lk-"]) .sigs .sig-meta{position:absolute;left:0;right:0;top:calc(100% + 4px);font-size:6.5pt;line-height:1.35;color:var(--gray)}
+.doc:where([class*="lk-"]) .sigs .sig-who{margin-top:.34in;font-size:9pt}
+.doc:where([class*="lk-"]) .sigs .sig-who b{display:block;color:var(--ink);font-weight:700;font-size:10pt}
+.doc:where([class*="lk-"]) .sigs .sig-who span{display:block;color:var(--gray)}
+
+/* A cover photo, when one is chosen, comes in through --photo on the header. */
+.doc:where([class*="lk-"]) .head.has-photo{display:flex;flex-direction:column}
+.doc:where([class*="lk-"]) .head.has-photo>.cover{order:0}
+.doc:where([class*="lk-"]) .head.has-photo>.hero{order:2}
+
 /* Paper only: short tables print whole, and the closing block, signatures and footer stay together. */
 .doc:where([class*="lk-"]) table.keep,.doc:where([class*="lk-"]) .tail{break-inside:avoid;page-break-inside:avoid}
 
@@ -212,16 +268,70 @@
 .lk-classic tr.grp td{background:none;font-weight:600;color:var(--ink)}
 .lk-classic tr.tot td{background:none;font-weight:700;color:var(--ink);border-top:1px solid var(--ink);border-bottom:3px double var(--ink)}
 .lk-classic .todo .box{border-color:var(--ink);border-width:1px}
-.lk-classic .sigs{display:block;margin-top:.45in}
-.lk-classic .sigs .sk{font-variant:small-caps;letter-spacing:1.4px;font-weight:600;color:var(--ink);text-align:center;margin-bottom:.32in}
-.lk-classic .sigs .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:.6in}
-.lk-classic .sigs .ln{border-bottom:1px solid var(--ink);height:.42in;margin-bottom:6px}
-.lk-classic .sigs .ln.d{height:.32in;width:55%;margin-top:.16in}
-.lk-classic .sigs b{display:block;font-weight:600;color:var(--ink)}
-.lk-classic .sigs span{display:block;font-size:9.5pt;color:var(--gray)}
 .lk-classic .dfoot{margin-top:.45in;padding-top:.16in;border-top:1px solid #d9d9d6;font-size:8.5pt;color:var(--gray);
  justify-content:center;gap:10px}
 .lk-classic .dfoot b{color:var(--ink);font-weight:600}
+
+/* ── Look touches for the new pages ─────────────────────────────────────── */
+/* Studio: photo strip between the band and the title, display type like the invoice. */
+.lk-studio .head.has-photo::after{content:"";order:1;display:block;height:3.2in;background:var(--photo) center/cover no-repeat #111}
+.lk-studio .mod .mt{font-family:Archivo,-apple-system,sans-serif;font-variation-settings:"wdth" 112;text-transform:uppercase;font-size:19pt;letter-spacing:-.2px}
+
+/* Midnight: the photo becomes the dark cover page itself. */
+.lk-midnight .head.has-photo{background:
+  radial-gradient(110% 70% at 0% 100%,rgba(232,98,44,.28),transparent 58%),
+  linear-gradient(180deg,rgba(8,8,8,.62) 0%,rgba(8,8,8,.18) 32%,rgba(8,8,8,.7) 66%,rgba(8,8,8,.96) 100%),
+  var(--photo) center/cover no-repeat,#0b0b0b}
+.lk-midnight .head.has-photo .hero{margin-top:auto}
+/* Each extra page is a full dark sheet of its own, like a slide in the decks. */
+.lk-midnight .mods{margin:-.7in -.7in .3in;padding:0}
+.lk-midnight .mod{background:#0b0b0b;color:#e9e9e7;padding:.85in .7in .7in;min-height:11in;box-sizing:border-box;
+ display:flex;flex-direction:column;break-after:page;page-break-after:always}
+.lk-midnight .mod.process{margin-top:0}
+.lk-midnight .mod .mt{font-size:26pt;line-height:1.02;margin-bottom:.3in}
+.lk-midnight .mod.about .mcols{font-size:10.5pt;line-height:1.65}
+.lk-midnight .mod.about .stats{margin:.45in 0 .4in}
+.lk-midnight .mod.about .stats b{font-size:34pt}
+.lk-midnight .mod.about .trusted{margin-top:auto}
+.lk-midnight .mod.process .msub{font-size:11pt;max-width:5.6in;margin-bottom:.45in}
+.lk-midnight .mod.process .steps{gap:.42in .42in}
+.lk-midnight .mod.process .steps i{font-size:9pt}
+.lk-midnight .mod.process .steps b{font-family:Archivo,-apple-system,sans-serif;font-variation-settings:"wdth" 112;
+ text-transform:uppercase;font-size:13pt;margin-bottom:8px}
+.lk-midnight .mod.process .steps span{font-size:10pt;line-height:1.65}
+.lk-midnight .mod .mt{font-family:Archivo,-apple-system,sans-serif;font-variation-settings:"wdth" 125;font-weight:900;text-transform:uppercase;
+ font-size:21pt;letter-spacing:-.2px;color:#fff}
+.lk-midnight .mod .mcols p,.lk-midnight .mod .msub,.lk-midnight .mod .steps span,.lk-midnight .mod .trusted{color:rgba(255,255,255,.72)}
+.lk-midnight .mod .stats{border-top-color:rgba(255,255,255,.35)}
+.lk-midnight .mod .stats b,.lk-midnight .mod .steps b,.lk-midnight .mod .quote blockquote{color:#fff}
+.lk-midnight .mod .quote{background:rgba(255,255,255,.06)}
+.lk-midnight .mod .steps li{border-top-color:rgba(255,255,255,.18)}
+.lk-midnight .sigs .sk{font-family:Archivo,-apple-system,sans-serif;font-variation-settings:"wdth" 118;font-size:14pt;letter-spacing:-.1px;color:var(--ink)}
+.lk-midnight .sigs .sk::before{content:"";display:block;width:22px;height:3px;background:var(--acc);margin-bottom:9px}
+
+/* Editorial: a full-bleed photo under the top line, serif heads, the left margin carries the labels. */
+.lk-editorial .head.has-photo::after{content:"";order:1;display:block;height:4.1in;margin-top:.32in;background:var(--photo) center/cover no-repeat #ddd}
+.lk-editorial .head.has-photo .hero{padding-top:.42in}
+.lk-editorial .mods{margin-left:-1.25in}
+.lk-editorial .mod .mt{font-family:Fraunces,Georgia,serif;font-weight:400;font-size:26pt;letter-spacing:-.8px;line-height:1.08}
+.lk-editorial .mod .stats b{font-family:Fraunces,Georgia,serif;font-weight:400;font-size:30pt}
+.lk-editorial .mod .quote{background:none;padding:0 0 0 .2in}
+.lk-editorial .mod .quote blockquote{font-family:Fraunces,Georgia,serif;font-size:14pt;line-height:1.4}
+.lk-editorial .mod .steps b{font-family:Fraunces,Georgia,serif;font-weight:500;font-size:13pt}
+.lk-editorial .sigs{margin-left:-1.25in}
+.lk-editorial .sigs .sk{color:var(--acc)}
+
+/* Classic: no photo, formal type, centred head over the signatures. */
+.lk-classic .head.has-photo::after{content:none}
+.lk-classic .mod .mk,.lk-classic .sigs .sk{font-family:inherit;font-variant:small-caps;text-transform:lowercase;letter-spacing:1.6px;font-size:11pt;font-weight:600;color:var(--ink)}
+.lk-classic .mod .mt{font-family:inherit;font-weight:500;font-size:20pt;letter-spacing:0}
+.lk-classic .mod .stats b{font-family:inherit;font-weight:600}
+.lk-classic .mod .quote{background:none;border-left-width:1px}
+.lk-classic .mod .quote blockquote{font-style:italic}
+.lk-classic .sigs .sk{text-align:center}
+.lk-classic .sigs .sx{text-align:center;font-style:italic}
+.lk-classic .sigs .sig-area{border-bottom-width:1px}
+.lk-classic .sigs .sig-who b{font-weight:600}
 
 /* Print: let the white looks start flush; the cover band and dark page carry
    their own colour (builder.css already turns on exact colour printing). */
