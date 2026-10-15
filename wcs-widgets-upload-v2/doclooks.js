@@ -419,7 +419,7 @@
   function fitDoc(w, sc, inner){
     if (!w || !sc || !inner) return;
     const W = inner.offsetWidth, Hh = inner.offsetHeight;
-    const availW = Math.max(120, w.clientWidth - 40), availH = Math.max(160, w.clientHeight - 108);
+    const availW = Math.max(120, w.clientWidth - 40), availH = Math.max(160, w.clientHeight - 92);
     const fw = Math.min(1, availW / W);
     // Fit page: a whole sheet in view, unless the preview is so short (phone, stacked layout) that it would be unreadable.
     const fp = availH / PH < .4 ? fw : Math.min(fw, availH / PH);
@@ -603,12 +603,12 @@
         i.addEventListener("input", () => { const o = origTok(tok); if (o) { o.value = i.value; o.dispatchEvent(new Event("input", { bubbles: true })); } });
         gb.append(f);
       });
-      else gb.append(el("p", "note", "Nothing to fill in here. Click any text on the page to rewrite it."));
+      else gb.append(el("p", "note", "No blanks in this section."));
     } else if (e.kind === "about" || e.kind === "process") {
       const sw = $lo(e.kind === "about" ? "loAbout" : "loProcess").closest("label");
       gb.append(sw, el("div", "lkfields"));
       const bar = el("div", "lkbar", `<button type="button" class="sp-link" data-reset="${e.kind}">Use the website copy</button>`);
-      gb.append(bar, el("p", "note lknote", "Copy comes from the website, so WebsiteOS edits show up here. Anything you change applies to this document only."));
+      gb.append(bar);
     } else if (e.kind === "sign") {
       gb.append(el("div", "lkfields"));
       gb.append(el("div", "lksig", ""));
@@ -702,7 +702,7 @@
         lkFields(g, ["sig.sk", "sig.sx"]);
         const mine = (() => { try { return JSON.parse(localStorage.getItem("wcsSenderSig.v1") || "null"); } catch (x) { return null; } })();
         const w = g.querySelector(".lksig");
-        if (w) w.innerHTML = `<p class="note">${esc(meta.person || "The client")} signs on their own copy. ${mine && mine.png ? "Your signature is saved and shows on the page." : "Draw your signature once in Send to sign and it shows on the page."}</p>` +
+        if (w) w.innerHTML = (mine && mine.png ? "" : `<p class="note">Draw your signature once in Send to sign.</p>`) +
           (document.getElementById("bSign") ? `<button type="button" class="sp-link" data-open-sign>Open Send to sign</button>` : "");
       }
     }
