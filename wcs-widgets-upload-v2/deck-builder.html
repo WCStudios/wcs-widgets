@@ -10,7 +10,7 @@
 .view .wcs-stage{position:absolute;left:0;top:0;transform-origin:0 0}
 .view .slide{opacity:1;visibility:visible;transition:none}
 .view .slide .rise{animation:none!important}
-.strip{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;flex:0 0 auto;align-self:center;max-width:100%}
+.strip{display:flex;gap:10px;overflow-x:auto;padding:0 0 6px;margin-top:-6px;flex:0 0 auto;align-self:center;max-width:100%}
 .th{position:relative;flex:0 0 168px;aspect-ratio:16/9;border-radius:7px;overflow:hidden;cursor:pointer;border:1px solid var(--line);background:#000}
 .th.cur{outline:2px solid var(--accent);outline-offset:2px}
 .th .wcs-stage{position:absolute;left:0;top:0;transform:scale(.0875);transform-origin:0 0;pointer-events:none}
@@ -114,11 +114,10 @@
     <p class="note" id="status"></p>
   </div>
   <div class="paper" id="paper">
-    <p class="edithint">Click any text on the slide to edit it. Drag <b>⠇</b> to reorder bullets and cards. Drop image files onto a slide, a thumbnail, or <b>+</b>.</p>
     <div class="vwrap" id="vwrap"><div class="view" id="view"></div><div class="dropcap" id="dropcap">Drop to place on this slide</div><div class="imgbar" id="imgbar"></div></div>
     <input type="file" id="fileIn" accept="image/*" multiple hidden>
     <div class="strip" id="strip"></div>
-    <p class="note">Images: paste any public image link (your site, Squarespace, a Dropbox share link). After the deck is created you can keep editing it as a normal Notion page.</p>
+    <p class="note" style="text-align:center">Click any text on the slide to edit it. Drop image files onto a slide, a card, or <b>+</b>. Images: paste any public image link (your site, Squarespace, a Dropbox share link). After the deck is created you can keep editing it as a normal Notion page.</p>
   </div>
 </div>
 <div id="show"><button class="x" id="showX">Close (Esc)</button><div class="ct" id="showCt"></div></div>
@@ -208,7 +207,9 @@ function fitView(){
   const innerW = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   const stripH = Math.max($("strip").offsetHeight, 106), hintH = hint ? hint.offsetHeight + 2 : 0;
   const availH = p.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - hintH - stripH - 32;
-  vw.style.width = Math.floor(Math.max(280, Math.min(innerW, availH * 16 / 9))) + "px";
+  const w = Math.floor(Math.max(280, Math.min(innerW, availH * 16 / 9)));
+  vw.style.width = w + "px";
+  $("strip").style.width = w + "px";                 // the cards line up under the slide, edge to edge
 }
 function drawPreview(){
   fitView();
@@ -562,4 +563,5 @@ boot();
   paint();
 })();
 </script>
+<script src="doclib.js?v=1" data-kind="deck" data-store="wcsDeckBuilder.v1" data-title="#dTitle"></script>
 </body></html>
