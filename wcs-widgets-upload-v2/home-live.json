@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-15T14:17:42.947Z",
+ "updated": "2026-10-15T14:22:43.064Z",
  "source": "worker",
  "tasks": {
   "open": 34,
@@ -21,9 +21,9 @@
    "ago": "2d"
   },
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Minnesota Wild",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "MN Wild - 2026 Hockey Fights Cancer Feature",
    "id": "3ef421efc7668185ae9fc5ccbc716fd7",
    "ago": "2d"
