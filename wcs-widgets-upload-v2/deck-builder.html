@@ -12,7 +12,7 @@
 .view .slide .rise{animation:none!important}
 .strip{display:flex;gap:10px;overflow-x:auto;padding:0 0 6px;margin-top:-6px;flex:0 0 auto;align-self:center;max-width:100%}
 .th{position:relative;flex:0 0 168px;aspect-ratio:16/9;border-radius:7px;overflow:hidden;cursor:pointer;border:1px solid var(--line);background:#000}
-.th.cur{outline:2px solid var(--accent);outline-offset:2px}
+.th.cur::after{content:"";position:absolute;inset:0;border:2px solid var(--accent);border-radius:7px;z-index:10;pointer-events:none}
 .th .wcs-stage{position:absolute;left:0;top:0;transform:scale(.0875);transform-origin:0 0;pointer-events:none}
 .th .slide{opacity:1;visibility:visible;transition:none}
 .th .slide .rise{animation:none!important}
@@ -117,7 +117,6 @@
     <div class="vwrap" id="vwrap"><div class="view" id="view"></div><div class="dropcap" id="dropcap">Drop to place on this slide</div><div class="imgbar" id="imgbar"></div></div>
     <input type="file" id="fileIn" accept="image/*" multiple hidden>
     <div class="strip" id="strip"></div>
-    <p class="note" style="text-align:center">Click any text on the slide to edit it. Drop image files onto a slide, a card, or <b>+</b>. Images: paste any public image link (your site, Squarespace, a Dropbox share link). After the deck is created you can keep editing it as a normal Notion page.</p>
   </div>
 </div>
 <div id="show"><button class="x" id="showX">Close (Esc)</button><div class="ct" id="showCt"></div></div>
