@@ -389,7 +389,8 @@
     `<button type="button" data-z="page" title="Fit the whole page">Fit page</button>` +
     `<button type="button" data-z="width" title="Fit the width">Fit width</button><i class="zs"></i>` +
     `<button type="button" data-z="-" title="Zoom out">−</button><b id="zPct">100%</b><button type="button" data-z="+" title="Zoom in">+</button><i class="zs"></i>` +
-    `<button type="button" data-z="up" title="Previous page">‹</button><span id="zPg">Page 1 of 1</span><button type="button" data-z="dn" title="Next page">›</button>`);
+    `<button type="button" data-z="up" title="Previous page">‹</button><span id="zPg">Page 1 of 1</span><button type="button" data-z="dn" title="Next page">›</button>` +
+    `<i class="zs"></i><button type="button" data-z="thumbs" title="Show or hide the page list">Pages</button>`);
   if (wrap) wrap.append(pill);
   const STEPS = [.4, .5, .6, .7, .8, .9, 1, 1.1, 1.25, 1.5];
   let cur = 1;
@@ -429,6 +430,11 @@
     const b = e.target.closest("button[data-z]"); if (!b) return;
     const z = b.dataset.z;
     if (z === "up" || z === "dn") return goPage(curPage() + (z === "dn" ? 1 : -1));
+    if (z === "thumbs") {
+      showThumbs = !showThumbs;
+      try { localStorage.setItem(TKEY, showThumbs ? "1" : "0"); } catch (err) {}
+      paintRail(); fitDoc(wrap, scaler, doc); buildThumbs(); return;
+    }
     const keep = curPage();
     if (z === "page" || z === "width") zoom = { mode: z, pct: cur };
     else {
@@ -444,7 +450,7 @@
   if (window.WCSHub) window.WCSHub.fitPaper = fitDoc;   // the builders call H.fitPaper on render and resize
 
   let pT = 0;
-  const later = () => { clearTimeout(pT); pT = setTimeout(() => { guard(paginate); fitDoc(wrap, scaler, doc); try { paintLayers(); } catch (e) {} }, 300); };
+  const later = () => { clearTimeout(pT); pT = setTimeout(() => { guard(paginate); fitDoc(wrap, scaler, doc); try { paintLayers(); } catch (e) {} schedThumbs(); }, 300); };
   doc.addEventListener("input", later);
   doc.addEventListener("load", later, true);           // pictures that arrive after the layout
 
@@ -752,7 +758,81 @@
     H.editIn(t, x => { inp.value = H.plainOf(x).trim(); inp.dispatchEvent(new Event("input", { bubbles: true })); }, { select: !h1 });
   });
 
-  function refit(){ guard(paginate); fitDoc(wrap, scaler, doc); try { syncLayers(); } catch (e) { console.warn("layers", e); } }
+  /* ── Page list ─────────────────────────────────────────────────────────
+     A column of page thumbnails on the right, like Pages or Word. Each is a
+     scaled copy of the document clipped to one sheet, so it shows exactly
+     what prints. Click one to go there; the page you're on is highlighted. */
+  const TKEY = "wcsDocThumbs.v1";
+  let showThumbs = true;
+  try { showThumbs = localStorage.getItem(TKEY) !== "0"; } catch (e) {}
+  const rail = el("aside", "pagerail", `<div class="prh"><span>Pages</span><b id="prN"></b></div><div class="prl" id="prList"></div>`);
+  if (wrap && wrap.parentElement) wrap.parentElement.insertBefore(rail, wrap.nextSibling);
+  const prList = rail.querySelector("#prList");
+  const TW = 128, TK = TW / 816;
+  let thT = 0, thSig = "";
+  const paintRail = () => { rail.hidden = !showThumbs; const b = pill.querySelector("[data-z=thumbs]"); if (b) b.classList.toggle("on", showThumbs); };
+  function pageTitles(){
+    const t = {}, lastOn = {};
+    for (const e of entries) {
+      const a = e.els.find(x => x && x.isConnected && x.getClientRects().length); if (!a) continue;
+      const s = doc.getBoundingClientRect().width / doc.offsetWidth || 1;
+      const p = Math.floor(((a.getBoundingClientRect().top - doc.getBoundingClientRect().top) / s + 1) / (PH + G)) + 1;
+      if (!t[p]) t[p] = e.title;
+      lastOn[p] = e.title;
+    }
+    // A page with no section starting on it continues the last section of the page before.
+    let last = "";
+    for (let p = 1; p <= pages; p++) { if (t[p]) last = lastOn[p]; else t[p] = last ? last + " (cont.)" : ""; }
+    return t;
+  }
+  function buildThumbs(){
+    if (!showThumbs || !doc.querySelector(":scope > .pg")) { prList.innerHTML = ""; thSig = ""; return; }
+    const src = doc.cloneNode(true);
+    src.removeAttribute("id"); src.style.transform = "";
+    src.querySelectorAll(".pgov,.grip,.zpill").forEach(n => n.remove());
+    src.querySelectorAll("[id]").forEach(n => n.removeAttribute("id"));
+    src.querySelectorAll("[contenteditable]").forEach(n => n.removeAttribute("contenteditable"));
+    src.querySelectorAll(".editing,.lk-flash").forEach(n => n.classList.remove("editing", "lk-flash"));
+    const html = src.outerHTML;
+    const titles = pageTitles();
+    const sig = pages + "|" + html.length + "|" + html.slice(0, 200) + "|" + Object.values(titles).join("/");
+    if (sig === thSig && prList.children.length === pages) return;
+    thSig = sig;
+    const frag = document.createDocumentFragment();
+    for (let n = 1; n <= pages; n++) {
+      // A div, not a button: a button's nowrap and bold would leak into the copy of the page.
+      const card = el("div", "prc", `<span class="prp"><span class="prs"></span></span><span class="prt"><b>${n}</b><span></span></span>`);
+      card.setAttribute("role", "button"); card.tabIndex = 0; card.dataset.p = n; card.title = `Go to page ${n}`;
+      card.querySelector(".prt span").textContent = titles[n] || "";
+      const sheet = card.querySelector(".prs");
+      sheet.innerHTML = html;
+      const c = sheet.firstElementChild;
+      c.style.transform = `scale(${TK}) translateY(${-pageTop(n - 1)}px)`;
+      frag.append(card);
+    }
+    prList.replaceChildren(frag);
+    rail.querySelector("#prN").textContent = String(pages);
+    markThumb();
+  }
+  function markThumb(){
+    if (!showThumbs) return;
+    const p = curPage();
+    prList.querySelectorAll(".prc").forEach(c => {
+      const on = +c.dataset.p === p;
+      if (on && !c.classList.contains("on")) {
+        const top = c.offsetTop - prList.offsetTop, bot = top + c.offsetHeight;
+        if (top < prList.scrollTop || bot > prList.scrollTop + prList.clientHeight) prList.scrollTo({ top: top - 12, behavior: "smooth" });
+      }
+      c.classList.toggle("on", on);
+    });
+  }
+  const schedThumbs = () => { clearTimeout(thT); thT = setTimeout(buildThumbs, 350); };
+  prList.addEventListener("click", e => { const c = e.target.closest(".prc"); if (c) goPage(+c.dataset.p); });
+  prList.addEventListener("keydown", e => { const c = e.target.closest(".prc"); if (c && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); goPage(+c.dataset.p); } });
+  if (wrap) wrap.addEventListener("scroll", markThumb, { passive: true });
+  paintRail();
+
+  function refit(){ guard(paginate); fitDoc(wrap, scaler, doc); try { syncLayers(); } catch (e) { console.warn("layers", e); } schedThumbs(); }
 
   // The builders replace #doc's children wholesale on every render; dress each new copy.
   // The page overlay coming and going is ours, not a render.
