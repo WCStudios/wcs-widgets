@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-16T21:42:15.484Z",
+ "updated": "2026-10-16T21:47:16.161Z",
  "source": "worker",
  "tasks": {
   "open": 33,
@@ -12,6 +12,14 @@
   "days": 81
  },
  "pings": [
+  {
+   "kind": "del",
+   "who": "Minnesota Wild",
+   "what": "delivered",
+   "task": "MN Wild - 2026 Hockey Fights Cancer Feature",
+   "id": "3ef421efc7668185ae9fc5ccbc716fd7",
+   "ago": "today"
+  },
   {
    "kind": "rev",
    "who": "Cascade CBX Sport",
@@ -27,14 +35,6 @@
    "task": "Walser - 2026 ValleyFair Family Day",
    "id": "3d7421efc766818daf9bca3a543053f2",
    "ago": "1d"
-  },
-  {
-   "kind": "del",
-   "who": "Tradition Companies",
-   "what": "delivered",
-   "task": "TC - 2026 All Employee Event",
-   "id": "3e2421efc7668164a9ebd519cc775b25",
-   "ago": "3d"
   }
  ],
  "nextShoot": {
