@@ -1,8 +1,8 @@
 {
- "updated": "2026-10-16T21:52:22.444Z",
+ "updated": "2026-10-16T21:57:21.756Z",
  "source": "worker",
  "tasks": {
-  "open": 33,
+  "open": 32,
   "inPost": 16,
   "overdue": 6
  },
@@ -13,9 +13,9 @@
  },
  "pings": [
   {
-   "kind": "del",
+   "kind": "rev",
    "who": "Minnesota Wild",
-   "what": "delivered",
+   "what": "left revisions",
    "task": "MN Wild - 2026 Hockey Fights Cancer Feature",
    "id": "3ef421efc7668185ae9fc5ccbc716fd7",
    "ago": "today"
