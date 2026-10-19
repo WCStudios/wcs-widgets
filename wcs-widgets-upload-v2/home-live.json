@@ -1,8 +1,8 @@
 {
- "updated": "2026-10-19T22:07:48.537Z",
+ "updated": "2026-10-19T22:12:50.024Z",
  "source": "worker",
  "tasks": {
-  "open": 30,
+  "open": 31,
   "inPost": 14,
   "overdue": 5
  },
@@ -13,9 +13,9 @@
  },
  "pings": [
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Walser Automotive",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "Walser - 2026 Kia OTT Spots + Service Video",
    "id": "3cd421efc766813e95ceec2002a9d3a5",
    "ago": "today"
@@ -38,9 +38,9 @@
   }
  ],
  "nextShoot": {
-  "name": "Walser - 2026 HR Trunk or Treat Event Recap (Burnsville Hill)",
-  "id": "3d7421efc7668167bd14c28ef03cc82e",
-  "date": "2026-10-24",
-  "time": "11:00 AM"
+  "name": "TC - 2026 Employee Pickleball Spotlight",
+  "id": "3fe421efc766815db741ede677ba64f6",
+  "date": "2026-10-20",
+  "time": "4:00 PM"
  }
 }
