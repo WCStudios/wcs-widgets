@@ -1,10 +1,10 @@
 {
- "updated": "2026-10-19T19:17:24.262Z",
+ "updated": "2026-10-19T19:22:24.047Z",
  "source": "worker",
  "tasks": {
-  "open": 32,
-  "inPost": 16,
-  "overdue": 7
+  "open": 30,
+  "inPost": 14,
+  "overdue": 5
  },
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
@@ -14,8 +14,16 @@
  "pings": [
   {
    "kind": "rev",
-   "who": "Minnesota Wild",
+   "who": "Walser Automotive",
    "what": "left revisions",
+   "task": "Walser - 2026 Kia OTT Spots + Service Video",
+   "id": "3cd421efc766813e95ceec2002a9d3a5",
+   "ago": "today"
+  },
+  {
+   "kind": "del",
+   "who": "Minnesota Wild",
+   "what": "delivered",
    "task": "MN Wild - 2026 Hockey Fights Cancer Feature",
    "id": "3ef421efc7668185ae9fc5ccbc716fd7",
    "ago": "3d"
@@ -26,14 +34,6 @@
    "what": "left revisions",
    "task": "Cascade CBX - 2026 Henderson Resort Spot",
    "id": "3aa421efc76680eeafded8c0400e7a25",
-   "ago": "4d"
-  },
-  {
-   "kind": "del",
-   "who": "Walser Automotive",
-   "what": "delivered",
-   "task": "Walser - 2026 ValleyFair Family Day",
-   "id": "3d7421efc766818daf9bca3a543053f2",
    "ago": "4d"
   }
  ],
