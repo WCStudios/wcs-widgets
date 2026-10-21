@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-21T04:57:38.318Z",
+ "updated": "2026-10-21T05:02:38.459Z",
  "source": "worker",
  "tasks": {
   "open": 31,
@@ -9,7 +9,7 @@
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
   "id": "4bd2b506ce2c4cd3b1c4c1efaa817029",
-  "days": 85
+  "days": 86
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "delivered",
    "task": "Walser - 2026 Kia OTT Spots + Service Video",
    "id": "3cd421efc766813e95ceec2002a9d3a5",
-   "ago": "1d"
+   "ago": "2d"
   },
   {
    "kind": "del",
@@ -26,7 +26,7 @@
    "what": "delivered",
    "task": "MN Wild - 2026 Hockey Fights Cancer Feature",
    "id": "3ef421efc7668185ae9fc5ccbc716fd7",
-   "ago": "4d"
+   "ago": "5d"
   },
   {
    "kind": "rev",
@@ -34,13 +34,13 @@
    "what": "left revisions",
    "task": "Cascade CBX - 2026 Henderson Resort Spot",
    "id": "3aa421efc76680eeafded8c0400e7a25",
-   "ago": "5d"
+   "ago": "6d"
   }
  ],
  "nextShoot": {
-  "name": "TC - 2026 Employee Pickleball Spotlight",
-  "id": "3fe421efc766815db741ede677ba64f6",
-  "date": "2026-10-20",
-  "time": "4:00 PM"
+  "name": "Walser - 2026 HR Trunk or Treat Event Recap (Burnsville Hill)",
+  "id": "3d7421efc7668167bd14c28ef03cc82e",
+  "date": "2026-10-24",
+  "time": "11:00 AM"
  }
 }
