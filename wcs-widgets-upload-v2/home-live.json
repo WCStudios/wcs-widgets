@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-21T22:25:23.074Z",
+ "updated": "2026-10-21T22:30:24.721Z",
  "source": "worker",
  "tasks": {
   "open": 30,
@@ -16,6 +16,14 @@
    "kind": "rev",
    "who": "Tradition Companies",
    "what": "left revisions",
+   "task": "TC - 2026 Employee Pickleball Spotlight",
+   "id": "3fe421efc766815db741ede677ba64f6",
+   "ago": "today"
+  },
+  {
+   "kind": "rev",
+   "who": "Tradition Companies",
+   "what": "left revisions",
    "task": "TC - 2026 Insight Trip Spotlight",
    "id": "3f2421efc76681ac84cce98f7d8323b9",
    "ago": "today"
@@ -27,14 +35,6 @@
    "task": "Walser - 2026 Kia OTT Spots + Service Video",
    "id": "3cd421efc766813e95ceec2002a9d3a5",
    "ago": "today"
-  },
-  {
-   "kind": "del",
-   "who": "Minnesota Wild",
-   "what": "delivered",
-   "task": "MN Wild - 2026 Hockey Fights Cancer Feature",
-   "id": "3ef421efc7668185ae9fc5ccbc716fd7",
-   "ago": "5d"
   }
  ],
  "nextShoot": {
