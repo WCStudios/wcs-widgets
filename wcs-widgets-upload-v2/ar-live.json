@@ -1,33 +1,7 @@
 {
- "updated": "2026-10-14T21:55:54.337Z",
+ "updated": "2026-10-21T15:52:28.365Z",
  "source": "worker",
  "ar": [
-  {
-   "notionPageId": "3f2421ef-c766-8184-866b-f24798015c2d",
-   "name": "Minnesota Hockey - Invoice 191 - MN Hockey X WCStudios - 26/27 Contract",
-   "client": "Minnesota Hockey",
-   "project": "MN Hockey X WCStudios - 26/27 Contract",
-   "terms": "Net 15",
-   "items": [
-    {
-     "description": "Monthly creative retainer - 26/27 Season",
-     "detail": "- 4 episodes of \"The Association\"\n- 18 high quality video projects\n- Premium music licensing from industry-leading libraries\n- Dedicated monthly production days with priority scheduling\n- October 2026 to October 2027",
-     "qty": 12,
-     "unit": "mo",
-     "rate": 5000
-    }
-   ],
-   "threaded": true,
-   "amount": 60000,
-   "status": "Sent",
-   "invoiceDate": "2026-10-07",
-   "dueDate": "2026-10-22",
-   "daysOverdue": 0,
-   "bucket": "Not yet due",
-   "notionUrl": "https://app.notion.com/3f2421efc7668184866bf24798015c2d",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
   {
    "notionPageId": "9e725ac4-8e5d-4d03-98ff-956b5bd0c508",
    "name": "Pulltab Sports - Invoice 0181 - DripDrop - Whats In Your Bottle Commercial (Part 1)",
@@ -48,7 +22,7 @@
    "status": "Sent",
    "invoiceDate": "2026-08-27",
    "dueDate": "2026-08-27",
-   "daysOverdue": 48,
+   "daysOverdue": 55,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/9e725ac48e5d4d0398ff956b5bd0c508",
    "pdfUrl": null,
@@ -147,7 +121,7 @@
    "status": "Sent",
    "invoiceDate": "2026-08-27",
    "dueDate": "2026-08-27",
-   "daysOverdue": 48,
+   "daysOverdue": 55,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/9d3da83e68854163bdf419c719246125",
    "pdfUrl": null,
@@ -173,7 +147,7 @@
    "status": "Sent",
    "invoiceDate": "2026-08-27",
    "dueDate": "2026-08-27",
-   "daysOverdue": 48,
+   "daysOverdue": 55,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/1df9db988bd84148a8b9b05d3f89ef52",
    "pdfUrl": null,
@@ -206,7 +180,7 @@
    "status": "Sent",
    "invoiceDate": "2026-09-21",
    "dueDate": "2026-10-06",
-   "daysOverdue": 8,
+   "daysOverdue": 15,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/3e2421efc7668145a909e510f5e64aae",
    "pdfUrl": null,
@@ -239,7 +213,7 @@
    "status": "Sent",
    "invoiceDate": "2026-09-21",
    "dueDate": "2026-10-06",
-   "daysOverdue": 8,
+   "daysOverdue": 15,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/3e2421efc76681a58e22edb82ba44070",
    "pdfUrl": null,
@@ -272,7 +246,7 @@
    "status": "Sent",
    "invoiceDate": "2026-09-21",
    "dueDate": "2026-10-06",
-   "daysOverdue": 8,
+   "daysOverdue": 15,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/3e2421efc766811fbfd2d24dec51ff21",
    "pdfUrl": null,
@@ -305,7 +279,7 @@
    "status": "Sent",
    "invoiceDate": "2026-09-21",
    "dueDate": "2026-10-06",
-   "daysOverdue": 8,
+   "daysOverdue": 15,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/3e2421efc766811998b1e4b23a86c3c7",
    "pdfUrl": null,
@@ -888,10 +862,6 @@
  ],
  "arAging": [
   {
-   "bucket": "Not yet due",
-   "amount": 60000
-  },
-  {
    "bucket": "1-30 days",
    "amount": 17750
   },
@@ -902,20 +872,16 @@
  ],
  "arByClient": [
   {
-   "client": "Minnesota Hockey",
-   "amount": 60000
-  },
-  {
    "client": "Pulltab Sports",
    "amount": 29866
   }
  ],
  "summary": {
-  "arTotal": 89866,
-  "arSent": 81866,
+  "arTotal": 29866,
+  "arSent": 21866,
   "arDraft": 8000,
   "arOverdue": 21866,
-  "arCount": 10,
+  "arCount": 9,
   "arDraftCount": 2,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
