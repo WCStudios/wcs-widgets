@@ -98,8 +98,12 @@ const usd = n => "$" + Number(n||0).toLocaleString("en-US",{minimumFractionDigit
 const usd0 = n => "$" + Number(n||0).toLocaleString("en-US",{maximumFractionDigits:0});
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-function paint(list, live){
-  document.querySelector(".flag").style.display = live ? "none" : "";
+function paint(list, live, meta){
+  // The corner tag only shows when something needs a look: sample figures, or a bank that wants a fresh login.
+  const flag = document.querySelector(".flag");
+  if(!live){ flag.textContent = "Sample data"; flag.title = "Placeholder figures, not connected to any bank"; flag.style.display = ""; }
+  else if(meta && meta.stale){ flag.textContent = "A bank needs a login"; flag.title = "Open wcs-sign…/bank and log in again"; flag.style.display = ""; }
+  else flag.style.display = "none";
   document.getElementById("strip").innerHTML = list.map(a => {
   const head = '<div class="inst">' + esc(a.inst)
              + (a.last4 ? '<span class="last4">••' + esc(a.last4) + '</span>' : '')
@@ -134,33 +138,27 @@ function paint(list, live){
 
 paint(ACCOUNTS, false);
 
-/* ── Live overlay (inert until you connect something) ─────────
-   Drop a balances-live.json beside this file, shaped exactly like ACCOUNTS
-   above — {"updated":"...","accounts":[ ... ]} — and the widget switches to it
-   and hides the "Sample data" flag. Until that file exists this fetch fails
-   quietly and the placeholders simply stand, so wiring it up later is a
-   one-file change with nothing to edit in here.
-
-   Same pattern the invoice tracker uses: Pages sits on this origin (no CORS,
-   purges on commit), raw.githubusercontent has a 5-minute edge cache. Ask both
-   and keep whichever reports the newer timestamp. */
-const LIVE_SRCS = [
-  "balances-live.json",
-  "https://raw.githubusercontent.com/wcstudios/wcs-widgets/main/wcs-widgets-upload-v2/balances-live.json"
-];
+/* ── Live balances ─────────────────────────────────────────────────────
+   Banks are linked through Plaid on the signing service (wcs-sign…/bank), which
+   reads them every two hours. This widget asks it for the figures with the
+   read-only key at the end of its link (#k=…). That key only reads balances,
+   and it lives in the hash, so it is never sent to GitHub. No key, or no bank
+   linked yet: the sample figures above stay, flagged as samples. */
+const KEYB = (location.hash.match(/[#&]k=([A-Za-z0-9_-]+)/) || [])[1] || "";
+const API = "https://wcs-sign.bennett-2b4.workers.dev/api/balances";
 let liveAt = null;
 
 function applyLive(){
-  const bust = "?t=" + Date.now();
-  Promise.all(LIVE_SRCS.map(u =>
-    fetch(u + bust, {cache:"no-store"}).then(r => r.ok ? r.json() : null).catch(() => null)
-  )).then(feeds => {
-    const live = feeds.filter(f => f && Array.isArray(f.accounts))
-                      .sort((a,b) => String(b.updated||"").localeCompare(String(a.updated||"")))[0];
-    if(!live || live.updated === liveAt) return;
-    liveAt = live.updated;
-    paint(live.accounts, true);
-  }).catch(() => {});   // stay on the placeholders
+  if(!KEYB) return;
+  fetch(API, { headers: { Authorization: "Bearer " + KEYB }, cache: "no-store" })
+    .then(r => r.ok ? r.json() : null)
+    .then(j => {
+      if(!j || !j.ok || !j.live || !(j.accounts || []).length) return;
+      const sig = j.updated + "|" + j.stale + "|" + JSON.stringify(j.accounts);
+      if(sig === liveAt) return;
+      liveAt = sig;
+      paint(j.accounts, true, j);
+    }).catch(() => {});   // stay on what's showing
 }
 
 applyLive();
