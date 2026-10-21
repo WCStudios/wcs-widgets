@@ -1,10 +1,10 @@
 {
- "updated": "2026-10-21T16:14:21.797Z",
+ "updated": "2026-10-21T16:19:23.205Z",
  "source": "worker",
  "tasks": {
-  "open": 31,
-  "inPost": 15,
-  "overdue": 5
+  "open": 30,
+  "inPost": 14,
+  "overdue": 4
  },
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
@@ -18,7 +18,7 @@
    "what": "delivered",
    "task": "Walser - 2026 Kia OTT Spots + Service Video",
    "id": "3cd421efc766813e95ceec2002a9d3a5",
-   "ago": "2d"
+   "ago": "today"
   },
   {
    "kind": "del",
