@@ -1,10 +1,10 @@
 {
- "updated": "2026-10-22T19:23:26.977Z",
+ "updated": "2026-10-22T19:28:30.357Z",
  "source": "worker",
  "tasks": {
-  "open": 30,
-  "inPost": 14,
-  "overdue": 3
+  "open": 29,
+  "inPost": 13,
+  "overdue": 2
  },
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
@@ -12,6 +12,14 @@
   "days": 87
  },
  "pings": [
+  {
+   "kind": "del",
+   "who": "Cascade CBX Sport",
+   "what": "delivered",
+   "task": "Cascade CBX - 2026 Henderson Resort Spot",
+   "id": "3aa421efc76680eeafded8c0400e7a25",
+   "ago": "today"
+  },
   {
    "kind": "rev",
    "who": "Tradition Companies",
@@ -26,14 +34,6 @@
    "what": "left revisions",
    "task": "TC - 2026 Insight Trip Spotlight",
    "id": "3f2421efc76681ac84cce98f7d8323b9",
-   "ago": "1d"
-  },
-  {
-   "kind": "del",
-   "who": "Walser Automotive",
-   "what": "delivered",
-   "task": "Walser - 2026 Kia OTT Spots + Service Video",
-   "id": "3cd421efc766813e95ceec2002a9d3a5",
    "ago": "1d"
   }
  ],
