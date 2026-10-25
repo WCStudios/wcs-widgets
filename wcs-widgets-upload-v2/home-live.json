@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-25T04:58:17.157Z",
+ "updated": "2026-10-25T05:03:17.639Z",
  "source": "worker",
  "tasks": {
   "open": 29,
@@ -9,7 +9,7 @@
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
   "id": "4bd2b506ce2c4cd3b1c4c1efaa817029",
-  "days": 89
+  "days": 90
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "delivered",
    "task": "Cascade CBX - 2026 Henderson Resort Spot",
    "id": "3aa421efc76680eeafded8c0400e7a25",
-   "ago": "2d"
+   "ago": "3d"
   },
   {
    "kind": "rev",
@@ -26,7 +26,7 @@
    "what": "left revisions",
    "task": "TC - 2026 Employee Pickleball Spotlight",
    "id": "3fe421efc766815db741ede677ba64f6",
-   "ago": "3d"
+   "ago": "4d"
   },
   {
    "kind": "rev",
@@ -34,13 +34,13 @@
    "what": "left revisions",
    "task": "TC - 2026 Insight Trip Spotlight",
    "id": "3f2421efc76681ac84cce98f7d8323b9",
-   "ago": "3d"
+   "ago": "4d"
   }
  ],
  "nextShoot": {
-  "name": "Walser - 2026 HR Trunk or Treat Event Recap (Burnsville Hill)",
-  "id": "3d7421efc7668167bd14c28ef03cc82e",
-  "date": "2026-10-24",
-  "time": "11:00 AM"
+  "name": "TC - 2026 Faith Hope Courage Event (Summary + Interviews)",
+  "id": "3e2421efc766816793b9e1d164c72ce3",
+  "date": "2026-11-03",
+  "time": "11:30 AM"
  }
 }
