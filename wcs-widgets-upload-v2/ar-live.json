@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-26T20:20:24.838Z",
+ "updated": "2026-10-26T20:22:51.961Z",
  "source": "worker",
  "ar": [
   {
@@ -66,10 +66,10 @@
    ],
    "threaded": false,
    "amount": 4000,
-   "status": "Sent",
+   "status": "Draft",
    "invoiceDate": "2026-09-21",
    "dueDate": "2026-10-06",
-   "daysOverdue": 20,
+   "daysOverdue": 0,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/3e2421efc766814c8056c09d5810c389",
    "pdfUrl": null,
@@ -900,11 +900,11 @@
  ],
  "summary": {
   "arTotal": 26500,
-  "arSent": 26500,
-  "arDraft": 0,
-  "arOverdue": 21750,
+  "arSent": 22500,
+  "arDraft": 4000,
+  "arOverdue": 17750,
   "arCount": 9,
-  "arDraftCount": 0,
+  "arDraftCount": 1,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
   "monthlyNet": 6285.03
