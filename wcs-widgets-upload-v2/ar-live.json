@@ -1,7 +1,80 @@
 {
- "updated": "2026-10-26T17:26:58.750Z",
+ "updated": "2026-10-26T17:32:34.617Z",
  "source": "worker",
  "ar": [
+  {
+   "notionPageId": "3e2421ef-c766-8139-89ef-dc1968670f48",
+   "name": "Pulltab Sports - Invoice 190 - MN Wild - Wild+ & Wall Of St.Paul",
+   "client": "Pulltab Sports",
+   "project": "MN Wild - Wild+ & Wall Of St.Paul",
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1500
+    },
+    {
+     "description": "Production day — half day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1000
+    },
+    {
+     "description": "Editing and post production",
+     "detail": "post production of two wild commercials + social deliverables",
+     "qty": 12,
+     "unit": "hr",
+     "rate": 125
+    }
+   ],
+   "threaded": false,
+   "amount": 4000,
+   "status": "Sent",
+   "invoiceDate": "2026-09-21",
+   "dueDate": "2026-10-06",
+   "daysOverdue": 20,
+   "bucket": "1-30 days",
+   "notionUrl": "https://app.notion.com/3e2421efc766813989efdc1968670f48",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
+  {
+   "notionPageId": "3e2421ef-c766-814c-8056-c09d5810c389",
+   "name": "Pulltab Sports - Invoice 189 - RBC Echelon Event + Int.",
+   "client": "Pulltab Sports",
+   "project": "RBC Echelon Event + Int.",
+   "terms": "Net 15",
+   "items": [
+    {
+     "description": "Production day — full day",
+     "detail": "On-site capture, crew and camera package.",
+     "qty": 1,
+     "unit": "day",
+     "rate": 1500
+    },
+    {
+     "description": "Editing and post production",
+     "detail": "Editing of mulitple video highlgihts from event",
+     "qty": 20,
+     "unit": "hr",
+     "rate": 125
+    }
+   ],
+   "threaded": false,
+   "amount": 4000,
+   "status": "Sent",
+   "invoiceDate": "2026-09-21",
+   "dueDate": "2026-10-06",
+   "daysOverdue": 20,
+   "bucket": "1-30 days",
+   "notionUrl": "https://app.notion.com/3e2421efc766814c8056c09d5810c389",
+   "pdfUrl": null,
+   "pdfSource": "live"
+  },
   {
    "notionPageId": "9d3da83e-6885-4163-bdf4-19c719246125",
    "name": "Pulltab Sports - Invoice 0183 - DripDrop - Whats In Your Bottle Commercial (Part 3)",
@@ -62,8 +135,8 @@
    "pdfSource": "live"
   },
   {
-   "notionPageId": "3e2421ef-c766-8139-89ef-dc1968670f48",
-   "name": "Minnesota Wild - Invoice 190 - MN Wild - 2026 Hockey Fights Cancer",
+   "notionPageId": "405421ef-c766-813a-a493-e84f2915edcd",
+   "name": "Minnesota Wild - Invoice 193 - MN Wild - 2026 Hockey Fights Cancer",
    "client": "Minnesota Wild",
    "project": "MN Wild - 2026 Hockey Fights Cancer",
    "terms": "Net 15",
@@ -83,14 +156,14 @@
      "rate": 125
     }
    ],
-   "threaded": true,
+   "threaded": false,
    "amount": 2500,
-   "status": "Sent",
+   "status": "Draft",
    "invoiceDate": "2026-10-26",
    "dueDate": "2026-11-10",
    "daysOverdue": 0,
    "bucket": "Not yet due",
-   "notionUrl": "https://app.notion.com/3e2421efc766813989efdc1968670f48",
+   "notionUrl": "https://app.notion.com/405421efc766813aa493e84f2915edcd",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -161,8 +234,8 @@
    "pdfSource": "live"
   },
   {
-   "notionPageId": "3e2421ef-c766-814c-8056-c09d5810c389",
-   "name": "Pulltab Sports - Invoice 189 - USHL Showcase Coverage",
+   "notionPageId": "405421ef-c766-81bc-8a38-c37d88466275",
+   "name": "Pulltab Sports - Invoice 192 - USHL Showcase Coverage",
    "client": "Pulltab Sports",
    "project": "USHL Showcase Coverage",
    "terms": "Net 15",
@@ -182,14 +255,14 @@
      "rate": 750
     }
    ],
-   "threaded": true,
+   "threaded": false,
    "amount": 2250,
-   "status": "Sent",
-   "invoiceDate": "2026-09-21",
+   "status": "Draft",
+   "invoiceDate": "2026-10-26",
    "dueDate": "2026-11-10",
    "daysOverdue": 0,
    "bucket": "Not yet due",
-   "notionUrl": "https://app.notion.com/3e2421efc766814c8056c09d5810c389",
+   "notionUrl": "https://app.notion.com/405421efc76681bc8a38c37d88466275",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -804,7 +877,7 @@
  "arAging": [
   {
    "bucket": "1-30 days",
-   "amount": 9750
+   "amount": 17750
   },
   {
    "bucket": "Not yet due",
@@ -818,7 +891,7 @@
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 16000
+   "amount": 24000
   },
   {
    "client": "Minnesota Wild",
@@ -826,12 +899,12 @@
   }
  ],
  "summary": {
-  "arTotal": 18500,
-  "arSent": 18500,
-  "arDraft": 0,
-  "arOverdue": 13750,
-  "arCount": 7,
-  "arDraftCount": 0,
+  "arTotal": 26500,
+  "arSent": 21750,
+  "arDraft": 4750,
+  "arOverdue": 21750,
+  "arCount": 9,
+  "arDraftCount": 2,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
   "monthlyNet": 6285.03
