@@ -519,7 +519,7 @@ function snapshotForm(){
      and you end up with duplicates of an invoice you thought you were editing. */
   const o = {items: items, dueTouched: dueTouched, open: openState,
              editingPageId: editingPageId, editingThreaded: editingThreaded,
-             editingStatus: editingStatus};
+             editingStatus: editingStatus, editingClient: editingClient};
   FIELDS.forEach(id => o[id] = $(id).value);
   return o;
 }
@@ -980,6 +980,7 @@ function fallback(text, done){
  "nNotes","pAch","pCheck","pLink"].forEach(id => $(id).addEventListener("input", () => { paint(); persist(); }));
 $("cName").addEventListener("input", () => {
   if(!$("cName").value.trim()) setOpen("client", true);
+  if($("cName").value.trim()) releaseIfOtherClient();
 });
 $("cPick").addEventListener("change", () => {
   const pick = $("cPick").value;
@@ -1014,6 +1015,7 @@ $("cPick").addEventListener("change", () => {
 
   paint(); persist();
   flag(c.email ? "Filled from Notion \u2713" : "No email on file for " + c.name, c.email ? "saved" : "");
+  releaseIfOtherClient();          // picking someone else's name is a new invoice
 });
 
 /* "August 2026" from an ISO date, for the retainer line. */
@@ -1021,7 +1023,7 @@ function monthName(iso){
   const d = iso ? new Date(iso + "T12:00:00") : new Date();
   return d.toLocaleDateString("en-US", {month: "long", year: "numeric"});
 }
-$("iNum").addEventListener("input", () => matchNumber());
+$("iNum").addEventListener("change", () => matchNumber());
 $("iDate").addEventListener("input", () => { syncDue(); paint(); persist(); });
 $("iTerms").addEventListener("change", () => { syncDue(); paint(); persist(); });
 $("iDue").addEventListener("input", () => { dueTouched = true; paint(); persist(); });
@@ -1190,11 +1192,13 @@ let editingPageId = null;
 let editingThreaded = false;
 
 let editingStatus = null;
+let editingClient = null;    // the client of the invoice that was opened
 
 function setEditing(row){
   editingPageId = row ? (row.notionPageId || null) : null;
   editingThreaded = !!(row && row.threaded);
   editingStatus = row ? (row.status || null) : null;
+  editingClient = row ? (row.client || ($("cName").value || "").trim() || null) : null;
   // Say what the button will do to the row in front of you, not what it does
   // in general — "Create invoice" on an invoice that already exists is a lie.
   $("bCreate").textContent = !editingPageId ? "Create invoice"
@@ -1213,8 +1217,9 @@ function setEditing(row){
    Editing used to be something the builder only knew about when the tracker
    handed it a row. Type a number that is already on the board and it happily
    offered to "Create invoice" again — which is how a second row for the same
-   number got made. The published receivables feed already lists every open
-   invoice, so match against it and slip into edit mode. */
+   number got made. The published receivables feed lists every open invoice
+   (and the next free number), so a new invoice is moved off a used number.
+   It is never switched into editing that invoice: see matchNumber. */
 const AR_FEED = [
   "ar-live.json",
   "https://raw.githubusercontent.com/wcstudios/wcs-widgets/main/wcs-widgets-upload-v2/ar-live.json"
@@ -1275,6 +1280,7 @@ async function loadAr(){
   if(!got.length) return;
   const live = got.sort((a,b) => String(b.updated||"").localeCompare(String(a.updated||"")))[0];
   arRows = live.ar;
+  if(live.nextNumber) feedNext = String(live.nextNumber);
   /* The client directory rides along on the same feed, straight from the Clients
      database. Bill To used to come from the baked snapshot, so a client added on
      one machine never reached another. */
@@ -1287,29 +1293,59 @@ async function loadAr(){
   matchNumber();
 }
 
-/* An edit the tracker set up deliberately is never disturbed. One this function
-   adopted by number is re-evaluated on every keystroke, so typing a different
-   number releases it — otherwise the button would keep offering to update a row
-   you had already navigated away from. */
-let editingAdopted = false;
+/* A number already on the board is NEVER adopted for editing any more.
+   2026-10-26: two new invoices typed as 189 and 190 silently switched the
+   builder into "edit 189 / 190", and Create rewrote the $4,000 invoices the
+   client already had. Editing now only happens when an invoice is opened on
+   purpose (tracker double-click or the Open picker). A new invoice whose number
+   is taken simply moves to the next free number, and says so. */
+let editingAdopted = false;      // legacy flag; nothing sets it true any more
+let feedNext = null;             // next free number, from the worker's feed
 
+const numIn = name => ((/invoice\s+#?(\d+)/i.exec(name || "") || [])[1] || "").replace(/^0+/, "");
+const bareNum = v => String(v || "").trim().replace(/^#/, "").replace(/^0+/, "");
+
+/** Is this number spent? Open invoices are in the feed; paid ones are not, so
+ *  anything below the worker's next free number counts as used too. */
+function numberTaken(num){
+  const n = bareNum(num);
+  if(!n || !/^\d+$/.test(n)) return null;
+  const hit = arRows.find(r => numIn(r.name) === n);
+  if(hit) return hit;
+  const next = parseInt(feedNext, 10);
+  return (next && parseInt(n, 10) < next) ? {client: "", name: ""} : null;
+}
+
+function nextFree(like){
+  let best = parseInt(feedNext, 10) || 0;
+  arRows.forEach(r => { const n = parseInt(numIn(r.name), 10); if(n >= best) best = n + 1; });
+  const width = ((String(like || "").match(/\d+/) || [""])[0]).length;
+  return String(best).padStart(width, "0");
+}
+
+/** For a NEW invoice only: if its number is taken, move to the next free one. */
 function matchNumber(){
-  if(editingPageId && !editingAdopted) return;
+  if(editingPageId) return;              // opened on purpose: it keeps its own number
   const num = ($("iNum").value || "").trim();
-  const hit = (num && arRows.length)
-    ? arRows.find(r => new RegExp("invoice\\s+#?0*" + num.replace(/^0+/, "") + "\\b", "i")
-                         .test(r.name || ""))
-    : null;
+  const hit = numberTaken(num);
+  if(!hit) return;
+  const nxt = nextFree(num);
+  if(!nxt || bareNum(nxt) === bareNum(num) || nxt === "0") return;
+  $("iNum").value = nxt;
+  paint(); persist();
+  flag("Invoice " + num + " is already used" + (hit.client ? " (" + hit.client + ")" : "")
+       + " \u00b7 this new one is " + nxt);
+}
 
-  if(hit && hit.notionPageId){
-    if(hit.notionPageId === editingPageId) return;
-    setEditing(hit);
-    editingAdopted = true;
-    flag("Invoice " + num + " already exists \u00b7 editing it", "saved");
-  } else if(editingAdopted){
-    setEditing(null);
-    editingAdopted = false;
-  }
+/* Opened invoice 189, then picked a different client? That is a new invoice,
+   not an edit of 189: let go of the row and give it a fresh number. */
+function releaseIfOtherClient(){
+  if(!editingPageId || !editingClient) return;
+  if(($("cName").value || "").trim().toLowerCase() === editingClient.trim().toLowerCase()) return;
+  const was = $("iNum").value;
+  setEditing(null);
+  matchNumber();
+  flag("Different client \u00b7 new invoice, invoice " + was + " is untouched");
 }
 
 function loadHandoff(){
@@ -1457,6 +1493,7 @@ window.addEventListener("focus", () => loadHandoff());
 
 /* Guards shared by both buttons, so neither can fire a half-built invoice. */
 function ready(needEmail){
+  if(!editingPageId) matchNumber();
   const I = spec();
   if(!I.number){ flag("Give it an invoice number"); setOpen("invoice", true, true); return null; }
   if(!I.client.name){ flag("Pick a client"); setOpen("client", true, true); return null; }
@@ -1470,7 +1507,7 @@ $("bCreate").addEventListener("click", async () => {
   $("bCreate").disabled = true;
   const editing = editingPageId;
   const ok = await fire(editing ? "update" : "create",
-                        editing ? {...workerPayload(), notionPageId: editing} : workerPayload());
+                        editing ? {...workerPayload(), notionPageId: editing, explicitEdit: true} : workerPayload());
   $("bCreate").disabled = false;
   if(ok){
     announce(editing ? "updated" : "created");
@@ -1488,7 +1525,7 @@ $("bSend").addEventListener("click", async () => {
      learn the id "create" returns — sending separately used to arrive with a
      null id, which is why the row stayed Draft and could not be reopened. */
   const ok = editingPageId
-    ? await fire("send", {...workerPayload(), notionPageId: editingPageId})
+    ? await fire("send", {...workerPayload(), notionPageId: editingPageId, explicitEdit: true})
     : await fire("createAndSend", workerPayload());
   $("bSend").disabled = false;
   if(ok){
@@ -1555,9 +1592,12 @@ function init(reset){
     items = d.items || [];
     dueTouched = !!d.dueTouched;
     if(d.cName) $("cPick").value = d.cName;
-    if(d.editingPageId){
+    /* Drafts saved before 2026-10-26 may hold an edit the builder guessed from
+       a typed number (how invoices 189 and 190 got overwritten). Only an edit
+       saved by this version, which records whose invoice it is, comes back. */
+    if(d.editingPageId && d.editingClient){
       setEditing({notionPageId: d.editingPageId, threaded: d.editingThreaded,
-                  status: d.editingStatus});
+                  status: d.editingStatus, client: d.editingClient || d.cName});
       editingAdopted = false;   // this row was chosen, not guessed from a number
     }
     drawItems(); paint(); setTimeout(fit, 60);
