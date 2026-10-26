@@ -1,10 +1,10 @@
 {
- "updated": "2026-10-26T17:34:20.492Z",
+ "updated": "2026-10-26T17:39:21.644Z",
  "source": "worker",
  "tasks": {
-  "open": 29,
-  "inPost": 14,
-  "overdue": 5
+  "open": 27,
+  "inPost": 12,
+  "overdue": 4
  },
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
@@ -21,17 +21,17 @@
    "ago": "4d"
   },
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Tradition Companies",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "TC - 2026 Employee Pickleball Spotlight",
    "id": "3fe421efc766815db741ede677ba64f6",
    "ago": "5d"
   },
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Tradition Companies",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "TC - 2026 Insight Trip Spotlight",
    "id": "3f2421efc76681ac84cce98f7d8323b9",
    "ago": "5d"
