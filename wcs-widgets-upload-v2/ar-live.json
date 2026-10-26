@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-26T20:19:36.878Z",
+ "updated": "2026-10-26T20:19:46.266Z",
  "source": "worker",
  "ar": [
   {
@@ -255,9 +255,9 @@
      "rate": 750
     }
    ],
-   "threaded": false,
+   "threaded": true,
    "amount": 2250,
-   "status": "Draft",
+   "status": "Sent",
    "invoiceDate": "2026-10-26",
    "dueDate": "2026-11-10",
    "daysOverdue": 0,
@@ -900,11 +900,11 @@
  ],
  "summary": {
   "arTotal": 26500,
-  "arSent": 24250,
-  "arDraft": 2250,
+  "arSent": 26500,
+  "arDraft": 0,
   "arOverdue": 21750,
   "arCount": 9,
-  "arDraftCount": 1,
+  "arDraftCount": 0,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
   "monthlyNet": 6285.03
