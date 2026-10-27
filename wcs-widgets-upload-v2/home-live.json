@@ -1,8 +1,8 @@
 {
- "updated": "2026-10-27T14:42:30.248Z",
+ "updated": "2026-10-27T14:47:32.376Z",
  "source": "worker",
  "tasks": {
-  "open": 27,
+  "open": 28,
   "inPost": 12,
   "overdue": 5
  },
@@ -38,9 +38,9 @@
   }
  ],
  "nextShoot": {
-  "name": "TC - 2026 Faith Hope Courage Event (Summary + Interviews)",
-  "id": "3e2421efc766816793b9e1d164c72ce3",
-  "date": "2026-11-03",
-  "time": "11:30 AM"
+  "name": "MN Hockey - 2026 Learn to Skate Event (Shakopee Mdewakanton)",
+  "id": "406421efc76681d28478dd41798c77b2",
+  "date": "2026-11-01",
+  "time": null
  }
 }
