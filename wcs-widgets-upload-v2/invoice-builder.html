@@ -995,14 +995,13 @@ $("cPick").addEventListener("change", () => {
   if(!c) return;
 
   $("cName").value = c.name || "";
-  $("cCompany").value = c.contact || "";
-  $("cEmail").value = c.email || "";
+  // A fresh pick goes to the directory's first person (Accounting sorts first);
+  // the Clients row is the fallback for a client with no directory people.
   // The Clients database has no address, so those two stay as typed.
+  $("cCompany").value = ""; $("cEmail").value = "";
   const lead = fillPeople(c.name);
-  if(lead){
-    $("cCompany").value = lead.name || $("cCompany").value;
-    $("cEmail").value = lead.email || $("cEmail").value;
-  }
+  $("cCompany").value = (lead && lead.name) || c.contact || "";
+  $("cEmail").value = (lead && lead.email) || c.email || "";
 
   // A retainer client with an empty sheet gets its monthly line for free.
   if(!items.length && c.retainer){
@@ -1236,39 +1235,89 @@ function fillClients(){
     + (rest.length ? '<optgroup label="Other clients">' + rest.map(opt).join("") + '</optgroup>' : "");
   // The feed arrives after first paint, so refresh the people for whoever is
   // already in Bill To rather than waiting for the client to be re-picked.
-  try { fillPeople($("cName").value, $("cEmail").value); } catch(e){}
+  try { fillPeople($("cName").value); } catch(e){}
 }
 
 /* The people at a client, from the Client Directory by way of the live feed.
    The worker sorts whoever holds an Accounting role to the front, so "the first
-   one" is the right default here without this file having to know the role
-   list — add a role there and the rule still holds. */
-function fillPeople(clientName, keepEmail){
+   one" is the right default for an EMPTY Bill To.
+
+   The dropdown always shows who the invoice is really addressed to. It used to
+   look for one person whose email equalled the whole Email field; with two
+   addresses in it ("payables@wild.com, Chris.barriere@wild.com") nothing
+   matched, so it quietly showed the first person while Contact still read
+   someone else's name (2026-10-28: "set to Chris, but showing Matt"). */
+const emailsIn = v => String(v || "").toLowerCase().split(/[\s,;]+/).filter(x => x.includes("@"));
+
+function peopleOf(clientName){
   const c = (clients || []).find(x => x.name === clientName);
-  const people = (c && Array.isArray(c.contacts)) ? c.contacts : [];
+  return (c && Array.isArray(c.contacts)) ? c.contacts : [];
+}
+
+/** Which person do the Contact and Email fields describe? -1 when nobody. The
+ *  email decides (it is where the invoice goes); the name only breaks a tie. */
+function whoIsAddressed(people){
+  const mails = emailsIn($("cEmail").value);
+  const name = ($("cCompany").value || "").trim().toLowerCase();
+  const byMail = people.findIndex(p => p.email && mails.includes(p.email.toLowerCase()));
+  const byName = people.findIndex(p => (p.name || "").trim().toLowerCase() === name);
+  if(byMail >= 0 && byName >= 0 && byMail !== byName){
+    // Two directory people are both addressed: keep the named one only if
+    // their own address is in the field too.
+    const named = people[byName];
+    return named.email && mails.includes(named.email.toLowerCase()) ? byName : byMail;
+  }
+  if(byMail >= 0) return byMail;
+  // An address nobody in the directory owns is "someone else", whatever the
+  // Contact name says. The name alone only counts while Email is empty.
+  return mails.length ? -1 : byName;
+}
+
+/** Rebuild the dropdown for this client and make it agree with the fields.
+ *  fix: also correct the Contact name to the person the email belongs to. */
+function fillPeople(clientName, fix = true){
+  const people = peopleOf(clientName);
   const row = $("cPersonRow"), sel = $("cPerson");
   if(!people.length){ row.hidden = true; sel.innerHTML = ""; return null; }
   row.hidden = false;
   sel.innerHTML = people.map((p, i) =>
       '<option value="' + i + '">' + esc(p.name)
-      + (p.role ? " \u00b7 " + esc(p.role) : "") + '</option>').join("")
-    + '<option value="-1">\u2014 someone else \u2014</option>';
-  /* Whoever the invoice is already addressed to stays selected. Reopening a
-     sent invoice must not quietly re-address it to the accounting contact. */
-  const at = keepEmail
-    ? people.findIndex(p => p.email && p.email.toLowerCase() === String(keepEmail).toLowerCase())
-    : -1;
-  sel.value = at >= 0 ? String(at) : "0";
-  return at >= 0 ? people[at] : people[0];
+      + (p.role ? " · " + esc(p.role) : "") + '</option>').join("")
+    + '<option value="-1">— someone else —</option>';
+
+  const empty = !($("cEmail").value || "").trim() && !($("cCompany").value || "").trim();
+  if(empty){                                  // nothing addressed yet: the first person
+    sel.value = "0";
+    return people[0];
+  }
+  const at = whoIsAddressed(people);
+  sel.value = String(at);
+  if(at >= 0 && fix && people[at].name && $("cCompany").value.trim() !== people[at].name){
+    $("cCompany").value = people[at].name;
+  }
+  return at >= 0 ? people[at] : null;
 }
 
+/** Keep the dropdown on the right person while Contact / Email are typed in. */
+function syncPersonPick(){
+  const people = peopleOf($("cName").value);
+  if(!people.length || $("cPersonRow").hidden) return;
+  $("cPerson").value = String(whoIsAddressed(people));
+}
+$("cCompany").addEventListener("input", syncPersonPick);
+$("cEmail").addEventListener("input", syncPersonPick);
+
+/* Picking a person addresses the invoice to them. Extra addresses that belong
+   to nobody in the directory (payables@…) stay; another person's address goes. */
 $("cPerson").addEventListener("change", () => {
-  const c = (clients || []).find(x => x.name === $("cName").value);
-  const people = (c && c.contacts) || [];
+  const people = peopleOf($("cName").value);
   const i = parseInt($("cPerson").value, 10);
   if(!(i >= 0) || !people[i]) return;      // "someone else" leaves the fields alone
+  const known = people.map(p => (p.email || "").toLowerCase()).filter(Boolean);
+  const extras = String($("cEmail").value || "").split(/[\s,;]+/)
+    .filter(x => x.includes("@") && !known.includes(x.toLowerCase()));
   $("cCompany").value = people[i].name || "";
-  $("cEmail").value = people[i].email || "";
+  $("cEmail").value = [people[i].email, ...extras].filter(Boolean).join(", ");
   paint(); persist();
 });
 
@@ -1391,12 +1440,8 @@ function adoptInvoice(inv, how){
     ? JSON.parse(JSON.stringify(inv.items)).map(it => ({...it, detail: it.detail || ""}))
     : [{description: inv.name || "", detail: "", qty: 1, unit: "", rate: inv.amount || 0}];
 
-  /* Keep the Contact name in step with whoever the dropdown lands on, or a
-     reopened invoice reads "Steven Gapinski" above Dani Duffey's address. */
-  const who = fillPeople(inv.client || "", $("cEmail").value);
-  if(who && who.email && who.email.toLowerCase() === String($("cEmail").value).toLowerCase()){
-    $("cCompany").value = who.name || $("cCompany").value;
-  }
+  /* The dropdown and the Contact name follow the email the invoice goes to. */
+  fillPeople(inv.client || "");
 
   setEditing(inv);
   drawItems(); syncDue(); paint(); persist();
