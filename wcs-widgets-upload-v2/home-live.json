@@ -1,21 +1,21 @@
 {
- "updated": "2026-10-28T19:06:40.480Z",
+ "updated": "2026-10-28T19:11:40.096Z",
  "source": "worker",
  "tasks": {
-  "open": 28,
-  "inPost": 12,
-  "overdue": 4
+  "open": 26,
+  "inPost": 10,
+  "overdue": 3
  },
  "mostOverdue": {
-  "name": "RTH - 2026 Neighborhood Drone Shoots",
-  "id": "4bd2b506ce2c4cd3b1c4c1efaa817029",
-  "days": 93
+  "name": "Cascade CBX - 2026 Andrew Fisher Spot",
+  "id": "3ce421efc766804a93b7d2e963df2a04",
+  "days": 47
  },
  "pings": [
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Walser Automotive",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "Walser - 2026 HR Trunk or Treat Event Recap (Burnsville Hill)",
    "id": "3d7421efc7668167bd14c28ef03cc82e",
    "ago": "today"
