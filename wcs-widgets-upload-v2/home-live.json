@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-28T04:59:29.431Z",
+ "updated": "2026-10-28T05:04:30.966Z",
  "source": "worker",
  "tasks": {
   "open": 28,
@@ -9,7 +9,7 @@
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
   "id": "4bd2b506ce2c4cd3b1c4c1efaa817029",
-  "days": 92
+  "days": 93
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "delivered",
    "task": "Cascade CBX - 2026 Henderson Resort Spot",
    "id": "3aa421efc76680eeafded8c0400e7a25",
-   "ago": "5d"
+   "ago": "6d"
   },
   {
    "kind": "del",
@@ -26,7 +26,7 @@
    "what": "delivered",
    "task": "TC - 2026 Employee Pickleball Spotlight",
    "id": "3fe421efc766815db741ede677ba64f6",
-   "ago": "6d"
+   "ago": "7d"
   },
   {
    "kind": "del",
@@ -34,7 +34,7 @@
    "what": "delivered",
    "task": "TC - 2026 Insight Trip Spotlight",
    "id": "3f2421efc76681ac84cce98f7d8323b9",
-   "ago": "6d"
+   "ago": "7d"
   }
  ],
  "nextShoot": {
