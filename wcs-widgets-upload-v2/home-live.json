@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-28T18:21:32.039Z",
+ "updated": "2026-10-28T18:26:34.015Z",
  "source": "worker",
  "tasks": {
   "open": 28,
@@ -12,6 +12,14 @@
   "days": 93
  },
  "pings": [
+  {
+   "kind": "rev",
+   "who": "Walser Automotive",
+   "what": "left revisions",
+   "task": "Walser - 2026 HR Trunk or Treat Event Recap (Burnsville Hill)",
+   "id": "3d7421efc7668167bd14c28ef03cc82e",
+   "ago": "today"
+  },
   {
    "kind": "del",
    "who": "Cascade CBX Sport",
@@ -26,14 +34,6 @@
    "what": "delivered",
    "task": "TC - 2026 Employee Pickleball Spotlight",
    "id": "3fe421efc766815db741ede677ba64f6",
-   "ago": "7d"
-  },
-  {
-   "kind": "del",
-   "who": "Tradition Companies",
-   "what": "delivered",
-   "task": "TC - 2026 Insight Trip Spotlight",
-   "id": "3f2421efc76681ac84cce98f7d8323b9",
    "ago": "7d"
   }
  ],
