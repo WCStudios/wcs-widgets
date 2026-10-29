@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-29T04:57:58.682Z",
+ "updated": "2026-10-29T05:03:01.127Z",
  "source": "worker",
  "tasks": {
   "open": 26,
@@ -9,7 +9,7 @@
  "mostOverdue": {
   "name": "Cascade CBX - 2026 Andrew Fisher Spot",
   "id": "3ce421efc766804a93b7d2e963df2a04",
-  "days": 47
+  "days": 48
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "delivered",
    "task": "Walser - 2026 HR Trunk or Treat Event Recap (Burnsville Hill)",
    "id": "3d7421efc7668167bd14c28ef03cc82e",
-   "ago": "today"
+   "ago": "1d"
   },
   {
    "kind": "del",
@@ -26,7 +26,7 @@
    "what": "delivered",
    "task": "Cascade CBX - 2026 Henderson Resort Spot",
    "id": "3aa421efc76680eeafded8c0400e7a25",
-   "ago": "6d"
+   "ago": "7d"
   },
   {
    "kind": "del",
@@ -34,7 +34,7 @@
    "what": "delivered",
    "task": "TC - 2026 Employee Pickleball Spotlight",
    "id": "3fe421efc766815db741ede677ba64f6",
-   "ago": "7d"
+   "ago": "8d"
   }
  ],
  "nextShoot": {
