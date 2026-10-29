@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-29T19:10:04.616Z",
+ "updated": "2026-10-29T19:15:04.581Z",
  "source": "worker",
  "tasks": {
   "open": 26,
@@ -12,6 +12,14 @@
   "days": 48
  },
  "pings": [
+  {
+   "kind": "rev",
+   "who": "Walser Automotive",
+   "what": "left revisions",
+   "task": "Walser - 2026 Kia “Real Talk” OTT Spots (Telluride + Sportage)",
+   "id": "3eb421efc76681bfaa96db84b96ffe1c",
+   "ago": "today"
+  },
   {
    "kind": "del",
    "who": "Walser Automotive",
@@ -27,14 +35,6 @@
    "task": "Cascade CBX - 2026 Henderson Resort Spot",
    "id": "3aa421efc76680eeafded8c0400e7a25",
    "ago": "7d"
-  },
-  {
-   "kind": "del",
-   "who": "Tradition Companies",
-   "what": "delivered",
-   "task": "TC - 2026 Employee Pickleball Spotlight",
-   "id": "3fe421efc766815db741ede677ba64f6",
-   "ago": "8d"
   }
  ],
  "nextShoot": {
