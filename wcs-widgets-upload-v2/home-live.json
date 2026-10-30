@@ -1,9 +1,9 @@
 {
- "updated": "2026-10-30T18:58:39.060Z",
+ "updated": "2026-10-30T19:03:39.388Z",
  "source": "worker",
  "tasks": {
-  "open": 27,
-  "inPost": 10,
+  "open": 26,
+  "inPost": 9,
   "overdue": 3
  },
  "mostOverdue": {
@@ -13,9 +13,9 @@
  },
  "pings": [
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Walser Automotive",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "Walser - 2026 Kia “Real Talk” OTT Spots (Telluride + Sportage)",
    "id": "3eb421efc76681bfaa96db84b96ffe1c",
    "ago": "1d"
