@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-01T16:55:35.409Z",
+ "updated": "2026-11-01T17:00:37.298Z",
  "source": "worker",
  "tasks": {
   "open": 26,
@@ -38,7 +38,7 @@
   }
  ],
  "nextShoot": {
-  "name": "MN Hockey - 2026 Learn to Skate Event (Shakopee Mdewakanton)",
+  "name": "MN Hockey - 2026 Learn to Skate Event",
   "id": "406421efc76681d28478dd41798c77b2",
   "date": "2026-11-01",
   "time": "12:45 PM"
