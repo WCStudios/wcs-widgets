@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-03T13:07:05.686Z",
+ "updatedAt": "2026-11-03T13:32:20.791Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -11,7 +11,7 @@
    "kind": "grid",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0i695cs.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/0sy0acz.jpg",
+    "",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0c38gwb.jpg"
    ]
   },
@@ -63,7 +63,7 @@
    "kind": "grid",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0o0hnra.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/0i7p7lj.jpg",
+    "",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/1bo2z6g.jpg"
    ]
   },
