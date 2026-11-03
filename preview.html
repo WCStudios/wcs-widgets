@@ -12,6 +12,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 .handle{font-size:clamp(15px,2.6vw,19px);font-weight:700}
 .meta{font-size:12px;color:var(--muted);margin-top:3px}
 .meta b{color:var(--text)}
+.live{display:inline-block;width:7px;height:7px;border-radius:50%;background:#6FA97F;margin-left:8px;vertical-align:middle;opacity:.9;transition:background .3s}
+.live.stale{background:#e0a060}.live.off{background:#777}
+.live.busy{animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
 .who{min-width:0}
 .vtog{display:flex;margin-top:8px}
 .vtog button{border:1px solid var(--line);background:rgba(127,127,127,.08);color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.2px;padding:4px 9px;cursor:pointer}
@@ -71,7 +75,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
   <div class="head" id="head">
     <div class="pic" id="pic" title="Switch account" onclick="cycle()">–</div>
     <div class="who">
-      <div class="handle" id="handle">@…</div>
+      <div class="handle"><span id="handle">@…</span><span class="live off" id="live" title="Connecting"></span></div>
       <div class="vtog" id="vtog">
         <button data-v="both" onclick="setView('both')">Both</button>
         <button data-v="preview" onclick="setView('preview')">Preview</button>
@@ -85,7 +89,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;co
 </div>
 <script>
 const STATSSRC="https://wcstudios.github.io/wcs-widgets/ig-stats.js";
-const DRAFTSRC="https://wcstudios.github.io/wcs-widgets/draft-grid.js";
+const DRAFTSRC="https://wcstudios.github.io/wcs-widgets/draft-grid.js";   // fallback when no key
+/* Live drafts come straight from Notion through the signing service, which
+   polls every few seconds while this page is open. The key after #k= in the
+   embed only reads the draft grid and reorders drafts; it can do nothing else. */
+const API="https://wcs-sign.bennett-2b4.workers.dev/api/social";
+const KEY=(location.hash.match(/[#&]k=(wcsg_[A-Za-z0-9_-]+)/)||[])[1]||"";
+const POLL_MS=KEY?12000:300000;
 const ACCTS=["wcstudios.co","lifeofbennyy"];
 // The account is tracked by NAME, never by position. The stats feed may list
 // accounts in any order, and the header used to follow that order while the
@@ -112,22 +122,30 @@ function clearPins(){savePins(cur,new Set());render();toast("Local pins cleared"
 function copyPins(){const a=cur,d=data&&data[a]||{},s=localPins(a);const fp=(d.grid||[]).filter(p=>p.pinned).map(p=>p.permalink);const all=[...new Set([...fp,...s])].filter(Boolean);if(!all.length){toast("No pins");return;}try{navigator.clipboard.writeText("PINNED:"+a+"|"+all.join(", "));toast("Copied — paste into Social Settings");}catch(_){toast("Copy failed");}}
 
 // ---- draft order ----
+// Notion's Grid Order is the one order (top = highest). Dragging here writes it
+// back, so every browser and the worker agree. The old per-browser override
+// made the preview disagree with Notion and never updated when Notion did.
 function draftItems(a){return ((draft&&draft.items)||[]).filter(x=>(x.account||"wcstudios.co")===a);}
-function ordKey(a){return "wcsgrid:"+a;}
-function persist(){try{localStorage.setItem(ordKey(cur),JSON.stringify(rows.map(r=>r.pageId)));}catch(_){}}
-function loadOrder(a){
-  const base=draftItems(a);let saved=null;try{saved=JSON.parse(localStorage.getItem(ordKey(a))||"null");}catch(_){}
-  if(saved&&Array.isArray(saved)){const byId=Object.fromEntries(base.map(x=>[x.pageId,x]));const o=saved.map(id=>byId[id]).filter(Boolean);base.forEach(x=>{if(!saved.includes(x.pageId))o.unshift(x);});return o;}
-  const key=p=>p.scheduleDate?new Date(p.scheduleDate).getTime():Number.POSITIVE_INFINITY;
-  return base.slice().sort((x,y)=>{const kx=key(x),ky=key(y);if(kx!==ky)return ky-kx;return (y.order??0)-(x.order??0);});
+function loadOrder(a){return draftItems(a).slice().sort((x,y)=>(y.order??-1)-(x.order??-1));}
+let orderTimer=null,orderBusy=false;
+function saveOrder(){
+  if(!KEY){toast("Order is only saved with a live key");return;}
+  clearTimeout(orderTimer);
+  orderTimer=setTimeout(async()=>{
+    const ids=rows.map(r=>r.pageId);orderBusy=true;setLive('busy');
+    try{
+      const r=await fetch(API+"/order",{method:"POST",headers:{"Authorization":"Bearer "+KEY,"Content-Type":"application/json"},body:JSON.stringify({pageIds:ids})});
+      if(!r.ok)throw new Error(r.status);
+      rows.forEach((it,i)=>{it.order=ids.length-i;});   // in step until the next poll confirms
+      toast("Order saved to Notion");
+    }catch(_){toast("Couldn't save the order");}
+    orderBusy=false;poll();
+  },500);
 }
-function resetOrder(){try{localStorage.removeItem(ordKey(cur));}catch(_){}rows=loadOrder(cur);render();toast("Reset");}
-function copyOrder(){const n=rows.length;const t="Grid Order (top = newest):\n"+rows.map((it,k)=>(n-k)+"  "+(it.title||it.pageId)).join("\n");try{navigator.clipboard.writeText(t);toast("Order copied");}catch(_){toast("Copy failed");}}
 
 // ---- view / tab ----
 function setView(v){view=v;render();}
 function setTab(t){tab=t;render();}
-function setAcct(a){cur=a;rows=loadOrder(cur);render();}
 function cycle(){if(accts.length>1){setAcct(accts[(accts.indexOf(cur)+1)%accts.length]);}}
 function open2(u){if(u&&u!=='#')window.open(u,'_blank');}
 
@@ -203,7 +221,7 @@ function render(){
   sizeCells();wireDrag();
 }
 
-function move(pi,d){const j=pi+d;if(j<0||j>=rows.length)return;const t=rows[pi];rows[pi]=rows[j];rows[j]=t;persist();render();}
+function move(pi,d){const j=pi+d;if(j<0||j>=rows.length)return;const t=rows[pi];rows[pi]=rows[j];rows[j]=t;render();saveOrder();}
 let dragPost=null;
 function wireDrag(){
   [...document.querySelectorAll('#grid .cell.draft')].forEach(el=>{
@@ -211,13 +229,36 @@ function wireDrag(){
     el.addEventListener('dragend',()=>{dragPost=null;[...document.querySelectorAll('#grid .cell')].forEach(c=>c.classList.remove('drag','over'));});
     el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('over');});
     el.addEventListener('dragleave',()=>el.classList.remove('over'));
-    el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('over');const to=+el.dataset.post;if(dragPost==null||dragPost===to)return;const it=rows.splice(dragPost,1)[0];rows.splice(to,0,it);persist();render();});
+    el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('over');const to=+el.dataset.post;if(dragPost==null||dragPost===to)return;const it=rows.splice(dragPost,1)[0];rows.splice(to,0,it);render();saveOrder();});
   });
 }
 
 function applyStats(d){if(!d)return;data=d;accts=(d.accounts||Object.keys(d).filter(k=>d[k]&&d[k].followers!=null));if(!accts.includes(cur))cur=accts[0]||cur;rows=loadOrder(cur);render();}
-function applyDraft(){rows=loadOrder(cur);render();}
+function setLive(state,title){const el=$('live');el.className='live '+(state||'');el.title=title||({'':'Live','stale':'Reconnecting','off':'Not live','busy':'Saving'}[state||'']||'');}
+/* A poll never clobbers a drag that is still being saved; the next one will.
+   Nothing repaints unless something actually changed. */
+function applyDraft(d){if(!d)return;draft=d;if(orderBusy)return;const sig=JSON.stringify(loadOrder(cur).map(r=>[r.pageId,r.order,r.tiles,r.status,r.scheduleDate,r.kind]));if(sig===applyDraft.sig)return;applyDraft.sig=sig;rows=loadOrder(cur);render();}
 function loadStats(){const s=document.createElement('script');s.src=STATSSRC+"?t="+Date.now();s.onload=()=>{applyStats(window.IGDATA);s.remove();};s.onerror=()=>{s.remove();};document.head.appendChild(s);}
-function loadDraft(){const s=document.createElement('script');s.src=DRAFTSRC+"?t="+Date.now();s.onload=()=>{draft=window.DRAFTGRID;applyDraft();s.remove();};s.onerror=()=>{s.remove();};document.head.appendChild(s);}
-loadStats();loadDraft();watchResize();watchScroll($('grid'));setInterval(()=>{loadStats();loadDraft();},300000);
+function loadDraftFile(){const s=document.createElement('script');s.src=DRAFTSRC+"?t="+Date.now();s.onload=()=>{applyDraft(window.DRAFTGRID);s.remove();};s.onerror=()=>{s.remove();};document.head.appendChild(s);}
+let polling=false,failures=0;
+async function poll(){
+  if(!KEY){loadDraftFile();return;}
+  if(polling)return;polling=true;
+  try{
+    const r=await fetch(API+"/grid",{headers:{"Authorization":"Bearer "+KEY},cache:"no-store"});
+    if(!r.ok)throw new Error(r.status);
+    applyDraft(await r.json());failures=0;setLive('');
+  }catch(_){
+    failures++;setLive('stale');
+    if(failures===3&&!draft)loadDraftFile();      // the service is down: show the last published grid
+  }
+  polling=false;
+}
+let pollTimer=null;
+function schedule(){clearInterval(pollTimer);pollTimer=setInterval(()=>{if(document.visibilityState==='visible')poll();},POLL_MS);}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')poll();});
+window.addEventListener('focus',()=>poll());
+function setAcct(a){cur=a;rows=loadOrder(cur);applyDraft.sig=null;render();}
+loadStats();poll();schedule();watchResize();watchScroll($('grid'));setInterval(loadStats,300000);
+if(!KEY)setLive('off','Not live: add #k=… to the embed');
 </script></body></html>
