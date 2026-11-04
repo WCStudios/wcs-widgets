@@ -1,5 +1,5 @@
 {
- "updatedAt": "2026-11-03T13:37:06.661Z",
+ "updatedAt": "2026-11-04T16:41:14.831Z",
  "items": [
   {
    "pageId": "39a421ef-c766-8026-add2-fbd3b06eee60",
@@ -63,7 +63,7 @@
    "kind": "grid",
    "tiles": [
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/0o0hnra.jpg",
-    "https://wcstudios.github.io/wcs-widgets/grid-tiles/0i7p7lj.jpg",
+    "",
     "https://wcstudios.github.io/wcs-widgets/grid-tiles/1bo2z6g.jpg"
    ]
   },
