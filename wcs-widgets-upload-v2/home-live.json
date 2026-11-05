@@ -1,9 +1,9 @@
 {
- "updated": "2026-11-05T14:59:42.153Z",
+ "updated": "2026-11-05T15:04:42.870Z",
  "source": "worker",
  "tasks": {
   "open": 26,
-  "inPost": 11,
+  "inPost": 12,
   "overdue": 3
  },
  "mostOverdue": {
