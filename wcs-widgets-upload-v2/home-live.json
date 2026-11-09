@@ -1,10 +1,10 @@
 {
- "updated": "2026-11-09T19:54:27.191Z",
+ "updated": "2026-11-09T19:59:29.829Z",
  "source": "worker",
  "tasks": {
-  "open": 27,
-  "inPost": 13,
-  "overdue": 3
+  "open": 31,
+  "inPost": 14,
+  "overdue": 1
  },
  "mostOverdue": {
   "name": "Cascade CBX - 2026 Andrew Fisher Spot",
@@ -12,6 +12,14 @@
   "days": 59
  },
  "pings": [
+  {
+   "kind": "rev",
+   "who": "Walser Automotive",
+   "what": "left revisions",
+   "task": "Walser - 2026 Veterans at Walser License Plate Video",
+   "id": "3ed421efc76681479561f440651e8421",
+   "ago": "today"
+  },
   {
    "kind": "del",
    "who": "Walser Automotive",
@@ -27,20 +35,12 @@
    "task": "Walser - 2026 HR Trunk or Treat Event Recap (Burnsville Hill)",
    "id": "3d7421efc7668167bd14c28ef03cc82e",
    "ago": "12d"
-  },
-  {
-   "kind": "del",
-   "who": "Cascade CBX Sport",
-   "what": "delivered",
-   "task": "Cascade CBX - 2026 Henderson Resort Spot",
-   "id": "3aa421efc76680eeafded8c0400e7a25",
-   "ago": "18d"
   }
  ],
  "nextShoot": {
-  "name": "TCB - 2026 The Well Event (Interlachen)",
-  "id": "3f3421efc76681129c64ef6b0b1e22f9",
-  "date": "2026-11-18",
-  "time": "5:00 PM"
+  "name": "Walser - 2026 Metropolitan Ford + Suburban Chevrolet Drone Spots",
+  "id": "410421efc76681a5b941c864d18b6ea4",
+  "date": "2026-11-12",
+  "time": "10:00 AM"
  }
 }
