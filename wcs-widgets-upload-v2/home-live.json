@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-11T20:58:45.796Z",
+ "updated": "2026-11-11T20:58:57.255Z",
  "source": "worker",
  "tasks": {
   "open": 33,
@@ -21,9 +21,9 @@
    "ago": "today"
   },
   {
-   "kind": "rev",
+   "kind": "review",
    "who": "Tradition Companies",
-   "what": "left revisions",
+   "what": "is reviewing",
    "task": "TC - 2026 Faith Hope Courage Event (Summary + Interviews)",
    "id": "3e2421efc766816793b9e1d164c72ce3",
    "ago": "today"
