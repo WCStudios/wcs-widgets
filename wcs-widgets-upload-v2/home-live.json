@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-11T07:56:45.428Z",
+ "updated": "2026-11-11T08:01:45.952Z",
  "source": "worker",
  "tasks": {
   "open": 33,
@@ -18,7 +18,15 @@
    "what": "left revisions",
    "task": "Walser - 2026 Veterans at Walser License Plate Video",
    "id": "3ed421efc76681479561f440651e8421",
-   "ago": "2d"
+   "ago": "today"
+  },
+  {
+   "kind": "rev",
+   "who": "Tradition Companies",
+   "what": "left revisions",
+   "task": "TC - 2026 Faith Hope Courage Event (Summary + Interviews)",
+   "id": "3e2421efc766816793b9e1d164c72ce3",
+   "ago": "today"
   },
   {
    "kind": "del",
@@ -27,14 +35,6 @@
    "task": "Walser - 2026 Kia “Real Talk” OTT Spots (Telluride + Sportage)",
    "id": "3eb421efc76681bfaa96db84b96ffe1c",
    "ago": "13d"
-  },
-  {
-   "kind": "del",
-   "who": "Walser Automotive",
-   "what": "delivered",
-   "task": "Walser - 2026 HR Trunk or Treat Event Recap (Burnsville Hill)",
-   "id": "3d7421efc7668167bd14c28ef03cc82e",
-   "ago": "14d"
   }
  ],
  "nextShoot": {
