@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-11T18:03:15.424Z",
+ "updated": "2026-11-11T18:08:16.395Z",
  "source": "worker",
  "tasks": {
   "open": 33,
@@ -13,9 +13,9 @@
  },
  "pings": [
   {
-   "kind": "rev",
+   "kind": "del",
    "who": "Walser Automotive",
-   "what": "left revisions",
+   "what": "delivered",
    "task": "Walser - 2026 Veterans at Walser License Plate Video",
    "id": "3ed421efc76681479561f440651e8421",
    "ago": "today"
