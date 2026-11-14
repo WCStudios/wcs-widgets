@@ -1,15 +1,15 @@
 {
- "updated": "2026-11-13T23:12:06.988Z",
+ "updated": "2026-11-14T06:03:06.232Z",
  "source": "worker",
  "tasks": {
   "open": 35,
   "inPost": 14,
-  "overdue": 3
+  "overdue": 4
  },
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
   "id": "4bd2b506ce2c4cd3b1c4c1efaa817029",
-  "days": 109
+  "days": 110
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "delivered",
    "task": "Walser - 2026 Veterans at Walser License Plate Video",
    "id": "3ed421efc76681479561f440651e8421",
-   "ago": "2d"
+   "ago": "3d"
   },
   {
    "kind": "review",
@@ -26,7 +26,7 @@
    "what": "is reviewing",
    "task": "TC - 2026 Faith Hope Courage Event (Summary + Interviews)",
    "id": "3e2421efc766816793b9e1d164c72ce3",
-   "ago": "2d"
+   "ago": "3d"
   },
   {
    "kind": "del",
@@ -34,13 +34,13 @@
    "what": "delivered",
    "task": "Walser - 2026 Kia “Real Talk” OTT Spots (Telluride + Sportage)",
    "id": "3eb421efc76681bfaa96db84b96ffe1c",
-   "ago": "15d"
+   "ago": "16d"
   }
  ],
  "nextShoot": {
-  "name": "Walser - 2026 Metropolitan Ford + Suburban Chevrolet Drone Spots",
-  "id": "410421efc76681a5b941c864d18b6ea4",
-  "date": "2026-11-13",
-  "time": "10:00 AM"
+  "name": "MN Wild - 2026 Service First Winners Video",
+  "id": "413421efc76681bb8c6be2a8784765ed",
+  "date": "2026-11-17",
+  "time": null
  }
 }
