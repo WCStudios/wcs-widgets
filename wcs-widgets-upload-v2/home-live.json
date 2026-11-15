@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-15T06:01:50.707Z",
+ "updated": "2026-11-15T20:29:00.963Z",
  "source": "worker",
  "tasks": {
   "open": 35,
@@ -12,6 +12,14 @@
   "days": 111
  },
  "pings": [
+  {
+   "kind": "review",
+   "who": "Minnesota Wild",
+   "what": "is reviewing",
+   "task": "MN Wild - 2026 No Fees Spot",
+   "id": "414421efc7668117af86d99cd79c4e52",
+   "ago": "today"
+  },
   {
    "kind": "del",
    "who": "Walser Automotive",
@@ -27,14 +35,6 @@
    "task": "TC - 2026 Faith Hope Courage Event (Summary + Interviews)",
    "id": "3e2421efc766816793b9e1d164c72ce3",
    "ago": "4d"
-  },
-  {
-   "kind": "del",
-   "who": "Walser Automotive",
-   "what": "delivered",
-   "task": "Walser - 2026 Kia “Real Talk” OTT Spots (Telluride + Sportage)",
-   "id": "3eb421efc76681bfaa96db84b96ffe1c",
-   "ago": "17d"
   }
  ],
  "nextShoot": {
