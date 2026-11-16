@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-16T06:00:29.267Z",
+ "updated": "2026-11-16T18:08:07.000Z",
  "source": "worker",
  "tasks": {
   "open": 35,
@@ -38,9 +38,9 @@
   }
  ],
  "nextShoot": {
-  "name": "MN Wild - 2026 Service First Winners Video",
-  "id": "413421efc76681bb8c6be2a8784765ed",
+  "name": "MN Wild - “Pucks & Rec: Two Cities, One Rink”  Broadcast Special",
+  "id": "3a3421efc7668087a9f9ed1f22430f0c",
   "date": "2026-11-17",
-  "time": null
+  "time": "4:00 PM"
  }
 }
