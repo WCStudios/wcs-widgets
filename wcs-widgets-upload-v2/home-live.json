@@ -1,15 +1,15 @@
 {
- "updated": "2026-11-16T21:38:41.825Z",
+ "updated": "2026-11-16T21:43:41.850Z",
  "source": "worker",
  "tasks": {
-  "open": 36,
-  "inPost": 15,
-  "overdue": 5
+  "open": 33,
+  "inPost": 13,
+  "overdue": 4
  },
  "mostOverdue": {
-  "name": "RTH - 2026 Neighborhood Drone Shoots",
-  "id": "4bd2b506ce2c4cd3b1c4c1efaa817029",
-  "days": 112
+  "name": "Cascade CBX - 2026 Andrew Fisher Spot",
+  "id": "3ce421efc766804a93b7d2e963df2a04",
+  "days": 66
  },
  "pings": [
   {
