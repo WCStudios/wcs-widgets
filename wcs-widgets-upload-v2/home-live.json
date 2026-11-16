@@ -1,10 +1,10 @@
 {
- "updated": "2026-11-16T18:08:07.000Z",
+ "updated": "2026-11-16T20:53:33.991Z",
  "source": "worker",
  "tasks": {
-  "open": 35,
-  "inPost": 15,
-  "overdue": 4
+  "open": 36,
+  "inPost": 16,
+  "overdue": 5
  },
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
@@ -21,9 +21,9 @@
    "ago": "1d"
   },
   {
-   "kind": "del",
+   "kind": "review",
    "who": "Walser Automotive",
-   "what": "delivered",
+   "what": "is reviewing",
    "task": "Walser - 2026 Veterans at Walser License Plate Video",
    "id": "3ed421efc76681479561f440651e8421",
    "ago": "5d"
