@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-15T20:29:00.963Z",
+ "updated": "2026-11-16T06:00:29.267Z",
  "source": "worker",
  "tasks": {
   "open": 35,
@@ -9,7 +9,7 @@
  "mostOverdue": {
   "name": "RTH - 2026 Neighborhood Drone Shoots",
   "id": "4bd2b506ce2c4cd3b1c4c1efaa817029",
-  "days": 111
+  "days": 112
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "is reviewing",
    "task": "MN Wild - 2026 No Fees Spot",
    "id": "414421efc7668117af86d99cd79c4e52",
-   "ago": "today"
+   "ago": "1d"
   },
   {
    "kind": "del",
@@ -26,7 +26,7 @@
    "what": "delivered",
    "task": "Walser - 2026 Veterans at Walser License Plate Video",
    "id": "3ed421efc76681479561f440651e8421",
-   "ago": "4d"
+   "ago": "5d"
   },
   {
    "kind": "review",
@@ -34,7 +34,7 @@
    "what": "is reviewing",
    "task": "TC - 2026 Faith Hope Courage Event (Summary + Interviews)",
    "id": "3e2421efc766816793b9e1d164c72ce3",
-   "ago": "4d"
+   "ago": "5d"
   }
  ],
  "nextShoot": {
