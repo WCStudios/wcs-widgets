@@ -1,15 +1,15 @@
 {
- "updated": "2026-11-16T21:43:41.850Z",
+ "updated": "2026-11-17T06:04:55.516Z",
  "source": "worker",
  "tasks": {
   "open": 33,
   "inPost": 13,
-  "overdue": 4
+  "overdue": 5
  },
  "mostOverdue": {
   "name": "Cascade CBX - 2026 Andrew Fisher Spot",
   "id": "3ce421efc766804a93b7d2e963df2a04",
-  "days": 66
+  "days": 67
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "is reviewing",
    "task": "MN Wild - 2026 No Fees Spot",
    "id": "414421efc7668117af86d99cd79c4e52",
-   "ago": "1d"
+   "ago": "2d"
   },
   {
    "kind": "review",
@@ -26,7 +26,7 @@
    "what": "is reviewing",
    "task": "Walser - 2026 Veterans at Walser License Plate Video",
    "id": "3ed421efc76681479561f440651e8421",
-   "ago": "5d"
+   "ago": "6d"
   },
   {
    "kind": "review",
@@ -34,7 +34,7 @@
    "what": "is reviewing",
    "task": "TC - 2026 Faith Hope Courage Event (Summary + Interviews)",
    "id": "3e2421efc766816793b9e1d164c72ce3",
-   "ago": "5d"
+   "ago": "6d"
   }
  ],
  "nextShoot": {
