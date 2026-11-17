@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-17T17:26:52.488Z",
+ "updated": "2026-11-17T18:22:03.060Z",
  "source": "worker",
  "tasks": {
   "open": 33,
@@ -12,6 +12,14 @@
   "days": 67
  },
  "pings": [
+  {
+   "kind": "review",
+   "who": "Walser Automotive",
+   "what": "is reviewing",
+   "task": "Walser - 2026 Veterans at Walser License Plate Video",
+   "id": "3ed421efc76681479561f440651e8421",
+   "ago": "today"
+  },
   {
    "kind": "review",
    "who": "Tradition Companies",
@@ -27,14 +35,6 @@
    "task": "MN Wild - 2026 No Fees Spot",
    "id": "414421efc7668117af86d99cd79c4e52",
    "ago": "2d"
-  },
-  {
-   "kind": "review",
-   "who": "Walser Automotive",
-   "what": "is reviewing",
-   "task": "Walser - 2026 Veterans at Walser License Plate Video",
-   "id": "3ed421efc76681479561f440651e8421",
-   "ago": "6d"
   }
  ],
  "nextShoot": {
