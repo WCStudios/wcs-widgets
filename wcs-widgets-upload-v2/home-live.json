@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-17T06:04:55.516Z",
+ "updated": "2026-11-17T17:26:52.488Z",
  "source": "worker",
  "tasks": {
   "open": 33,
@@ -14,6 +14,14 @@
  "pings": [
   {
    "kind": "review",
+   "who": "Tradition Companies",
+   "what": "is reviewing",
+   "task": "TC - 2026 Faith Hope Courage Event (Summary + Interviews)",
+   "id": "3e2421efc766816793b9e1d164c72ce3",
+   "ago": "today"
+  },
+  {
+   "kind": "review",
    "who": "Minnesota Wild",
    "what": "is reviewing",
    "task": "MN Wild - 2026 No Fees Spot",
@@ -26,14 +34,6 @@
    "what": "is reviewing",
    "task": "Walser - 2026 Veterans at Walser License Plate Video",
    "id": "3ed421efc76681479561f440651e8421",
-   "ago": "6d"
-  },
-  {
-   "kind": "review",
-   "who": "Tradition Companies",
-   "what": "is reviewing",
-   "task": "TC - 2026 Faith Hope Courage Event (Summary + Interviews)",
-   "id": "3e2421efc766816793b9e1d164c72ce3",
    "ago": "6d"
   }
  ],
