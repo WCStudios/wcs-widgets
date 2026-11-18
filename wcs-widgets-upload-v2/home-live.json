@@ -1,15 +1,15 @@
 {
- "updated": "2026-11-17T18:22:03.060Z",
+ "updated": "2026-11-18T06:03:35.659Z",
  "source": "worker",
  "tasks": {
   "open": 33,
   "inPost": 13,
-  "overdue": 5
+  "overdue": 6
  },
  "mostOverdue": {
   "name": "Cascade CBX - 2026 Andrew Fisher Spot",
   "id": "3ce421efc766804a93b7d2e963df2a04",
-  "days": 67
+  "days": 68
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "is reviewing",
    "task": "Walser - 2026 Veterans at Walser License Plate Video",
    "id": "3ed421efc76681479561f440651e8421",
-   "ago": "today"
+   "ago": "1d"
   },
   {
    "kind": "review",
@@ -26,7 +26,7 @@
    "what": "is reviewing",
    "task": "TC - 2026 Faith Hope Courage Event (Summary + Interviews)",
    "id": "3e2421efc766816793b9e1d164c72ce3",
-   "ago": "today"
+   "ago": "1d"
   },
   {
    "kind": "review",
@@ -34,13 +34,13 @@
    "what": "is reviewing",
    "task": "MN Wild - 2026 No Fees Spot",
    "id": "414421efc7668117af86d99cd79c4e52",
-   "ago": "2d"
+   "ago": "3d"
   }
  ],
  "nextShoot": {
-  "name": "MN Wild - “Pucks & Rec: Two Cities, One Rink”  Broadcast Special",
-  "id": "3a3421efc7668087a9f9ed1f22430f0c",
-  "date": "2026-11-17",
-  "time": "4:00 PM"
+  "name": "TCB - 2026 The Well Event (Interlachen)",
+  "id": "3f3421efc76681129c64ef6b0b1e22f9",
+  "date": "2026-11-18",
+  "time": "5:00 PM"
  }
 }
