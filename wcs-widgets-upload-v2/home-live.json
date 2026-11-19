@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-18T21:35:56.565Z",
+ "updated": "2026-11-19T06:02:19.238Z",
  "source": "worker",
  "tasks": {
   "open": 34,
@@ -9,7 +9,7 @@
  "mostOverdue": {
   "name": "Cascade CBX - 2026 Andrew Fisher Spot",
   "id": "3ce421efc766804a93b7d2e963df2a04",
-  "days": 68
+  "days": 69
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "is reviewing",
    "task": "Walser - 2026 Veterans at Walser License Plate Video",
    "id": "3ed421efc76681479561f440651e8421",
-   "ago": "1d"
+   "ago": "2d"
   },
   {
    "kind": "review",
@@ -26,7 +26,7 @@
    "what": "is reviewing",
    "task": "TC - 2026 Faith Hope Courage Event (Summary + Interviews)",
    "id": "3e2421efc766816793b9e1d164c72ce3",
-   "ago": "1d"
+   "ago": "2d"
   },
   {
    "kind": "review",
@@ -34,13 +34,13 @@
    "what": "is reviewing",
    "task": "MN Wild - 2026 No Fees Spot",
    "id": "414421efc7668117af86d99cd79c4e52",
-   "ago": "3d"
+   "ago": "4d"
   }
  ],
  "nextShoot": {
-  "name": "TCB - 2026 The Well Event (Interlachen)",
-  "id": "3f3421efc76681129c64ef6b0b1e22f9",
-  "date": "2026-11-18",
-  "time": "3:00 PM"
+  "name": "Walser - 2026 Burnsville Subaru Dealership Update",
+  "id": "413421efc76681c8ba22db254fff56d1",
+  "date": "2026-11-19",
+  "time": "10:00 AM"
  }
 }
