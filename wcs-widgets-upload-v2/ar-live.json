@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-12T18:31:42.954Z",
+ "updated": "2026-11-22T02:10:38.945Z",
  "source": "worker",
  "nextNumber": "195",
  "ar": [
@@ -30,7 +30,7 @@
    "status": "Sent",
    "invoiceDate": "2026-10-26",
    "dueDate": "2026-11-10",
-   "daysOverdue": 2,
+   "daysOverdue": 12,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/416421efc76681f3aa9ee8d276d9e656",
    "pdfUrl": null,
@@ -70,7 +70,7 @@
    "status": "Sent",
    "invoiceDate": "2026-09-21",
    "dueDate": "2026-10-06",
-   "daysOverdue": 37,
+   "daysOverdue": 47,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/3e2421efc766813989efdc1968670f48",
    "pdfUrl": null,
@@ -103,35 +103,9 @@
    "status": "Sent",
    "invoiceDate": "2026-09-21",
    "dueDate": "2026-10-06",
-   "daysOverdue": 37,
+   "daysOverdue": 47,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/3e2421efc766814c8056c09d5810c389",
-   "pdfUrl": null,
-   "pdfSource": "live"
-  },
-  {
-   "notionPageId": "9d3da83e-6885-4163-bdf4-19c719246125",
-   "name": "Pulltab Sports - Invoice 0183 - DripDrop - Whats In Your Bottle Commercial (Part 3)",
-   "client": "Pulltab Sports",
-   "project": "DripDrop - Whats In Your Bottle Commercial (Part 3)",
-   "terms": "Due on receipt",
-   "items": [
-    {
-     "description": "DripDrop - Whats In Your Bottle Commercial (Part 3)",
-     "detail": null,
-     "qty": 1,
-     "unit": null,
-     "rate": 4000
-    }
-   ],
-   "threaded": true,
-   "amount": 4000,
-   "status": "Sent",
-   "invoiceDate": "2026-08-27",
-   "dueDate": "2026-08-27",
-   "daysOverdue": 77,
-   "bucket": "61-90 days",
-   "notionUrl": "https://app.notion.com/9d3da83e68854163bdf419c719246125",
    "pdfUrl": null,
    "pdfSource": "live"
   },
@@ -162,7 +136,7 @@
    "status": "Sent",
    "invoiceDate": "2026-09-21",
    "dueDate": "2026-10-06",
-   "daysOverdue": 37,
+   "daysOverdue": 47,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/3e2421efc7668145a909e510f5e64aae",
    "pdfUrl": null,
@@ -195,7 +169,7 @@
    "status": "Sent",
    "invoiceDate": "2026-10-26",
    "dueDate": "2026-11-10",
-   "daysOverdue": 2,
+   "daysOverdue": 12,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/405421efc766813aa493e84f2915edcd",
    "pdfUrl": null,
@@ -228,7 +202,7 @@
    "status": "Sent",
    "invoiceDate": "2026-09-21",
    "dueDate": "2026-10-06",
-   "daysOverdue": 37,
+   "daysOverdue": 47,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/3e2421efc76681a58e22edb82ba44070",
    "pdfUrl": null,
@@ -261,7 +235,7 @@
    "status": "Sent",
    "invoiceDate": "2026-09-21",
    "dueDate": "2026-10-06",
-   "daysOverdue": 37,
+   "daysOverdue": 47,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/3e2421efc766811fbfd2d24dec51ff21",
    "pdfUrl": null,
@@ -294,7 +268,7 @@
    "status": "Sent",
    "invoiceDate": "2026-10-26",
    "dueDate": "2026-11-10",
-   "daysOverdue": 2,
+   "daysOverdue": 12,
    "bucket": "1-30 days",
    "notionUrl": "https://app.notion.com/405421efc76681bc8a38c37d88466275",
    "pdfUrl": null,
@@ -327,7 +301,7 @@
    "status": "Sent",
    "invoiceDate": "2026-09-21",
    "dueDate": "2026-10-06",
-   "daysOverdue": 37,
+   "daysOverdue": 47,
    "bucket": "31-60 days",
    "notionUrl": "https://app.notion.com/3e2421efc766811998b1e4b23a86c3c7",
    "pdfUrl": null,
@@ -916,16 +890,12 @@
   {
    "bucket": "1-30 days",
    "amount": 9750
-  },
-  {
-   "bucket": "61-90 days",
-   "amount": 4000
   }
  ],
  "arByClient": [
   {
    "client": "Pulltab Sports",
-   "amount": 29000
+   "amount": 25000
   },
   {
    "client": "Minnesota Wild",
@@ -933,11 +903,11 @@
   }
  ],
  "summary": {
-  "arTotal": 31500,
-  "arSent": 31500,
+  "arTotal": 27500,
+  "arSent": 27500,
   "arDraft": 0,
-  "arOverdue": 31500,
-  "arCount": 10,
+  "arOverdue": 27500,
+  "arCount": 9,
   "arDraftCount": 0,
   "monthlyBurn": 7214.97,
   "mrr": 13500,
