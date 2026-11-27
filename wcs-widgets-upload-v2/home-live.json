@@ -1,15 +1,15 @@
 {
- "updated": "2026-11-26T06:03:51.719Z",
+ "updated": "2026-11-27T06:02:20.262Z",
  "source": "worker",
  "tasks": {
   "open": 33,
   "inPost": 17,
-  "overdue": 8
+  "overdue": 10
  },
  "mostOverdue": {
   "name": "Cascade CBX - 2026 Andrew Fisher Spot",
   "id": "3ce421efc766804a93b7d2e963df2a04",
-  "days": 76
+  "days": 77
  },
  "pings": [
   {
@@ -18,7 +18,7 @@
    "what": "is reviewing",
    "task": "Walser - 2026 Metropolitan Ford + Suburban Chevrolet Drone Spots",
    "id": "410421efc76681a5b941c864d18b6ea4",
-   "ago": "6d"
+   "ago": "7d"
   },
   {
    "kind": "review",
@@ -26,7 +26,7 @@
    "what": "is reviewing",
    "task": "MN Wild - 2026 Get Wild Anywhere Forest Ranger Shoot",
    "id": "408421efc7668109813adf4c4d9b0995",
-   "ago": "6d"
+   "ago": "7d"
   },
   {
    "kind": "del",
@@ -34,7 +34,7 @@
    "what": "delivered",
    "task": "Walser - 2026 Veterans at Walser License Plate Video",
    "id": "3ed421efc76681479561f440651e8421",
-   "ago": "9d"
+   "ago": "10d"
   }
  ],
  "nextShoot": {
